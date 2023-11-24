@@ -1,0 +1,61 @@
+import { ChatCompletionCreateParams } from "openai/resources/chat";
+import { createClient } from "@supabase/supabase-js";
+import { OpenAI } from "openai";
+
+const matches = 12;
+
+const meta: ChatCompletionCreateParams.Function = {
+  name: "semanticCodeSearch",
+  description: `
+    Performs a semantic code search of the swr react hook. Returns chunks of code that are semantically similar to the query.
+  `,
+  parameters: {
+    type: "object",
+    properties: {
+      // repository: {
+      //   type: "string",
+      //   description: "The owner and name of a repository. This is required. Do not guess. Confirm with the user before assuming."
+      // },
+      query: {
+        type: "string",
+        description: "",
+      },
+    },
+    required: ["query"],
+  },
+};
+
+async function embedQuery(query: string): Promise<number[]> {
+  const input = query.replace(/\n/g, " ");
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const embeddingResponse = await openai.embeddings.create({
+    model: "text-embedding-ada-002",
+    input,
+  });
+
+  const [{ embedding }] = embeddingResponse.data;
+  return embedding;
+}
+
+async function run(query: string): Promise<any> {
+  const queryEmbedding = await embedQuery(query);
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const result = await supabase.rpc("new_docs_search", {
+    query_embedding: queryEmbedding,
+    similarity_threshold: 0.01,
+    match_count: matches,
+  });
+  const answer = result.data.map((chunk: any) => {
+    return {
+      snippet: chunk.chunk,
+      path: chunk.path,
+    };
+  });
+  return answer;
+}
+
+export default { run, meta };
