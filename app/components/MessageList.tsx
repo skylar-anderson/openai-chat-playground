@@ -1,29 +1,67 @@
 import { Text, Box } from "@primer/react";
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronDownIcon, ChevronUpIcon } from "@primer/octicons-react";
 import { Message } from "ai/react";
 
-function UserMessage({ message }: { message: Message }) {
+function UserMessage({ i, message }: { i:number, message: Message }) {
   return (
     <Box mb={1} key={message.id} className="whitespace-pre-wrap">
       <Text color="fg.default" sx={{ fontWeight: "bold" }}>
-        {message.content}
+        {i} {message.content}
       </Text>
     </Box>
   );
 }
-function BotMessage({ message }: { message: Message }) {
+function BotMessage({ i, message, data }: { i:number, data: any; message: Message }) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box mb={3} key={message.id} className="whitespace-pre-wrap">
-      <Box color="fg.subtle">{message.content}</Box>
+      <Box color="fg.default">{i} {message.content}</Box>
+      {JSON.stringify(data)}
+      {data && data.signature && data.signature !== 'NO_FUNCTION_CALLED' ? (
+        <Box
+          onClick={() => setIsOpen(!isOpen)}
+          as="button"
+          color="fg.subtle"
+          borderRadius={2}
+          sx={{
+            alignItems: "center",
+            display: "flex",
+            gap: "8px",
+            fontFamily: "monospace",
+            fontSize: 0,
+            "&:hover": { color: 'fg.default' },
+          }}
+        >
+          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          {data.signature}
+        </Box>
+      ) : null}
+      {isOpen && (
+        <Box>
+          <code>
+            <Box as="pre" fontSize={0}>
+              {JSON.stringify(data, null, 2)}  
+            </Box>
+          </code>
+        </Box>
+      )}
     </Box>
   );
 }
 
-export default function MessageList({ messages }: { messages: Message[] }) {
+export default function MessageList({
+  data,
+  messages,
+}: {
+  data: any | undefined;
+  messages: Message[];
+}) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(scrollToBottom, [messages]);
   return (
     <Box
@@ -41,11 +79,11 @@ export default function MessageList({ messages }: { messages: Message[] }) {
       }}
     >
       {messages.length > 0
-        ? messages.map((m) => {
+        ? messages.map((m, i) => {
             return m.role === "user" ? (
-              <UserMessage message={m} />
+              <UserMessage i={i} key={i} message={m} />
             ) : (
-              <BotMessage message={m} />
+              <BotMessage i={i} key={i} data={data[(i-1)/2]} message={m} />
             );
           })
         : null}

@@ -3,11 +3,11 @@
 ## Getting started
 
 First, install dependencies
-```npm install```
+`npm install`
 
 Next, setup appropriate values in your `.env.local` file:
 
-```
+````
 # From OpenAI
 OPENAI_API_KEY=
 
@@ -32,3 +32,4 @@ Start your local dev server with
 
 ### Creating new functions
 Add new functions to the `app/api/chat/functions` directory. Then update `app/api/chat/functions.ts` to include your newly added functions to the `availableFunctions` set **and** update the `runFunction` function to invoke your function with the correct arguments.
+````

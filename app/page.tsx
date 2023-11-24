@@ -12,7 +12,7 @@ import { useChat } from "ai/react";
 import MessageList from "./components/MessageList";
 import Settings, { SettingsProps } from "./components/Settings";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
-
+import useLocalStorage from "./hooks/useLocalStorage";
 const defaultInstructions = `You are a helpful coding assistant that assists users with coding questions
 about the swr react hook.
 You have the ability to perform a semantic code search against the source code of swr.
@@ -23,26 +23,22 @@ answer questions using your own knowledge. Only use the functions provided to yo
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
 export default function Chat() {
-  const { isLoading, messages, input, handleInputChange, handleSubmit } =
+  const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
     useChat();
 
-  const [settings, setSettings] = useState<SettingsProps>(() => {
-    const savedInstructions = localStorage.getItem("customInstructions");
-    const savedTools = localStorage.getItem("tools");
-    return {
-      customInstructions:
-        savedInstructions !== null ? savedInstructions : defaultInstructions,
-      tools: savedTools !== null ? JSON.parse(savedTools) : tools,
-    };
+  const [settings, setSettings] = useLocalStorage<SettingsProps>('settings', {
+    customInstructions: defaultInstructions,
+    tools: tools,
   });
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
   function onSettingsChange(settings: SettingsProps) {
-    localStorage.setItem("customInstructions", settings.customInstructions);
-    localStorage.setItem("tools", JSON.stringify(settings.tools));
     setSettings(settings);
   }
+
   async function submit(...args: unknown[]) {
+    if (isLoading) return false;
+    
     const chatRequestOptions = {
       data: {
         settings: settings as any,
@@ -72,7 +68,7 @@ export default function Chat() {
             onSubmit={onSettingsChange}
           />
 
-          <MessageList messages={messages} />
+          <MessageList data={data} messages={messages} />
 
           <Box
             as="form"
@@ -103,7 +99,7 @@ export default function Chat() {
               }
               value={input}
               block={true}
-              placeholder="Ask Copilot..."
+              placeholder={isLoading ? "Loading..." : "Ask Copilot..."}
               size="large"
               autoFocus={true}
               loading={isLoading}

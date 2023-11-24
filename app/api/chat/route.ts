@@ -1,22 +1,16 @@
 import {
   JSONValue,
-  Message,
   OpenAIStream,
   StreamingTextResponse,
   experimental_StreamData,
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-// Create an OpenAI API client (that's edge friendly!)
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-});
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 import { runFunction, selectFunctions, FunctionName } from "./functions";
 
-// IMPORTANT! Set the runtime to edge
 export const runtime = "edge";
 const MODEL = process.env.MODEL_VERSION || "gpt-4-1106-preview";
-
 const systemMessage = {
   // content: `
   //   You are a helpful coding assistant that assists users with coding questions.
@@ -46,7 +40,11 @@ type SettingsProps = {
   customInstructions: string;
   tools: FunctionName[];
 };
-
+function signatureFromArgs(args: Record<string, unknown>) {
+  return Object.entries(args)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(", ");
+}
 export async function POST(req: Request) {
   const body: RequestProps = await req.json();
   const {
@@ -62,36 +60,34 @@ export async function POST(req: Request) {
   });
 
   const data = new experimental_StreamData();
+  
+  let signature = "NO_FUNCTION_CALLED";
+  let result = {};
+
   const stream = OpenAIStream(response, {
     experimental_onFunctionCall: async (
       { name, arguments: args },
       createFunctionCallMessages,
     ) => {
       const functionResult = await runFunction(name, args);
-      // Not sure what to do with this yet, but seems interesting!
-      data.append({
-        text: "Some custom data",
-      });
       const newMessages = createFunctionCallMessages(
         functionResult as JSONValue,
       ) as ChatCompletionMessageParam[];
+      signature = `${name}(${signatureFromArgs(args)})`;
+      result = functionResult;;
+
       return openai.chat.completions.create({
         messages: [systemMessage, ...messages, ...newMessages],
         stream: true,
         model: MODEL,
       });
     },
-    onCompletion(completion) {
-      console.log("completion", completion);
-    },
-    onFinal(completion) {
+    //onCompletion() {},
+    onFinal() {
+      data.append({ signature, result });
       data.close();
     },
     experimental_streamData: true,
-  });
-
-  data.append({
-    text: "Hello, how are you?",
   });
 
   return new StreamingTextResponse(stream, {}, data);
