@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@primer/octicons-react";
 import { Message } from "ai/react";
 
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
 function UserMessage({ i, message }: { i:number, message: Message }) {
   return (
     <Box mb={1} key={message.id} className="whitespace-pre-wrap">
@@ -16,8 +19,12 @@ function BotMessage({ i, message, data }: { i:number, data: any; message: Messag
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box mb={3} key={message.id} className="whitespace-pre-wrap">
-      <Box color="fg.default">{i} {message.content}</Box>
-      {JSON.stringify(data)}
+      <Box color="fg.default">
+        <Markdown remarkPlugins={[remarkGfm]}>
+          {message.content}
+        </Markdown>
+      </Box>
+      
       {data && data.signature && data.signature !== 'NO_FUNCTION_CALLED' ? (
         <Box
           onClick={() => setIsOpen(!isOpen)}
