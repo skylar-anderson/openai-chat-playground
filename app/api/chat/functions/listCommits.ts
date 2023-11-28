@@ -5,21 +5,39 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/commits";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listCommits",
-  description: `
-    Returns a list of commits for a given repository. Optionally provide
-    a page number to paginate through the results. 
-  `,
+  description: `Retrieves a paginated list of commits for a given repository. This function accepts 2 arguments: 
+
+* Repository (Required): The owner and name of a repository. 
+* Page (Optional): An optional page number to paginate through the results. Defaults to 1.
+* SHA (Optional): SHA or branch to start listing commits from. Default: the repository's default branch (usually main).
+* Path (Optional): Only commits containing this file path will be returned.
+* Author (Optional): GitHub login or email address by which to filter by commit author.`,
   parameters: {
     type: "object",
     properties: {
       repository: {
         type: "string",
         description:
-          "The owner and name of a repository. This is required. Do not guess. Confirm with the user before assuming.",
+          "Required. The owner and name of a repository represented as :owner/:name. Do not guess. Confirm with the user if you are unsure.",
       },
       page: {
         type: "number",
-        description: "The page of commits to return, defaults to 1",
+        description:
+          "Optional. Defaults to 1. The page of commits to return, defaults to 1",
+      },
+      sha: {
+        type: "string",
+        description:
+          "SHA or branch to start listing commits from. Default: the repository's default branch (usually main).",
+      },
+      path: {
+        type: "string",
+        description: "Only commits containing this file path will be returned.",
+      },
+      author: {
+        type: "string",
+        description:
+          "GitHub login or email address by which to filter by commit author.",
       },
     },
     required: ["repository"],

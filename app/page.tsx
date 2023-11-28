@@ -10,7 +10,11 @@ import {
 import { useState } from "react";
 import { useChat } from "ai/react";
 import MessageList from "./components/MessageList";
-import Settings, { SettingsProps } from "./components/Settings";
+import Settings, {
+  Model,
+  FUNCTION_CALLING_MODELS,
+  SettingsProps,
+} from "./components/Settings";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
 const defaultInstructions = `You are a helpful coding assistant that assists users with coding questions
@@ -26,9 +30,10 @@ export default function Chat() {
   const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
     useChat();
 
-  const [settings, setSettings] = useLocalStorage<SettingsProps>('settings', {
+  const [settings, setSettings] = useLocalStorage<SettingsProps>("settings", {
     customInstructions: defaultInstructions,
     tools: tools,
+    model: FUNCTION_CALLING_MODELS[0],
   });
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -38,7 +43,7 @@ export default function Chat() {
 
   async function submit(...args: unknown[]) {
     if (isLoading) return false;
-    
+
     const chatRequestOptions = {
       data: {
         settings: settings as any,
@@ -73,7 +78,13 @@ export default function Chat() {
           <Box
             as="form"
             onSubmit={submit}
-            sx={{ padding: 3, display: "flex", gap: "8px" }}
+            sx={{
+              padding: 3,
+              display: "flex",
+              gap: "8px",
+              borderTop: "1px solid",
+              borderColor: "border.default",
+            }}
           >
             <IconButton
               icon={GearIcon}

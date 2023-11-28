@@ -6,22 +6,26 @@ const matches = 12;
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "semanticCodeSearch",
-  description: `
-    Performs a semantic code search of the swr react hook. Returns chunks of code that are semantically similar to the query.
-  `,
+  description: `Performs a semantic code search of the provided repository. Returns chunks of code that are semantically similar to the query. Results are ordred by cosine similarity.
+
+This function accepts 2 arguments:
+
+* Repository (Required): The owner and name of a repository.
+* Query (Required): The query to search for.`,
   parameters: {
     type: "object",
     properties: {
-      // repository: {
-      //   type: "string",
-      //   description: "The owner and name of a repository. This is required. Do not guess. Confirm with the user before assuming."
-      // },
+      repository: {
+        type: "string",
+        description:
+          "Required. The owner and name of a repository represented as :owner/:name. Do not guess. Confirm with the user if you are unsure.",
+      },
       query: {
         type: "string",
         description: "",
       },
     },
-    required: ["query"],
+    required: ["repository", "query"],
   },
 };
 

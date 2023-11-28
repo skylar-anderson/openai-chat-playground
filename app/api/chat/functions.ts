@@ -2,12 +2,13 @@ import listCommits from "./functions/listCommits";
 import listIssues from "./functions/listIssues";
 import listIssueComments from "./functions/listIssueComments";
 import semanticCodeSearch from "./functions/semanticCodeSearch";
-
+import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
 export const availableFunctions = {
   semanticCodeSearch,
   listCommits,
   listIssues,
   listIssueComments,
+  listPullRequestsForCommit,
 };
 
 export type FunctionName = keyof typeof availableFunctions;
@@ -20,6 +21,11 @@ export function selectFunctions(functions: FunctionName[]) {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "listPullRequestsForCommit":
+      return await listPullRequestsForCommit.run(
+        args["repository"],
+        args["commit_sha"],
+      );
     case "semanticCodeSearch":
       return await semanticCodeSearch.run(args["query"]);
     case "listCommits":

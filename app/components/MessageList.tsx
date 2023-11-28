@@ -1,58 +1,14 @@
-import { Text, Box } from "@primer/react";
-import { useState, useRef, useEffect } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "@primer/octicons-react";
+import { Spinner, Text, Box } from "@primer/react";
+import { useRef, useEffect } from "react";
 import { Message } from "ai/react";
+import BotMessage from "./BotMessage";
 
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-
-function UserMessage({ i, message }: { i:number, message: Message }) {
+function UserMessage({ message }: { message: Message }) {
   return (
     <Box mb={1} key={message.id} className="whitespace-pre-wrap">
-      <Text color="fg.default" sx={{ fontWeight: "bold" }}>
-        {i} {message.content}
+      <Text color="fg.default" sx={{ fontSize: 3 }}>
+        {message.content}
       </Text>
-    </Box>
-  );
-}
-function BotMessage({ i, message, data }: { i:number, data: any; message: Message }) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  return (
-    <Box mb={3} key={message.id} className="whitespace-pre-wrap">
-      <Box color="fg.default">
-        <Markdown remarkPlugins={[remarkGfm]}>
-          {message.content}
-        </Markdown>
-      </Box>
-      
-      {data && data.signature && data.signature !== 'NO_FUNCTION_CALLED' ? (
-        <Box
-          onClick={() => setIsOpen(!isOpen)}
-          as="button"
-          color="fg.subtle"
-          borderRadius={2}
-          sx={{
-            alignItems: "center",
-            display: "flex",
-            gap: "8px",
-            fontFamily: "monospace",
-            fontSize: 0,
-            "&:hover": { color: 'fg.default' },
-          }}
-        >
-          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          {data.signature}
-        </Box>
-      ) : null}
-      {isOpen && (
-        <Box>
-          <code>
-            <Box as="pre" fontSize={0}>
-              {JSON.stringify(data, null, 2)}  
-            </Box>
-          </code>
-        </Box>
-      )}
     </Box>
   );
 }
@@ -69,13 +25,27 @@ export default function MessageList({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const turns = [];
+
+  for (let i = 0; i < messages.length; i += 2) {
+    const turn = {
+      index: i,
+      user: messages[i],
+      debugData: i > 0 ? data[i / 2] : null,
+      agent: messages[i + 1] ? messages[i + 1] : null,
+    };
+    turns.push(turn);
+  }
+
   useEffect(scrollToBottom, [messages]);
+
   return (
     <Box
-      padding={4}
+      padding={1}
       width="100%"
       fontSize={1}
       sx={{
+        backgroundColor: "canvas.subtle",
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -83,16 +53,34 @@ export default function MessageList({
         marginLeft: "auto",
         flexGrow: 1,
         overflowY: "scroll",
+        paddingBottom: 0,
+        gap: 1,
       }}
     >
-      {messages.length > 0
-        ? messages.map((m, i) => {
-            return m.role === "user" ? (
-              <UserMessage i={i} key={i} message={m} />
-            ) : (
-              <BotMessage i={i} key={i} data={data[(i-1)/2]} message={m} />
-            );
-          })
+      {turns.length > 0
+        ? turns.map((turn, i) => (
+            <Box
+              sx={{
+                backgroundColor: "canvas.default",
+                //border: '1px solid',
+                borderRadius: 2,
+                padding: 3,
+                //borderColor: 'border.default',
+                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.06)",
+              }}
+            >
+              <UserMessage key={turn.index} message={turn.user} />
+              {turn.agent ? (
+                <BotMessage
+                  key={turn.index + 1}
+                  data={turn.debugData}
+                  message={turn.agent}
+                />
+              ) : (
+                <Spinner size='small' />
+              )}
+            </Box>
+          ))
         : null}
       <div ref={messagesEndRef} />
     </Box>

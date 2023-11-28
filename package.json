@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.38.4",
     "@types/nodegit": "^0.28.7",
     "ai": "2.2.25",
+    "copy-to-clipboard": "^3.3.3",
     "glob": "^10.3.3",
     "gray-matter": "^4.0.3",
     "langchain": "^0.0.189",

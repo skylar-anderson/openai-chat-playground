@@ -6,18 +6,18 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/issues/{issue_number}/comments";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listIssueComments",
-  description: `
-    Use this function to finds the list of comments for a github issue. Optionally
-    provide a page number to paginate through the results. An issue_number must
-    be provided.
-  `,
+  description: `Retrieves a paginated list of comments for a given issue. This function accepts 3 arguments:
+
+* Repository (Required): The owner and name of a repository.
+* Issue Number (Required): The issue number to retrieve comments for.
+* Page (Optional): An optional page number to paginate through the results. Defaults to 1.`,
   parameters: {
     type: "object",
     properties: {
       repository: {
         type: "string",
         description:
-          "The owner and name of a repository, e.g. facebook/react or vercel/next.js",
+          "Required. The owner and name of a repository represented as :owner/:name. Do not guess. Confirm with the user if you are unsure.",
       },
       issue_number: {
         type: "number",

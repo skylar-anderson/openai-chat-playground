@@ -6,18 +6,19 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/issues";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listIssues",
-  description: `
-    Returns a list of issues for a given repository. Optionally provide a page
-    number to paginate through the results.  Optionally provide an assignee to
-    filter issues to a specific user.
-  `,
+  description: `Retrieves a paginated list of issues for a given repository. This function accepts 4 arguments:
+
+* Repository (Required): The owner and name of a repository.
+* Page (Optional): An optional page number to paginate through the results. Defaults to 1.
+* Assignee (Optional): An assignee to filter issues by.
+* State (Optional): The state of the issues to return, e.g. open or closed. Defaults to open. Must be one of open, closed, or all.`,
   parameters: {
     type: "object",
     properties: {
       repository: {
         type: "string",
         description:
-          "The owner and name of a repository, e.g. facebook/react or vercel/next.js",
+          "Required. The owner and name of a repository represented as :owner/:name. Do not guess. Confirm with the user if you are unsure.",
       },
       page: {
         type: "number",
@@ -55,6 +56,7 @@ async function run(
       per_page: 10,
       page,
       state,
+      assignee,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
       },

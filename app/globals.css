@@ -1,3 +1,50 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.markdownContainer > :first-child {
+  margin-top: 0;
+}
+.markdownContainer > :last-child {
+  margin-bottom: 0;
+}
+
+.markdownContainer code {
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 13px;
+  padding: 2px 4px;
+  font-weight: 500;
+}
+
+/* Table Styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+thea th {
+  background-color: #f2f2f2;
+}
+
+tr th:first-child {
+  border-top-left-radius: 6px;
+}
+
+tr th:last-child {
+  border-top-right-radius: 6px;
+}
+
+tr:last-child td:last-child {
+  border-bottom-right-radius: 6px;
+}
+
+tr:last-child td:first-child {
+  border-bottom-left-radius: 6px;
+}

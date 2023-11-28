@@ -11,25 +11,6 @@ import { runFunction, selectFunctions, FunctionName } from "./functions";
 
 export const runtime = "edge";
 const MODEL = process.env.MODEL_VERSION || "gpt-4-1106-preview";
-const systemMessage = {
-  // content: `
-  //   You are a helpful coding assistant that assists users with coding questions.
-  //   You help users find answers to questions related to popular open source libraries.
-  //   You have access to functions that load GitHub data. Do not guess which repository
-  //   the user is referencing. If you are unsure, ask the user to clarify.
-  //   You have access to search all of the world's code.  If there are any questions about
-  //   how code works, use one of the functions provided to you to find the answer. Do not
-  //   utilize your own knowledge to answer questions. Only use the functions provided to you.
-  //   `,
-  content: `
-    You are a helpful coding assistant that assists users with coding questions
-    about the swr react hook.
-    You have the ability to perform a semantic code search against the source code of swr.
-    Please use this ability to answer questions about how swr works. Do not attempt to
-    answer questions using your own knowledge. Only use the functions provided to you.
-    `,
-  role: "system",
-} as ChatCompletionMessageParam;
 
 type RequestProps = {
   messages: ChatCompletionMessageParam[];
@@ -40,17 +21,49 @@ type SettingsProps = {
   customInstructions: string;
   tools: FunctionName[];
 };
+
 function signatureFromArgs(args: Record<string, unknown>) {
   return Object.entries(args)
     .map(([key, value]) => `${key}=${value}`)
     .join(", ");
 }
+
+function getSystemMessage(
+  customInstructions: string,
+): ChatCompletionMessageParam {
+  const DEFAULT_INSTRUCTIONS = `
+  You are a helpful coding assistant that assists users with coding questions.
+
+  * You have been provided a number of functions that load data from GitHub.com. 
+  * Please use these functions to answer the user's questions when necessary. 
+  * If you are unsure about invoking a function, just ask the user to clarify.
+  * Be concise and helpful in your responses.
+  * Most users are developers. Use technical terms freely and avoid over simplification.
+  `;
+
+  const instructions = `
+    ${DEFAULT_INSTRUCTIONS}
+    ${
+      customInstructions
+        ? `The user has provided the following additional instructions:${customInstructions}`
+        : ``
+    }
+  `;
+
+  return {
+    content: instructions,
+    role: "system",
+  };
+}
+
 export async function POST(req: Request) {
   const body: RequestProps = await req.json();
   const {
     messages,
     data: { settings },
   } = body;
+
+  const systemMessage = getSystemMessage(settings.customInstructions);
 
   const response = await openai.chat.completions.create({
     model: MODEL,
@@ -60,9 +73,10 @@ export async function POST(req: Request) {
   });
 
   const data = new experimental_StreamData();
-  
+
   let signature = "NO_FUNCTION_CALLED";
   let result = {};
+  let schema = {};
 
   const stream = OpenAIStream(response, {
     experimental_onFunctionCall: async (
@@ -73,8 +87,10 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(
         functionResult as JSONValue,
       ) as ChatCompletionMessageParam[];
+
       signature = `${name}(${signatureFromArgs(args)})`;
-      result = functionResult;;
+      result = functionResult;
+      schema = selectFunctions([name as FunctionName])[0];
 
       return openai.chat.completions.create({
         messages: [systemMessage, ...messages, ...newMessages],
@@ -84,7 +100,7 @@ export async function POST(req: Request) {
     },
     //onCompletion() {},
     onFinal() {
-      data.append({ signature, result });
+      data.append({ signature, result, schema });
       data.close();
     },
     experimental_streamData: true,
