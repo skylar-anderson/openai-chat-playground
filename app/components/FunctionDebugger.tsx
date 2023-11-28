@@ -1,6 +1,6 @@
 import copy from "copy-to-clipboard";
 import { useState } from "react";
-import { IconButton, Box, UnderlineNav } from "@primer/react";
+import { Text, IconButton, Box, UnderlineNav } from "@primer/react";
 import {
   CopyIcon,
   ChevronDownIcon,
@@ -24,18 +24,15 @@ export default function FunctionDebugger({
   return (
     <Box
       sx={{
-        border: "1px solid",
+        borderTop: "1px solid",
         borderColor: "border.default",
         padding: 0,
-        borderRadius: 2,
-        marginTop: 3,
         overflow: "hidden",
       }}
     >
       <Box
         onClick={() => setIsOpen(!isOpen)}
         as="button"
-        color="fg.subtle"
         borderRadius={2}
         py={2}
         sx={{
@@ -54,7 +51,7 @@ export default function FunctionDebugger({
         }}
       >
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>
-          {functionData.signature}
+          <Text sx={{color:"fg.subtle"}}>{functionData.signature}</Text>
         </Box>
         {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Box>

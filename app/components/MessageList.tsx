@@ -1,14 +1,33 @@
 import { Spinner, Text, Box } from "@primer/react";
 import { useRef, useEffect } from "react";
 import { Message } from "ai/react";
-import BotMessage from "./BotMessage";
+import FunctionDebugger from "./FunctionDebugger";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function UserMessage({ message }: { message: Message }) {
   return (
-    <Box mb={1} key={message.id} className="whitespace-pre-wrap">
-      <Text color="fg.default" sx={{ fontSize: 3 }}>
+    <Box px={3} py={3} sx={{ borderRadius: '6px 6px 0 0', borderBottom: '1px solid', borderColor: 'border.default', backgroundColor: 'canvas.subtle'}} key={message.id}>
+      <Text color="fg.default" sx={{ fontSize: 1, fontWeight: 'semibold' }}>
         {message.content}
       </Text>
+    </Box>
+  );
+}
+type BotMessageProps = {
+  data: any;
+  message: Message;
+};
+function BotMessage({ message, data }: BotMessageProps) {
+  return (
+    <Box key={message.id} sx={{overflowY: 'scroll'}}>
+      <Box p={3} color="fg.default" className="markdownContainer">
+        <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+      </Box>
+
+      {data && data.signature && data.signature !== "NO_FUNCTION_CALLED" ? (
+        <FunctionDebugger functionData={data} />
+      ) : null}
     </Box>
   );
 }
@@ -41,11 +60,8 @@ export default function MessageList({
 
   return (
     <Box
-      padding={1}
-      width="100%"
-      fontSize={1}
       sx={{
-        backgroundColor: "canvas.subtle",
+        //backgroundColor: "canvas.subtle",
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
@@ -54,7 +70,10 @@ export default function MessageList({
         flexGrow: 1,
         overflowY: "scroll",
         paddingBottom: 0,
-        gap: 1,
+        padding: 3,
+        width: "100%",
+        fontSize: 1,
+        gap: 3,
       }}
     >
       {turns.length > 0
@@ -62,11 +81,11 @@ export default function MessageList({
             <Box
               sx={{
                 backgroundColor: "canvas.default",
-                //border: '1px solid',
+                border: '1px solid',
                 borderRadius: 2,
-                padding: 3,
-                //borderColor: 'border.default',
-                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.06)",
+                //padding: 3,
+                borderColor: 'border.default',
+                //boxShadow: "0 0px 4px rgba(0, 0, 0, 0.03), 0 1px 1px rgba(0, 0, 0, 0.2), 0 1px 5px rgba(0, 0, 0, 0.02)"
               }}
             >
               <UserMessage key={turn.index} message={turn.user} />
@@ -77,7 +96,9 @@ export default function MessageList({
                   message={turn.agent}
                 />
               ) : (
-                <Spinner size='small' />
+                <Box p={3}>
+                  <Spinner size='small' />
+                </Box>
               )}
             </Box>
           ))
