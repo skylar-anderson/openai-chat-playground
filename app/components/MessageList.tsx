@@ -45,12 +45,13 @@ export default function MessageList({
   };
 
   const turns = [];
-
+  console.log(data);
   for (let i = 0; i < messages.length; i += 2) {
+    const dataIndex = i === 0 ? i : (i / 2);
     const turn = {
       index: i,
       user: messages[i],
-      debugData: i > 0 ? data[i / 2] : null,
+      debugData: (data && data[dataIndex]) ? data[dataIndex] : null,
       agent: messages[i + 1] ? messages[i + 1] : null,
     };
     turns.push(turn);
