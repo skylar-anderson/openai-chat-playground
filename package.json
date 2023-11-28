@@ -23,7 +23,7 @@
     "next": "13.4.7",
     "nodegit": "^0.28.0-alpha.21",
     "octokit": "2.0.19",
-    "openai": "4.16.1",
+    "openai": "4.20.1",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
