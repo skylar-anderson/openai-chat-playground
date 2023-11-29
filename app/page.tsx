@@ -17,12 +17,7 @@ import Settings, {
 } from "./components/Settings";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
-const defaultInstructions = `You are a helpful coding assistant that assists users with coding questions
-about the swr react hook.
-You have the ability to perform a semantic code search against the source code of swr.
-Please use this ability to answer questions about how swr works. Do not attempt to
-answer questions using your own knowledge. Only use the functions provided to you.
-`;
+const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
 

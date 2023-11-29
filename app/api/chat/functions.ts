@@ -3,7 +3,12 @@ import listIssues from "./functions/listIssues";
 import listIssueComments from "./functions/listIssueComments";
 import semanticCodeSearch from "./functions/semanticCodeSearch";
 import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
+import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
+import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
+
 export const availableFunctions = {
+  retrieveDiffFromSHA,
+  retrieveDiffFromPullRequest,
   semanticCodeSearch,
   listCommits,
   listIssues,
@@ -21,6 +26,16 @@ export function selectFunctions(functions: FunctionName[]) {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "retrieveDiffFromPullRequest":
+      return await retrieveDiffFromPullRequest.run(
+        args["repository"],
+        args["pullRequestId"],
+      );
+    case "retrieveDiffFromSHA":
+      return await retrieveDiffFromSHA.run(
+        args["repository"],
+        args["sha"],
+      );
     case "listPullRequestsForCommit":
       return await listPullRequestsForCommit.run(
         args["repository"],

@@ -15,3 +15,24 @@ export async function githubApiRequest<T>(
   }
   return response as T;
 }
+
+export async function retrieveDiffContents(url: string): Promise<string> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github.diff",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch diff contents");
+    }
+
+    const diffContents = await response.text();
+    return diffContents;
+  } catch (error) {
+    console.log("Failed to fetch diff contents!");
+    console.log(error);
+    throw error;
+  }
+}
