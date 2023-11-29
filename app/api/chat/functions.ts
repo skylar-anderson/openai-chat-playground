@@ -32,10 +32,7 @@ export async function runFunction(name: string, args: any) {
         args["pullRequestId"],
       );
     case "retrieveDiffFromSHA":
-      return await retrieveDiffFromSHA.run(
-        args["repository"],
-        args["sha"],
-      );
+      return await retrieveDiffFromSHA.run(args["repository"], args["sha"]);
     case "listPullRequestsForCommit":
       return await listPullRequestsForCommit.run(
         args["repository"],

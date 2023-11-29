@@ -37,6 +37,50 @@ type Props = {
   onSubmit: (s: SettingsProps) => void;
 };
 
+function ToolOption({
+  tool,
+  checked,
+}: {
+  checked: boolean;
+  tool: ChatCompletionCreateParams.Function;
+}) {
+  return (
+    <Box
+      p={3}
+      sx={{
+        "&:last-child": { border: 0 },
+        borderBottom: "1px solid",
+        borderColor: "border.default",
+      }}
+    >
+      <FormControl key={tool.name}>
+        <Checkbox value={tool.name} name="tools[]" defaultChecked={checked} />
+        <FormControl.Label>
+          <Box>{tool.name}</Box>
+          <Box
+            sx={{
+              fontWeight: "normal",
+              fontSize: 0,
+              color: "fg.muted",
+            }}
+          >
+            <Box
+              as="pre"
+              sx={{
+                margin: 0,
+                whiteSpace: "pre-line",
+                padding: 0,
+              }}
+            >
+              {tool.description}
+            </Box>
+          </Box>
+        </FormControl.Label>
+      </FormControl>
+    </Box>
+  );
+}
+
 const Settings = ({ onDismiss, isOpen, initialValues, onSubmit }: Props) => {
   const form = useRef<HTMLFormElement>(null);
   const handleSubmit = useCallback(
@@ -117,45 +161,10 @@ const Settings = ({ onDismiss, isOpen, initialValues, onSubmit }: Props) => {
                   const tool = availableFunctions[functionName]
                     .meta as ChatCompletionCreateParams.Function;
                   return (
-                    <Box
-                      p={3}
-                      sx={{
-                        "&:last-child": { border: 0 },
-                        borderBottom: "1px solid",
-                        borderColor: "border.default",
-                      }}
-                    >
-                      <FormControl key={tool.name}>
-                        <Checkbox
-                          value={tool.name}
-                          name="tools[]"
-                          defaultChecked={initialValues.tools.includes(
-                            tool.name,
-                          )}
-                        />
-                        <FormControl.Label>
-                          <Box>{tool.name}</Box>
-                          <Box
-                            sx={{
-                              fontWeight: "normal",
-                              fontSize: 0,
-                              color: "fg.muted",
-                            }}
-                          >
-                            <Box
-                              as="pre"
-                              sx={{
-                                margin: 0,
-                                whiteSpace: "pre-line",
-                                padding: 0,
-                              }}
-                            >
-                              {tool.description}
-                            </Box>
-                          </Box>
-                        </FormControl.Label>
-                      </FormControl>
-                    </Box>
+                    <ToolOption
+                      checked={initialValues.tools.includes(tool.name)}
+                      tool={tool}
+                    />
                   );
                 })}
               </Box>

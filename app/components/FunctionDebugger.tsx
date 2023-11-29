@@ -6,13 +6,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@primer/octicons-react";
-import { JSONSchema } from "openai/lib/jsonschema";
-
-type FunctionData = {
-  signature: string;
-  schema: JSONSchema;
-  result: any;
-};
+import { FunctionData } from "../types";
 
 export default function FunctionDebugger({
   functionData,
@@ -24,9 +18,11 @@ export default function FunctionDebugger({
   return (
     <Box
       sx={{
-        borderTop: "1px solid",
+        border: "1px solid",
         borderColor: "border.default",
+        borderRadius: 2,
         padding: 0,
+        mt: 3,
         overflow: "hidden",
       }}
     >
@@ -51,7 +47,7 @@ export default function FunctionDebugger({
         }}
       >
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>
-          <Text sx={{color:"fg.subtle"}}>{functionData.signature}</Text>
+          <Text sx={{ color: "fg.subtle" }}>{functionData.signature}</Text>
         </Box>
         {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Box>
@@ -80,7 +76,7 @@ export default function FunctionDebugger({
               Schema
             </UnderlineNav.Item>
           </UnderlineNav>
-          <Box sx={{ maxHeight: "480px", overflowY: "scroll" }} p={3}>
+          <Box p={3}>
             {tab === "result" && (
               <Box sx={{ position: "relative" }}>
                 <Box sx={{ position: "absolute", top: "-8px", right: "-8px" }}>

@@ -26,11 +26,11 @@ const meta: ChatCompletionCreateParams.Function = {
 
 async function run(repository: string, sha: string) {
   const [owner, repo] = repository.split("/");
-  const url = `https://github.com/${owner}/${repo}/commit/${sha}.diff`
-  
+  const url = `https://github.com/${owner}/${repo}/commit/${sha}.diff`;
+
   try {
     const diffContents = await retrieveDiffContents(url);
-    return diffContents
+    return diffContents;
   } catch (error) {
     console.log("Failed to fetch diff content!");
     console.log(error);

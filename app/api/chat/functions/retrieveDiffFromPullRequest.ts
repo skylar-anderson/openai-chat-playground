@@ -16,8 +16,7 @@ const meta: ChatCompletionCreateParams.Function = {
       },
       pullRequestId: {
         type: "string",
-        description:
-          `The pull request ID to retrieve the diff from.`
+        description: `The pull request ID to retrieve the diff from.`,
       },
     },
     required: ["repository", "pullRequestId"],
@@ -26,11 +25,11 @@ const meta: ChatCompletionCreateParams.Function = {
 
 async function run(repository: string, pullRequestId: string) {
   const [owner, repo] = repository.split("/");
-  const url = `https://github.com/${owner}/${repo}/pull/${pullRequestId}.diff`
-  
+  const url = `https://github.com/${owner}/${repo}/pull/${pullRequestId}.diff`;
+
   try {
     const diffContents = await retrieveDiffContents(url);
-    return diffContents
+    return diffContents;
   } catch (error) {
     console.log("Failed to fetch diff content!");
     console.log(error);
