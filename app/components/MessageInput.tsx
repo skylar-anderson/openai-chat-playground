@@ -29,7 +29,7 @@ export default function MessageInput({
         aria-label="Settings"
         onClick={() => setShowSettings(!showSettings)}
       >
-        Settings {showSettings ? "Show" : "Hide"}
+        Settings 
       </IconButton> */}
       <TextInput
         sx={{ paddingRight: 1 }}

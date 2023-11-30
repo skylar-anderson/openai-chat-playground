@@ -5,8 +5,9 @@ import semanticCodeSearch from "./functions/semanticCodeSearch";
 import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
 import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
 import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
-
+import listNotifications from "./functions/listNotifications";
 export const availableFunctions = {
+  listNotifications,
   retrieveDiffFromSHA,
   retrieveDiffFromPullRequest,
   semanticCodeSearch,
@@ -26,6 +27,12 @@ export function selectFunctions(functions: FunctionName[]) {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "listNotifications":
+      return await listNotifications.run(
+        args["all"],
+        args["participating"],
+        args["page"],
+      );
     case "retrieveDiffFromPullRequest":
       return await retrieveDiffFromPullRequest.run(
         args["repository"],

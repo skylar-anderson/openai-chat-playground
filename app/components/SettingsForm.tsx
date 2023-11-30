@@ -113,6 +113,7 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
     <Box
       sx={{
         width: "360px",
+        flexShrink: 0,
         height: "100%",
         borderRight: "1px solid",
         borderColor: "border.default",

@@ -1,4 +1,4 @@
-import { IconButton, Text, Box } from "@primer/react";
+import { Avatar, IconButton, Text, Box } from "@primer/react";
 import { useRef, useEffect } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -16,9 +16,8 @@ function UserMessage({ message }: { message: MessageWithDebugData }) {
       }}
     >
       <Box
-        py={2}
+        p={3}
         sx={{
-          paddingX: "12px",
           borderRadius: 2,
           lineHeight: 1,
           backgroundColor: "canvas.subtle",
@@ -56,35 +55,43 @@ function BotMessage({ message, onClick }: BotMessageProps & ButtonBaseProps) {
         boxShadow: "rgba(31, 35, 40, 0.04) 0px 1px 0px",
       }}
     >
-      <Box
-        color="fg.default"
-        py={2}
-        sx={{ px: "12px", textAlign: "left", position: "relative" }}
-      >
-        <IconButton
-          icon={ScreenFullIcon}
-          aria-label="Expand message"
-          variant="invisible"
-          size="small"
-          onClick={onClick}
-          sx={{ position: "absolute", top: "8px", right: "8px" }}
-        >
-          Expand message
-        </IconButton>
-        <Box sx={{ fontWeight: "semibold", mb: 2 }}>Copilot</Box>
+      <Box>
+        <Box
+          sx={{
+            backgroundColor: "canvas.subtle",
+            borderBottom: "1px solid",
+            borderColor: "border.default",
+            px:3,
+            py:2,
+            fontWeight: 'semibold',
+            display: 'flex',
+            gap: 2
 
-        <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
-          {content}
-        </Markdown>
-        {message.showFunctionDebugger ? (
-          <Box mt={2}>
-            <Text
-              sx={{ fontSize: 0, color: "fg.subtle", fontFamily: "monospace" }}
-            >
-              {data.signature}
-            </Text>
-          </Box>
-        ) : null}
+          }}
+        >
+          Copilot
+        </Box>
+        <Box
+          color="fg.default"
+          p={3}
+          sx={{ textAlign: "left", position: "relative" }}
+        >
+          {/* <IconButton
+            icon={ScreenFullIcon}
+            aria-label="Expand message"
+            variant="invisible"
+            size="small"
+            onClick={onClick}
+            sx={{ position: "absolute", top: "8px", right: "8px" }}
+          >
+            Expand message
+          </IconButton> */}
+          {/* <Box sx={{ fontWeight: "semibold", mb: 2 }}>Copilot</Box> */}
+
+          <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
+            {content}
+          </Markdown>
+        </Box>
       </Box>
     </Box>
   );
@@ -121,8 +128,10 @@ export default function MessageList({
         paddingBottom: 0,
         width: "100%",
         fontSize: 1,
+        
       }}
     >
+      <Box sx={{maxWidth: '9600px'}}>
       {messages.length > 0
         ? messages.map((m, i) => {
             return m.message.role === "user" ? (
@@ -142,6 +151,7 @@ export default function MessageList({
             );
           })
         : null}
+      </Box>
       <div ref={messagesEndRef} />
     </Box>
   );
