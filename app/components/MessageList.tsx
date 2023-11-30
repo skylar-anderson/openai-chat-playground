@@ -46,14 +46,14 @@ function BotMessage({ message, onClick }: BotMessageProps & ButtonBaseProps) {
         backgroundColor: "canvas.default",
         mb: 2,
         overflowY: "scroll",
-        border: "1px solid",
-        borderColor: "border.default",
+        border: "1px solid rgb(208, 215, 222)",
         width: "100%",
         height: "auto",
         flexShrink: 0,
         borderRadius: 2,
         fontSize: 1,
         lineHeight: 1.5,
+        boxShadow: 'rgba(31, 35, 40, 0.04) 0px 1px 0px'
       }}
     >
       <Box

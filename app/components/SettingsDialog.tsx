@@ -37,13 +37,14 @@ type Props = {
   onSubmit: (s: SettingsProps) => void;
 };
 
-{/* <Settings
+{
+  /* <Settings
 onDismiss={() => setShowSettings(false)}
 isOpen={showSettings}
 initialValues={settings}
 onSubmit={onSettingsChange}
-/> */}
-
+/> */
+}
 
 function ToolOption({
   tool,

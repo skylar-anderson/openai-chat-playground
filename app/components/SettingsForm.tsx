@@ -33,10 +33,10 @@ type Props = {
 
 function RepositoryOption({
   repository,
-  checked
+  checked,
 }: {
   checked: boolean;
-  repository: string
+  repository: string;
 }) {
   return (
     <Box
@@ -45,7 +45,11 @@ function RepositoryOption({
       }}
     >
       <FormControl key={repository}>
-        <Checkbox value={repository} name="repositories[]" defaultChecked={checked} />
+        <Checkbox
+          value={repository}
+          name="repositories[]"
+          defaultChecked={checked}
+        />
         <FormControl.Label>
           <Box>{repository}</Box>
         </FormControl.Label>
@@ -100,48 +104,67 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
     [onSubmit],
   );
 
-  if(!isVisible) return (
-    <IconButton
-      icon={SidebarExpandIcon}
-      aria-label="Show settings"
-      variant="invisible"
-      size="small"
-      onClick={() => setIsVisible(true)}
-      sx={{position: 'absolute', top: 3, left: 3 }}
-      >Show settings</IconButton>
-  )
+  if (!isVisible)
+    return (
+      <IconButton
+        icon={SidebarExpandIcon}
+        aria-label="Show settings"
+        variant="invisible"
+        size="small"
+        onClick={() => setIsVisible(true)}
+        sx={{ position: "absolute", top: 3, left: 3 }}
+      >
+        Show settings
+      </IconButton>
+    );
 
   return (
-    <Box sx={{
-      width: '360px',
-      height: '100%',
-      borderRight: '1px solid',
-      borderColor: 'border.default',
-      overflowY: 'scroll',
-    }}>
-      <Box as="form" onSubmit={handleSubmit} ref={form} sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        height: "100%"
-      }}>
-        <Box sx={{ flexGrow: 1, p:3, overflowY: "scroll" }}>
-          <Box sx={{display: 'flex', flexDirection: 'row', gap: 2, fontSize: 3, fontWeight: 'semibold', color: 'fg.default', pb: 3, }}>
+    <Box
+      sx={{
+        width: "360px",
+        height: "100%",
+        borderRight: "1px solid",
+        borderColor: "border.default",
+        overflowY: "scroll",
+      }}
+    >
+      <Box
+        as="form"
+        onSubmit={handleSubmit}
+        ref={form}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          height: "100%",
+        }}
+      >
+        <Box sx={{ flexGrow: 1, p: 3, overflowY: "scroll" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 2,
+              fontSize: 3,
+              fontWeight: "semibold",
+              color: "fg.default",
+              pb: 3,
+            }}
+          >
             <IconButton
               icon={SidebarCollapseIcon}
               aria-label="Hide settings"
               variant="invisible"
               size="small"
               onClick={() => setIsVisible(false)}
-        >
-          Hide settings
-        </IconButton>
-        <Box sx={{flexGrow: 1}}>Settings</Box>
-
+            >
+              Hide settings
+            </IconButton>
+            <Box sx={{ flexGrow: 1 }}>Settings</Box>
           </Box>
           <FormControl>
             <FormControl.Label>Model</FormControl.Label>
-            <Select sx={{width: '100%' }}>
+            <Select sx={{ width: "100%" }}>
               {FUNCTION_CALLING_MODELS.map((model) => (
                 <Select.Option
                   selected={model === initialValues.model}
@@ -169,7 +192,10 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
           <Box display="grid" pt={3} sx={{ gap: 4 }}>
             <CheckboxGroup>
               <CheckboxGroup.Label>Tools</CheckboxGroup.Label>
-              <CheckboxGroup.Caption>Select which tools are available to the model in this conversation</CheckboxGroup.Caption>
+              <CheckboxGroup.Caption>
+                Select which tools are available to the model in this
+                conversation
+              </CheckboxGroup.Caption>
               <Box>
                 {Object.keys(availableFunctions).map((toolName) => {
                   const functionName = toolName as FunctionName;
@@ -188,21 +214,43 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
           <Box display="grid" pt={3} sx={{ gap: 4 }}>
             <CheckboxGroup>
               <CheckboxGroup.Label>Retrieval</CheckboxGroup.Label>
-              <CheckboxGroup.Caption>Select which repositories to include when performing semantic code search</CheckboxGroup.Caption>
+              <CheckboxGroup.Caption>
+                Select which repositories to include when performing semantic
+                code search
+              </CheckboxGroup.Caption>
               <Box>
-                {Object.entries(indexedRepositories).map(([repository,ref]) => (
-                  <RepositoryOption
-                    checked={true /*initialValues.repositories.includes(repository)*/}
-                    repository={repository} />
-                ))}
+                {Object.entries(indexedRepositories).map(
+                  ([repository, ref]) => (
+                    <RepositoryOption
+                      checked={
+                        true /*initialValues.repositories.includes(repository)*/
+                      }
+                      repository={repository}
+                    />
+                  ),
+                )}
               </Box>
             </CheckboxGroup>
           </Box>
         </Box>
         <Box
-          sx={{ borderTop: '1px solid', borderColor: 'border.default', flexGrow: 0, p:3, justifyContent: "flex-end", display: "flex", gap: "8px" }}
+          sx={{
+            borderTop: "1px solid",
+            borderColor: "border.default",
+            flexGrow: 0,
+            p: 3,
+            justifyContent: "flex-end",
+            display: "flex",
+            gap: "8px",
+          }}
         >
-          <Button type="reset" variant="default" onClick={() => { /*onDismiss*/ }}>
+          <Button
+            type="reset"
+            variant="default"
+            onClick={() => {
+              /*onDismiss*/
+            }}
+          >
             Cancel
           </Button>
           <Button type="submit" variant="primary">
@@ -212,4 +260,4 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
       </Box>
     </Box>
   );
-};
+}

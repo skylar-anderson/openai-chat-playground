@@ -74,10 +74,6 @@ export async function POST(req: Request) {
 
   const data = new experimental_StreamData();
 
-  let signature = "NO_FUNCTION_CALLED";
-  let result = {};
-  let schema = {};
-
   const stream = OpenAIStream(response, {
     experimental_onFunctionCall: async (
       { name, arguments: args },
@@ -87,20 +83,21 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(
         functionResult as JSONValue,
       ) as ChatCompletionMessageParam[];
-
-      signature = `${name}(${signatureFromArgs(args)})`;
-      result = functionResult;
-      schema = selectFunctions([name as FunctionName])[0];
+      
+      const signature = `${name}(${signatureFromArgs(args)})`;
+      const result = functionResult;
+      const schema = selectFunctions([name as FunctionName])[0];
+      data.append({ signature, result, schema });
 
       return openai.chat.completions.create({
         messages: [systemMessage, ...messages, ...newMessages],
         stream: true,
         model: MODEL,
+        functions: selectFunctions(settings.tools),
       });
     },
     //onCompletion() {},
     onFinal() {
-      data.append({ signature, result, schema });
       data.close();
     },
     experimental_streamData: true,

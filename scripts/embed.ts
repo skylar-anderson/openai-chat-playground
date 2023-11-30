@@ -79,7 +79,7 @@ async function embedFile({
         owner,
         sha,
         repo,
-        handle: [owner,repo].join('/'),
+        handle: [owner, repo].join("/"),
         chunk,
         content,
         embedding,
@@ -157,9 +157,9 @@ async function embedRepo(owner: string, repo: string, ref: string) {
 }
 
 async function main() {
-  Object.entries(indexedRepositories).forEach(([repo,ref]) => {
-    const [org,repoName] = repo.split('/');
-    embedRepo(org,repoName, ref); 
+  Object.entries(indexedRepositories).forEach(([repo, ref]) => {
+    const [org, repoName] = repo.split("/");
+    embedRepo(org, repoName, ref);
   });
 }
 

@@ -12,18 +12,23 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import { MessageWithDebugData, FunctionData, SettingsProps } from "./types";
 import MessageInput from "./components/MessageInput";
 import CurrentMessageViewer from "./components/CurrentMessageViewer";
-
+import FunctionDebugger from "./components/FunctionDebugger";
 const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
-function ChatColumn({ fullWidth, children }: { fullWidth: boolean, children: React.ReactNode }) {
+function ChatColumn({
+  fullWidth,
+  children,
+}: {
+  fullWidth: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <Box
       sx={{
         height: "100%",
         flexGrow: 1,
-        //maxWidth: "960px",
         display: "flex",
         p: 3,
         flexDirection: "column",
@@ -34,6 +39,26 @@ function ChatColumn({ fullWidth, children }: { fullWidth: boolean, children: Rea
   );
 }
 
+function DebugColumn({ data }: { data: any[] }) {
+  return (
+    <Box
+      sx={{
+        height: "100%",
+        flexGrow: 1,
+        display: "flex",
+        borderLeft: '1px solid',
+        borderColor: 'border.default',
+        width: '640px',
+        p: 0,
+        flexDirection: "column",
+      }}
+    >
+      {data.map((d) => (
+        <FunctionDebugger functionData={d} />
+      ))}
+    </Box>
+  );
+}
 
 export default function Chat() {
   const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
@@ -88,46 +113,49 @@ export default function Chat() {
   );
 
   return (
-    <ThemeProvider>
-      <BaseStyles>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            height: "100vh",
-            justifyContent: "center",
-          }}
-        >
-          
-          <SettingsForm
-            initialValues={settings}
-            onSubmit={onSettingsChange}
-          />
-          
-          <ChatColumn fullWidth={currentMessage===null}>
-            <MessageList
-              onSelectMessage={setCurrentMessage}
-              onDismiss={() => setCurrentMessage(null)}
-              currentMessage={currentMessage}
-              messages={messagesWithDebugData}
+    <Box>
+      <ThemeProvider theme='light'>
+        <BaseStyles>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              height: "100vh",
+              justifyContent: "center",
+            }}
+          >
+            <SettingsForm
+              initialValues={settings}
+              onSubmit={onSettingsChange}
             />
 
-            <MessageInput
-              input={input}
-              onInputChange={handleInputChange}
-              onSubmit={onSubmit}
-              isLoading={isLoading}
-            />
-          </ChatColumn>
-          
-          {currentMessage ? (
-            <CurrentMessageViewer
-              messageWithDebugData={currentMessage}
-              onDismiss={() => setCurrentMessage(null)}
-            />
-          ) : null}
-        </Box>
-      </BaseStyles>
-    </ThemeProvider>
+            <ChatColumn fullWidth={currentMessage === null}>
+              <MessageList
+                onSelectMessage={setCurrentMessage}
+                onDismiss={() => setCurrentMessage(null)}
+                currentMessage={currentMessage}
+                messages={messagesWithDebugData}
+              />
+
+              <MessageInput
+                input={input}
+                onInputChange={handleInputChange}
+                onSubmit={onSubmit}
+                isLoading={isLoading}
+              />
+            </ChatColumn>
+
+            {data && <DebugColumn data={data} />}
+
+            {currentMessage ? (
+              <CurrentMessageViewer
+                messageWithDebugData={currentMessage}
+                onDismiss={() => setCurrentMessage(null)}
+              />
+            ) : null}
+          </Box>
+        </BaseStyles>
+      </ThemeProvider>
+    </Box>
   );
 }

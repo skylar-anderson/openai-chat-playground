@@ -18,11 +18,9 @@ export default function FunctionDebugger({
   return (
     <Box
       sx={{
-        border: "1px solid",
+        borderBottom: "1px solid",
         borderColor: "border.default",
-        borderRadius: 2,
         padding: 0,
-        mt: 3,
         overflow: "hidden",
       }}
     >
