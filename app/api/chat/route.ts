@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       const newMessages = createFunctionCallMessages(
         functionResult as JSONValue,
       ) as ChatCompletionMessageParam[];
-      
+
       const signature = `${name}(${signatureFromArgs(args)})`;
       const result = functionResult;
       const schema = selectFunctions([name as FunctionName])[0];

@@ -4,9 +4,8 @@ import { Box, BaseStyles, ThemeProvider } from "@primer/react";
 import { useState } from "react";
 import { useChat } from "ai/react";
 import MessageList from "./components/MessageList";
-import SettingsForm, {
-  FUNCTION_CALLING_MODELS,
-} from "./components/SettingsForm";
+import SettingsForm from "./components/SettingsForm";
+import { FUNCTION_CALLING_MODELS } from "./models";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { MessageWithDebugData, FunctionData, SettingsProps } from "./types";
@@ -44,11 +43,11 @@ function DebugColumn({ data }: { data: any[] }) {
     <Box
       sx={{
         height: "100%",
-        flexGrow: 1,
+        flexShrink: 0,
         display: "flex",
-        borderLeft: '1px solid',
-        borderColor: 'border.default',
-        width: '640px',
+        borderLeft: "1px solid",
+        borderColor: "border.default",
+        width: "640px",
         p: 0,
         flexDirection: "column",
       }}
@@ -114,7 +113,7 @@ export default function Chat() {
 
   return (
     <Box>
-      <ThemeProvider theme='light'>
+      <ThemeProvider>
         <BaseStyles>
           <Box
             sx={{

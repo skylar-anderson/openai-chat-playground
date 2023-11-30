@@ -53,7 +53,7 @@ function BotMessage({ message, onClick }: BotMessageProps & ButtonBaseProps) {
         borderRadius: 2,
         fontSize: 1,
         lineHeight: 1.5,
-        boxShadow: 'rgba(31, 35, 40, 0.04) 0px 1px 0px'
+        boxShadow: "rgba(31, 35, 40, 0.04) 0px 1px 0px",
       }}
     >
       <Box

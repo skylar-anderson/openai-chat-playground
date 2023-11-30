@@ -1,5 +1,5 @@
 import { XIcon } from "@primer/octicons-react";
-import { Box, IconButton, UnderlineNav } from "@primer/react";
+import { Box, IconButton } from "@primer/react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import FunctionDebugger from "./FunctionDebugger";
