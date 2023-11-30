@@ -5,6 +5,7 @@ import { OpenAI } from "openai";
 import * as matter from "gray-matter";
 import { glob } from "glob";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { indexedRepositories } from "../app/repositories";
 
 const splitters = {
   md: RecursiveCharacterTextSplitter.fromLanguage("markdown", {
@@ -70,7 +71,7 @@ async function embedFile({
 
     const [{ embedding }] = embeddingResponse.data;
     const { data, error } = await supabase
-      .from("docs")
+      .from("search_index")
       .insert({
         title,
         path: filePath,
@@ -78,6 +79,7 @@ async function embedFile({
         owner,
         sha,
         repo,
+        handle: [owner,repo].join('/'),
         chunk,
         content,
         embedding,
@@ -155,7 +157,10 @@ async function embedRepo(owner: string, repo: string, ref: string) {
 }
 
 async function main() {
-  embedRepo("vercel", "swr", "main");
+  Object.entries(indexedRepositories).forEach(([repo,ref]) => {
+    const [org,repoName] = repo.split('/');
+    embedRepo(org,repoName, ref); 
+  });
 }
 
 main();

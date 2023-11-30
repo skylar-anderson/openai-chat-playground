@@ -4,19 +4,36 @@ import { Box, BaseStyles, ThemeProvider } from "@primer/react";
 import { useState } from "react";
 import { useChat } from "ai/react";
 import MessageList from "./components/MessageList";
-import Settings, {
-  Model,
+import SettingsForm, {
   FUNCTION_CALLING_MODELS,
-  SettingsProps,
-} from "./components/Settings";
+} from "./components/SettingsForm";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
-import { MessageWithDebugData, FunctionData } from "./types";
+import { MessageWithDebugData, FunctionData, SettingsProps } from "./types";
 import MessageInput from "./components/MessageInput";
 import CurrentMessageViewer from "./components/CurrentMessageViewer";
+
 const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
+
+function ChatColumn({ fullWidth, children }: { fullWidth: boolean, children: React.ReactNode }) {
+  return (
+    <Box
+      sx={{
+        height: "100%",
+        flexGrow: 1,
+        //maxWidth: "960px",
+        display: "flex",
+        p: 3,
+        flexDirection: "column",
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
 
 export default function Chat() {
   const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
@@ -77,29 +94,17 @@ export default function Chat() {
           sx={{
             display: "flex",
             flexDirection: "row",
-            px: 3,
-            gap: 3,
             height: "100vh",
             justifyContent: "center",
           }}
         >
-          <Box
-            sx={{
-              height: "100%",
-              width: currentMessage === null ? "100%" : "33%",
-              maxWidth: "960px",
-              display: "flex",
-              py: 3,
-              flexDirection: "column",
-            }}
-          >
-            <Settings
-              onDismiss={() => setShowSettings(false)}
-              isOpen={showSettings}
-              initialValues={settings}
-              onSubmit={onSettingsChange}
-            />
-
+          
+          <SettingsForm
+            initialValues={settings}
+            onSubmit={onSettingsChange}
+          />
+          
+          <ChatColumn fullWidth={currentMessage===null}>
             <MessageList
               onSelectMessage={setCurrentMessage}
               onDismiss={() => setCurrentMessage(null)}
@@ -113,7 +118,8 @@ export default function Chat() {
               onSubmit={onSubmit}
               isLoading={isLoading}
             />
-          </Box>
+          </ChatColumn>
+          
           {currentMessage ? (
             <CurrentMessageViewer
               messageWithDebugData={currentMessage}

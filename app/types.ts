@@ -13,3 +13,9 @@ export type FunctionData = {
   schema: JSONSchema;
   result: any;
 };
+
+export type SettingsProps = {
+  customInstructions: string;
+  tools: string[];
+  model: Model;
+};

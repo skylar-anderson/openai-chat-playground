@@ -44,7 +44,6 @@ function BotMessage({ message, onClick }: BotMessageProps & ButtonBaseProps) {
         color: "fg.default",
         p: 0,
         backgroundColor: "canvas.default",
-        cursor: "pointer",
         mb: 2,
         overflowY: "scroll",
         border: "1px solid",

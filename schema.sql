@@ -1,5 +1,5 @@
 -- RUN 3rd after running the scripts
-create or replace function docs_search (
+create or replace function repository_search (
   query_embedding vector(1536),
   similarity_threshold float,
   match_count int
@@ -14,6 +14,7 @@ returns table (
   content text,
   ref text,
   path text,
+  handle text,
   similarity float
 )
 language plpgsql
@@ -21,24 +22,25 @@ as $$
 begin
   return query
   select
-    docs.id,
-    docs.title,
-    docs.sha,
-    docs.repo,
-    docs.owner,
-    docs.chunk,
-    docs.content,
-    docs.ref,
-    docs.path,
-    1 - (docs.embedding <=> query_embedding) as similarity
-  from docs
-  where 1 - (docs.embedding <=> query_embedding) > similarity_threshold
-  order by docs.embedding <=> query_embedding
+    search_index.id,
+    search_index.title,
+    search_index.sha,
+    search_index.repo,
+    search_index.owner,
+    search_index.chunk,
+    search_index.content,
+    search_index.ref,
+    search_index.handle,
+    search_index.path,
+    1 - (search_index.embedding <=> query_embedding) as similarity
+  from search_index
+  where 1 - (search_index.embedding <=> query_embedding) > similarity_threshold
+  order by search_index.embedding <=> query_embedding
   limit match_count;
 end;
 $$;
 
 -- RUN 4th
-create index on docs 
+create index on search_index 
 using ivfflat (embedding vector_cosine_ops)
 with (lists = 100);

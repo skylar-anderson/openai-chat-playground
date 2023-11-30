@@ -7,8 +7,7 @@ First, install dependencies
 
 Next, setup appropriate values in your `.env.local` file:
 
-````
-# From OpenAI
+```# From OpenAI
 OPENAI_API_KEY=
 
 # From Supabase (only necessary if you are creating embeddings)
@@ -23,7 +22,7 @@ GITHUB_PAT=```
 
 If you want to play with semantic code search, you can optionally download and index the vercel/swr library by running the following:
 
-```set -a && source .env.local && npm run embed ```
+```set -a && source .env.local && npm run embed```
 
 Start your local dev server with
 
@@ -32,4 +31,4 @@ Start your local dev server with
 
 ### Creating new functions
 Add new functions to the `app/api/chat/functions` directory. Then update `app/api/chat/functions.ts` to include your newly added functions to the `availableFunctions` set **and** update the `runFunction` function to invoke your function with the correct arguments.
-````
+

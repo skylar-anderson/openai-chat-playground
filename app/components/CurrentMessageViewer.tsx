@@ -24,6 +24,7 @@ export default function CurrentMessageViewer({
         display: "flex",
         flexDirection: "column",
         py: 3,
+        pr: 3,
         flexGrow: "1",
       }}
     >
@@ -53,7 +54,7 @@ export default function CurrentMessageViewer({
         </Box>
 
         <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
-        {debugData.showFunctionDebugger && (
+        {messageWithDebugData.showFunctionDebugger && (
           <FunctionDebugger functionData={debugData} />
         )}
       </Box>

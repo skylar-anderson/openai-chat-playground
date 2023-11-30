@@ -48,7 +48,7 @@ async function run(query: string): Promise<any> {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
-  const result = await supabase.rpc("new_docs_search", {
+  const result = await supabase.rpc("repository_search", {
     query_embedding: queryEmbedding,
     similarity_threshold: 0.01,
     match_count: matches,
