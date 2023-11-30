@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 
   const systemMessage = getSystemMessage(settings.customInstructions);
 
+  // basic completion at start of turn
   const response = await openai.chat.completions.create({
     model: MODEL,
     stream: true,
@@ -79,6 +80,7 @@ export async function POST(req: Request) {
       { name, arguments: args },
       createFunctionCallMessages,
     ) => {
+      // a function call was detected
       const functionResult = await runFunction(name, args);
       const newMessages = createFunctionCallMessages(
         functionResult as JSONValue,
@@ -87,12 +89,13 @@ export async function POST(req: Request) {
       const signature = `${name}(${signatureFromArgs(args)})`;
       const result = functionResult;
       const schema = selectFunctions([name as FunctionName])[0];
-      data.append({ signature, result, schema });
+      data.append({ signature, result, schema } as any);
 
       return openai.chat.completions.create({
         messages: [systemMessage, ...messages, ...newMessages],
         stream: true,
         model: MODEL,
+        // providing functions here will allow the model to recursively loop through function calls
         functions: selectFunctions(settings.tools),
       });
     },
