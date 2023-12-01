@@ -1,5 +1,5 @@
 import { IconButton, Box, TextInput } from "@primer/react";
-import { PaperAirplaneIcon, GearIcon } from "@primer/octicons-react";
+import { PaperAirplaneIcon } from "@primer/octicons-react";
 
 type Props = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;

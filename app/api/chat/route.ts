@@ -39,13 +39,24 @@ function getSystemMessage(
   * If you are unsure about invoking a function, just ask the user to clarify.
   * Be concise and helpful in your responses.
   * Most users are developers. Use technical terms freely and avoid over simplification.
-  `;
+  
+  This conversation is rendered inside a markdown content area with access to special plugins. See below for guidance on plugin use:
+
+  ### Render notifications with the notification list block
+  Use the notification list block to render an interactive block of GitHub notifications. To invoke this block, return a list of notifications urls inside a notificationsList markdown code block. When the markdown is rendered, the URLs provided will be unfurled into interactive notification blocks. The unfurled notifications may contain more helpful data for the user. Here is an example of using a notificationsList block:
+
+\`\`\`notificationsList
+  - https://api.github.com/notifications/threads/1
+  - https://api.github.com/notifications/threads/2
+\`\`\`  
+`;
 
   const instructions = `
     ${DEFAULT_INSTRUCTIONS}
     ${
       customInstructions
-        ? `The user has provided the following additional instructions:${customInstructions}`
+        ? `The user has provided the following additional instructions:
+        ${customInstructions}`
         : ``
     }
   `;
@@ -64,7 +75,7 @@ export async function POST(req: Request) {
   } = body;
 
   const systemMessage = getSystemMessage(settings.customInstructions);
-
+  console.log(systemMessage);
   // basic completion at start of turn
   const response = await openai.chat.completions.create({
     model: MODEL,

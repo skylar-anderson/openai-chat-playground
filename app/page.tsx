@@ -52,8 +52,8 @@ function DebugColumn({ data }: { data: any[] }) {
         flexDirection: "column",
       }}
     >
-      {data.map((d) => (
-        <FunctionDebugger functionData={d} />
+      {data.map((d, i) => (
+        <FunctionDebugger key={i} functionData={d} />
       ))}
     </Box>
   );

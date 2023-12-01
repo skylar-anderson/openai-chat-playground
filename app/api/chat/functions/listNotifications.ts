@@ -5,13 +5,7 @@ const ENDPOINT = "GET /notifications";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listNotifications",
-  description: `List all notifications for the current user, sorted by most recently updated. This function accepts 2 arguments: 
-
-  Absolutely never retrieve notifications for a user without explicit conset.  Confirm with the user before calling this function.
-
-* All (Optional): If true, show notifications marked as read. Defaults to false.
-* Participating (Optional): If true, only shows notifications in which the user is directly participating or mentioned. Defaults to false.
-* Page (Optional): An optional page number to paginate through the results. Defaults to 1.`,
+  description: `List all notifications for the current user, sorted by most recently updated. Typically when you use this function, you will need to render responses in a notificationsList block`,
   parameters: {
     type: "object",
     properties: {
@@ -50,6 +44,7 @@ async function run(all:boolean=false, participating:boolean=false, page:number=1
       subject: notification.subject,
       reason: notification.reason,
       unread: notification.unread,
+      url: notification.url,
 
     }));
   } catch (error) {
