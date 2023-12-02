@@ -6,7 +6,9 @@ import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
 import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
 import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
 import listNotifications from "./functions/listNotifications";
+import searchWithBing from "./functions/searchWithBing";
 export const availableFunctions = {
+  searchWithBing,
   listNotifications,
   retrieveDiffFromSHA,
   retrieveDiffFromPullRequest,
@@ -27,6 +29,8 @@ export function selectFunctions(functions: FunctionName[]) {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "searchWithBing":
+      return await searchWithBing.run(args["query"]);
     case "listNotifications":
       return await listNotifications.run(
         args["all"],
@@ -46,7 +50,7 @@ export async function runFunction(name: string, args: any) {
         args["commit_sha"],
       );
     case "semanticCodeSearch":
-      return await semanticCodeSearch.run(args["query"]);
+      return await semanticCodeSearch.run(args["repository"], args["query"]);
     case "listCommits":
       return await listCommits.run(args["repository"], args["page"]);
     case "listIssues":

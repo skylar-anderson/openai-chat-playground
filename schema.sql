@@ -2,7 +2,8 @@
 create or replace function repository_search (
   query_embedding vector(1536),
   similarity_threshold float,
-  match_count int
+  match_count int,
+  query_handle text
 )
 returns table (
   id bigint,
@@ -30,11 +31,12 @@ begin
     search_index.chunk,
     search_index.content,
     search_index.ref,
-    search_index.handle,
     search_index.path,
+    search_index.handle,
     1 - (search_index.embedding <=> query_embedding) as similarity
   from search_index
-  where 1 - (search_index.embedding <=> query_embedding) > similarity_threshold
+  where search_index.handle = query_handle
+      AND 1 - (search_index.embedding <=> query_embedding) > similarity_threshold
   order by search_index.embedding <=> query_embedding
   limit match_count;
 end;

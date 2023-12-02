@@ -38,7 +38,7 @@ function ChatColumn({
   );
 }
 
-function DebugColumn({ data }: { data: any[] }) {
+function DebugColumn({ data }: { data?: any[] }) {
   return (
     <Box
       sx={{
@@ -52,9 +52,10 @@ function DebugColumn({ data }: { data: any[] }) {
         flexDirection: "column",
       }}
     >
-      {data.map((d, i) => (
+      {data && data.map((d, i) => (
         <FunctionDebugger key={i} functionData={d} />
       ))}
+      {!data?.length && <Box p={3} sx={{fontSize: 0, textAlign: 'center', color: 'fg.muted'}}>Function calls will appear here</Box>}
     </Box>
   );
 }
@@ -73,6 +74,7 @@ export default function Chat() {
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
   function onSettingsChange(settings: SettingsProps) {
+    console.log("settings changed", settings)
     setSettings(settings);
   }
 
@@ -143,8 +145,8 @@ export default function Chat() {
                 isLoading={isLoading}
               />
             </ChatColumn>
-
-            {data && <DebugColumn data={data} />}
+            
+            <DebugColumn data={data} />
 
             {currentMessage ? (
               <CurrentMessageViewer

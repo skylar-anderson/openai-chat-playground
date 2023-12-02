@@ -41,7 +41,7 @@ async function embedQuery(query: string): Promise<number[]> {
   return embedding;
 }
 
-async function run(query: string): Promise<any> {
+async function run(repository:string, query: string): Promise<any> {
   const queryEmbedding = await embedQuery(query);
 
   const supabase = createClient(
@@ -52,11 +52,18 @@ async function run(query: string): Promise<any> {
     query_embedding: queryEmbedding,
     similarity_threshold: 0.01,
     match_count: matches,
+    query_handle: repository
   });
+
+  if (!result.data) {
+    return "No matches could be found for this query";
+  }
   const answer = result.data.map((chunk: any) => {
     return {
-      snippet: chunk.chunk,
+      chunk: chunk.chunk,
       path: chunk.path,
+      similarity: chunk.similarity,
+      title: chunk.title
     };
   });
   return answer;

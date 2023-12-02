@@ -23,29 +23,39 @@ const meta: ChatCompletionCreateParams.Function = {
         type: "boolean",
         description:
           "Optional. If true, only shows notifications in which the user is directly participating or mentioned. Defaults to false.",
-      }
+      },
     },
     required: [],
   },
 };
 
-async function run(all:boolean=false, participating:boolean=false, page:number=1) {
-  type ListNotificationsResponse = Endpoints[typeof ENDPOINT]["response"] | undefined;
+async function run(
+  all: boolean = false,
+  participating: boolean = false,
+  page: number = 1,
+) {
+  type ListNotificationsResponse =
+    | Endpoints[typeof ENDPOINT]["response"]
+    | undefined;
   try {
-    const response = await githubApiRequest<ListNotificationsResponse>(ENDPOINT, {
-      all, participating, page,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Accept": "application/vnd.github+json"
+    const response = await githubApiRequest<ListNotificationsResponse>(
+      ENDPOINT,
+      {
+        all,
+        participating,
+        page,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+          Accept: "application/vnd.github+json",
+        },
       },
-    });
+    );
     return response?.data.map((notification) => ({
       text: `*${notification.subject.title}* by ${notification.repository.full_name} (${notification.reason})`,
       subject: notification.subject,
       reason: notification.reason,
       unread: notification.unread,
       url: notification.url,
-
     }));
   } catch (error) {
     console.log("Failed to fetch notifications!");

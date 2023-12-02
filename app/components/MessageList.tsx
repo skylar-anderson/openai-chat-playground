@@ -28,7 +28,6 @@ function UserMessage({ message }: { message: MessageWithDebugData }) {
   );
 }
 
-
 export default function MessageList({
   messages,
   onSelectMessage,
@@ -60,22 +59,18 @@ export default function MessageList({
         paddingBottom: 0,
         width: "100%",
         fontSize: 1,
-        
       }}
     >
-      <Box sx={{maxWidth: '9600px'}}>
-      {messages.length > 0
-        ? messages.map((m, i) => {
-            return m.message.role === "user" ? (
-              <UserMessage key={i} message={m} />
-            ) : (
-              <CopilotMessage
-                key={i}
-                message={m}
-              />
-            );
-          })
-        : null}
+      <Box sx={{ maxWidth: "9600px" }}>
+        {messages.length > 0
+          ? messages.map((m, i) => {
+              return m.message.role === "user" ? (
+                <UserMessage key={i} message={m} />
+              ) : (
+                <CopilotMessage key={i} message={m} />
+              );
+            })
+          : null}
       </Box>
       <div ref={messagesEndRef} />
     </Box>

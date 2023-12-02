@@ -20,6 +20,7 @@ type RequestProps = {
 type SettingsProps = {
   customInstructions: string;
   tools: FunctionName[];
+  model: string;
 };
 
 function signatureFromArgs(args: Record<string, unknown>) {
@@ -75,10 +76,10 @@ export async function POST(req: Request) {
   } = body;
 
   const systemMessage = getSystemMessage(settings.customInstructions);
-  console.log(systemMessage);
   // basic completion at start of turn
+  console.log(settings.model)
   const response = await openai.chat.completions.create({
-    model: MODEL,
+    model: settings.model || MODEL,
     stream: true,
     messages: [systemMessage, ...messages],
     functions: selectFunctions(settings.tools),

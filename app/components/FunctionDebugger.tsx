@@ -74,12 +74,12 @@ export default function FunctionDebugger({
               Schema
             </UnderlineNav.Item>
           </UnderlineNav>
-          <Box p={3}>
+          <Box>
             {tab === "result" && (
-              <Box sx={{ position: "relative" }}>
-                <Box sx={{ position: "absolute", top: "-8px", right: "-8px" }}>
+              <Box sx={{ p: 3, position: "relative", overflow: 'scroll'}}>
+                <Box sx={{ position: "absolute", top: 1, right: 1 }}>
                   <IconButton
-                    onClick={() => copy(functionData.result)}
+                    onClick={() => copy(JSON.stringify(functionData.result, null, 2))}
                     aria-label="Copy result"
                     icon={CopyIcon}
                   >

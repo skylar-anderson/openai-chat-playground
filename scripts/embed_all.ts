@@ -7,16 +7,11 @@ import { glob } from "glob";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { indexedRepositories } from "../app/repositories";
 
-const splitters = {
-  md: RecursiveCharacterTextSplitter.fromLanguage("markdown", {
-    chunkSize: 1024,
-    chunkOverlap: 200,
-  }),
-  js: RecursiveCharacterTextSplitter.fromLanguage("js", {
-    chunkSize: 1024,
-    chunkOverlap: 200,
-  }),
-};
+
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 1024,
+  chunkOverlap: 200
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const supabase = createClient(
@@ -25,7 +20,6 @@ const supabase = createClient(
 );
 
 type EmbedProps = {
-  type: "js" | "markdown";
   repo: string;
   owner: string;
   sha: string;
@@ -35,7 +29,6 @@ type EmbedProps = {
 };
 
 async function embedFile({
-  type,
   repo,
   owner,
   fileContent,
@@ -43,21 +36,9 @@ async function embedFile({
   sha,
   ref,
 }: EmbedProps): Promise<void> {
-  let result;
   let content = fileContent;
   let title = filePath.split("/").pop();
-
-  if (type === "js") {
-    result = await splitters.js.createDocuments([content]);
-  } else if (type === "markdown") {
-    const { data, content } = matter.default(fileContent);
-    result = await splitters.md.createDocuments([content]);
-    if (data.title) {
-      title = data.title;
-    }
-  } else {
-    throw new Error("unsupported type");
-  }
+  const result = await splitter.createDocuments([content]);
 
   for (let i = 0; i < result.length; i++) {
     const document = result[i];
@@ -108,19 +89,17 @@ async function embedRepo(owner: string, repo: string, ref: string) {
   console.log(`Embedding content in ${checkoutPath}...`);
   console.log(`With sha: ${ref}:${sha}...`);
 
-  const mdfiles = await glob(`${checkoutPath}/**/*.{md,mdx}`);
-  const jsfiles = await glob(`${checkoutPath}/**/*.{js,jsx,ts,tsx}`);
-
+  const files = await glob(`${checkoutPath}/**/*.*`);
+  
   try {
     await Promise.all(
-      jsfiles.map(async (filePath) => {
+      files.map(async (filePath) => {
         const fileContent = await fs.readFile(filePath, "utf8");
         const relativeFilePath = filePath.replace(
           checkoutPath.replace("./", ""),
           "",
         );
         await embedFile({
-          type: "js",
           repo,
           owner,
           sha,
@@ -130,25 +109,7 @@ async function embedRepo(owner: string, repo: string, ref: string) {
         });
       }),
     );
-    await Promise.all(
-      mdfiles.map(async (filePath) => {
-        const fileContent = await fs.readFile(filePath, "utf8");
-        const relativeFilePath = filePath.replace(
-          checkoutPath.replace("./", ""),
-          "",
-        );
-
-        await embedFile({
-          type: "markdown",
-          repo,
-          owner,
-          sha,
-          fileContent,
-          filePath: relativeFilePath,
-          ref,
-        });
-      }),
-    );
+   
   } catch (err) {
     console.error(`Error in embedRepoContent:`, err);
   }
