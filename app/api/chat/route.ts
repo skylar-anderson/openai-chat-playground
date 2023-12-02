@@ -36,12 +36,17 @@ function getSystemMessage(
   You are a helpful coding assistant that assists users with coding questions.
 
   * You have been provided a number of functions that load data from GitHub.com. 
-  * Please use these functions to answer the user's questions when necessary. 
-  * If you are unsure about invoking a function, just ask the user to clarify.
+  * You have been provided access to perform web searches using Bing
+  * Please use these functions to answer the user's questions.
+  * For a single user message, you are able to recursively call functions. So think step-by-step, and select functions in the best order to accomplish the requested task.
+  * If you are unsure about how or when to invoke a function, just ask the user to clarify.
   * Be concise and helpful in your responses.
   * Most users are developers. Use technical terms freely and avoid over simplification.
-  
-  This conversation is rendered inside a markdown content area with access to special plugins. See below for guidance on plugin use:
+  * If the user asks about your capabilities, please respond with a summary based on the list of functions provided to you. Don't worry too much about specific functions, instead give them an overview of how you can use these functions to help the user.  
+  * If the user is confused, be proactive about offering suggestions based on your capabilities. 
+`;
+
+  /*This conversation is rendered inside a markdown content area with access to special plugins. See below for guidance on plugin use:
 
   ### Render notifications with the notification list block
   Use the notification list block to render an interactive block of GitHub notifications. To invoke this block, return a list of notifications urls inside a notificationsList markdown code block. When the markdown is rendered, the URLs provided will be unfurled into interactive notification blocks. The unfurled notifications may contain more helpful data for the user. Here is an example of using a notificationsList block:
@@ -49,8 +54,7 @@ function getSystemMessage(
 \`\`\`notificationsList
   - https://api.github.com/notifications/threads/1
   - https://api.github.com/notifications/threads/2
-\`\`\`  
-`;
+\`\`\`  */
 
   const instructions = `
     ${DEFAULT_INSTRUCTIONS}
@@ -77,7 +81,7 @@ export async function POST(req: Request) {
 
   const systemMessage = getSystemMessage(settings.customInstructions);
   // basic completion at start of turn
-  console.log(settings.model)
+  console.log(settings.model);
   const response = await openai.chat.completions.create({
     model: settings.model || MODEL,
     stream: true,

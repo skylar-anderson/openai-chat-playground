@@ -52,7 +52,13 @@ export async function runFunction(name: string, args: any) {
     case "semanticCodeSearch":
       return await semanticCodeSearch.run(args["repository"], args["query"]);
     case "listCommits":
-      return await listCommits.run(args["repository"], args["page"]);
+      return await listCommits.run(
+        args["repository"],
+        args["path"],
+        args["author"],
+        args["sha"],
+        args["page"],
+      );
     case "listIssues":
       return await listIssues.run(
         args["repository"],

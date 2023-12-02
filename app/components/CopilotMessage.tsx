@@ -58,17 +58,16 @@ function NotificationsList({ children }) {
 }
 type Thread = {
   subject: {
-    title: string
+    title: string;
   };
   repository: {
     full_name: string;
-    private:boolean;
+    private: boolean;
   };
   unread: boolean;
-
-}
+};
 function UnfurledThread({ threadId }: { threadId: number }) {
-  const [thread, setThread] = useState<Thread|null>(null);
+  const [thread, setThread] = useState<Thread | null>(null);
 
   useEffect(() => {
     fetch(`/api/threads/${threadId}`)

@@ -156,7 +156,7 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
           </Box>
           <FormControl>
             <FormControl.Label>Model</FormControl.Label>
-            <Select name='model' sx={{ width: "100%" }}>
+            <Select name="model" sx={{ width: "100%" }}>
               {FUNCTION_CALLING_MODELS.map((model) => (
                 <Select.Option
                   selected={model === initialValues.model}

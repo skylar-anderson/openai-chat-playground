@@ -7,10 +7,9 @@ import { glob } from "glob";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { indexedRepositories } from "../app/repositories";
 
-
 const splitter = new RecursiveCharacterTextSplitter({
   chunkSize: 1024,
-  chunkOverlap: 200
+  chunkOverlap: 200,
 });
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -90,7 +89,7 @@ async function embedRepo(owner: string, repo: string, ref: string) {
   console.log(`With sha: ${ref}:${sha}...`);
 
   const files = await glob(`${checkoutPath}/**/*.*`);
-  
+
   try {
     await Promise.all(
       files.map(async (filePath) => {
@@ -109,7 +108,6 @@ async function embedRepo(owner: string, repo: string, ref: string) {
         });
       }),
     );
-   
   } catch (err) {
     console.error(`Error in embedRepoContent:`, err);
   }

@@ -28,23 +28,30 @@ const meta: ChatCompletionCreateParams.Function = {
       sha: {
         type: "string",
         description:
-          "SHA or branch to start listing commits from. Default: the repository's default branch (usually main).",
+          "Optional.SHA or branch to start listing commits from. Default: the repository's default branch (usually main).",
       },
       path: {
         type: "string",
-        description: "Only commits containing this file path will be returned.",
+        description:
+          "Optional. Only commits containing this file path will be returned.",
       },
       author: {
         type: "string",
         description:
-          "GitHub login or email address by which to filter by commit author.",
+          "Optional.GitHub login or email address by which to filter by commit author.",
       },
     },
     required: ["repository"],
   },
 };
 
-async function run(repository: string, page: number = 1) {
+async function run(
+  repository: string,
+  path: string,
+  author: string,
+  sha: string,
+  page: number = 1,
+) {
   const [owner, repo] = repository.split("/");
   type ListCommitsResponse = Endpoints[typeof ENDPOINT]["response"] | undefined;
   try {
@@ -53,6 +60,9 @@ async function run(repository: string, page: number = 1) {
       repo,
       per_page: 10,
       page,
+      path,
+      author,
+      sha,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
       },

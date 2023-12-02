@@ -8,8 +8,7 @@ const meta: ChatCompletionCreateParams.Function = {
     properties: {
       query: {
         type: "string",
-        description:
-          "Required. The query to search for."
+        description: "Required. The query to search for.",
       },
     },
     required: ["query"],
@@ -20,21 +19,21 @@ async function run(query: string) {
   const ENDPOINT = process.env.BING_SEARCH_ENDPOINT;
   const KEY = process.env.BING_SEARCH_SUBSCRIPTION_KEY;
 
-  if(!ENDPOINT || !KEY) {
-    return 'unable to make bing request'
+  if (!ENDPOINT || !KEY) {
+    return "unable to make bing request";
   }
 
   try {
     const url = new URL(ENDPOINT);
-    url.searchParams.append('mkt', 'en-US');
-    url.searchParams.append('q', query);
+    url.searchParams.append("mkt", "en-US");
+    url.searchParams.append("q", query);
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Ocp-Apim-Subscription-Key': KEY
+        "Ocp-Apim-Subscription-Key": KEY,
       },
     });
-    console.log(response)
+    console.log(response);
     if (!response.ok) {
       throw new Error("Failed to search bing");
     }
@@ -44,14 +43,14 @@ async function run(query: string) {
       return {
         title: result.name,
         url: result.url,
-        description: result.snippet
-      }
-    })
+        description: result.snippet,
+      };
+    });
     return {
       pages,
       webSearchUrl: json.webSearchUrl,
-      totalEstimatedMatches: json.webPages.totalEstimatedMatches
-    }
+      totalEstimatedMatches: json.webPages.totalEstimatedMatches,
+    };
   } catch (error) {
     console.log("Failed to search bing!");
     console.log(error);

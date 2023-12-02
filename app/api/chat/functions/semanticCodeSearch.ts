@@ -41,7 +41,7 @@ async function embedQuery(query: string): Promise<number[]> {
   return embedding;
 }
 
-async function run(repository:string, query: string): Promise<any> {
+async function run(repository: string, query: string): Promise<any> {
   const queryEmbedding = await embedQuery(query);
 
   const supabase = createClient(
@@ -52,7 +52,7 @@ async function run(repository:string, query: string): Promise<any> {
     query_embedding: queryEmbedding,
     similarity_threshold: 0.01,
     match_count: matches,
-    query_handle: repository
+    query_handle: repository,
   });
 
   if (!result.data) {
@@ -63,7 +63,7 @@ async function run(repository:string, query: string): Promise<any> {
       chunk: chunk.chunk,
       path: chunk.path,
       similarity: chunk.similarity,
-      title: chunk.title
+      title: chunk.title,
     };
   });
   return answer;

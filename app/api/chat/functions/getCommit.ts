@@ -5,7 +5,7 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/commits/{ref}";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "getCommit",
-  description: `Retrieves details for a given commit:`, 
+  description: `Retrieves details for a given commit:`,
   parameters: {
     type: "object",
     properties: {
@@ -37,7 +37,7 @@ async function run(repository: string, ref: string) {
       },
     });
     if (!response?.data) {
-      return 'That commit could not be found'
+      return "That commit could not be found";
     }
     return {
       stats: response.data.stats,
