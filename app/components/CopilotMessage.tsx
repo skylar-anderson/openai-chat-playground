@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Spinner, Box, IconButton, Text } from "@primer/react";
@@ -24,8 +24,9 @@ function extractThreadIds(urls: string): number[] {
     .filter((id) => !isNaN(id));
 }
 
-function NotificationsList({ children }: { children: string }) {
-  const threadIds = extractThreadIds(children);
+function NotificationsList({ threadString }: { threadString?: string }) {
+  if (!threadString) return null;
+  const threadIds = extractThreadIds(threadString);
   return (
     <Box
       sx={{
@@ -196,7 +197,7 @@ export default function CopilotMessage({ message }: Props) {
                 }
                 switch (match[1]) {
                   case "notificationsList":
-                    return <NotificationsList children={children} />;
+                    return <NotificationsList threadString={children?.toString()} />;
                   default:
                     return (
                       <SyntaxHighlighter
