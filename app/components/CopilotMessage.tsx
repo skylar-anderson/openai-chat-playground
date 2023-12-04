@@ -1,13 +1,13 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Spinner, Box, IconButton, Text } from "@primer/react";
 import { CheckIcon } from "@primer/octicons-react";
-import { MessageWithDebugData } from "../types";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Message } from "ai";
+//import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 type Props = {
-  message: MessageWithDebugData;
+  message: Message;
 };
 
 function extractThreadIds(urls: string): number[] {
@@ -128,7 +128,7 @@ function UnfurledThread({ threadId }: { threadId: number }) {
 }
 
 export default function CopilotMessage({ message }: Props) {
-  const content = message.message.content;
+  const { content } = message;
   return (
     <Box
       key={message.id}
@@ -184,35 +184,35 @@ export default function CopilotMessage({ message }: Props) {
           <Markdown
             remarkPlugins={[remarkGfm]}
             className="markdownContainer"
-            components={{
-              code(props) {
-                const { children, className, node, ...rest } = props;
-                const match = /language-(\w+)/.exec(className || "");
-                if (!match) {
-                  return (
-                    <code {...rest} className={className}>
-                      {children}
-                    </code>
-                  );
-                }
-                switch (match[1]) {
-                  case "notificationsList":
-                    return (
-                      <NotificationsList threadString={children?.toString()} />
-                    );
-                  default:
-                    return (
-                      <SyntaxHighlighter
-                        {...rest as any}
-                        PreTag="div"
-                        $props={{}}
-                        children={String(children).replace(/\n$/, "")}
-                        language={match[1]}
-                      />
-                    );
-                }
-              },
-            }}
+            // components={{
+            //   code(props) {
+            //     const { children, className, node, ...rest } = props;
+            //     const match = /language-(\w+)/.exec(className || "");
+            //     if (!match) {
+            //       return (
+            //         <code {...rest} className={className}>
+            //           {children}
+            //         </code>
+            //       );
+            //     }
+            //     switch (match[1]) {
+            //       case "notificationsList":
+            //         return (
+            //           <NotificationsList threadString={children?.toString()} />
+            //         );
+            //       default:
+            //         return (
+            //           <SyntaxHighlighter
+            //             {...rest as any}
+            //             PreTag="div"
+            //             $props={{}}
+            //             children={String(children).replace(/\n$/, "")}
+            //             language={match[1]}
+            //           />
+            //         );
+            //     }
+            //   },
+            // }}
           >
             {content}
           </Markdown>

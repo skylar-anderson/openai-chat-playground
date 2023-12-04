@@ -1,8 +1,8 @@
 import { Text, Box } from "@primer/react";
 import { useRef, useEffect } from "react";
-import { MessageWithDebugData } from "../types";
 import CopilotMessage from "./CopilotMessage";
-function UserMessage({ message }: { message: MessageWithDebugData }) {
+import { Message } from "ai";
+function UserMessage({ message }: { message: Message }) {
   return (
     <Box
       sx={{
@@ -21,24 +21,14 @@ function UserMessage({ message }: { message: MessageWithDebugData }) {
         }}
       >
         <Text color="fg.default" sx={{ lineHeight: "21px", fontSize: 1 }}>
-          {message.message.content}
+          {message.content}
         </Text>
       </Box>
     </Box>
   );
 }
 
-export default function MessageList({
-  messages,
-  onSelectMessage,
-  currentMessage,
-  onDismiss,
-}: {
-  messages: MessageWithDebugData[];
-  onDismiss: () => void;
-  currentMessage: MessageWithDebugData | null;
-  onSelectMessage: (message: MessageWithDebugData | null) => void;
-}) {
+export default function MessageList({ messages }: { messages: Message[] }) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -64,7 +54,7 @@ export default function MessageList({
       <Box sx={{ maxWidth: "9600px" }}>
         {messages.length > 0
           ? messages.map((m, i) => {
-              return m.message.role === "user" ? (
+              return m.role === "user" ? (
                 <UserMessage key={i} message={m} />
               ) : (
                 <CopilotMessage key={i} message={m} />
