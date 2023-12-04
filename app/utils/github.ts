@@ -1,6 +1,7 @@
 import { Octokit } from "octokit";
 
 const auth = process.env.GITHUB_PAT;
+const octokit = new Octokit({ auth });
 export async function githubApiRequest<T>(
   endpoint: string,
   parameters: any,
@@ -8,22 +9,19 @@ export async function githubApiRequest<T>(
   if (!auth) {
     throw new Error("GitHub PAT Not set!");
   }
-  const octokit = new Octokit({ auth });
   const response = await octokit.request(endpoint, parameters);
-  if (!response) {
-    throw new Error("Failed to load commits");
-  }
   return response as T;
 }
 
-export async function searchIssues<T>(q: string) {
+export async function searchIssues<T>(q: string, page: number = 1): Promise<T> {
   if (!auth) {
     throw new Error("GitHub PAT Not set!");
   }
-  const octokit = new Octokit({ auth });
+
   const response = await octokit.rest.search.issuesAndPullRequests({
     q,
-    per_page: 100,
+    page,
+    per_page: 25,
   });
 
   if (!response) {

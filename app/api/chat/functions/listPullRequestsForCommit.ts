@@ -5,10 +5,7 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/pulls";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listPullRequestsForCommit",
-  description: `Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, will only return open pull requests associated with the commit. To list the open or merged pull requests associated with a branch, you can set the commit_sha parameter to the branch name. This function accepts 2 arguments:
-
-* Repository (Required): The owner and name of a repository.
-* commit_sha (Optional): The SHA of the commit to list the pull requests for. Default: the repository's default branch (usually main).`,
+  description: `Lists the merged pull request that introduced the commit to the repository. If the commit is not present in the default branch, will only return open pull requests associated with the commit. To list the open or merged pull requests associated with a branch, you can set the commit_sha parameter to the branch name.`,
   parameters: {
     type: "object",
     properties: {

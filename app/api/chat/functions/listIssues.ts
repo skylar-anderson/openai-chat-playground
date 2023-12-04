@@ -6,8 +6,7 @@ const ENDPOINT = "GET /search/issues";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listIssues",
-  description: `Retrieves a paginated list of issues for a given repository.
-  Note: GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the pull_request key.`,
+  description: `Retrieves a paginated list of issues for a given repository.`,
   parameters: {
     type: "object",
     properties: {
@@ -43,10 +42,11 @@ async function run(
   page: number = 1,
   assignee: string,
   state: State = "open",
+  is: "issue" | "pull-request" = "issue",
 ) {
   const [owner, repo] = repository.split("/");
   try {
-    const filters = ["is:issue", `repo:${owner}/${repo}`];
+    const filters = [`is:${is}`, `repo:${owner}/${repo}`];
     if (state !== "all") {
       filters.push(`state:${state}`);
     }
@@ -54,10 +54,11 @@ async function run(
       filters.push(`assignee:${assignee}`);
     }
 
-    console.log(filters.join(" "));
-    const issues = await searchIssues<ListIssuesResponse>(filters.join(" "));
+    const issues = await searchIssues<ListIssuesResponse>(
+      filters.join(" "),
+      page,
+    );
 
-    console.log(issues.data.items);
     return issues.data.items.map((data) => ({
       assignee_handle: data.assignee?.login,
       assignee_avatar: data.assignee?.avatar_url,

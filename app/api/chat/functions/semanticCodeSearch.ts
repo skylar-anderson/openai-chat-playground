@@ -6,12 +6,7 @@ const matches = 12;
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "semanticCodeSearch",
-  description: `Performs a semantic code search of the provided repository. Returns chunks of code that are semantically similar to the query. Results are ordred by cosine similarity.
-
-This function accepts 2 arguments:
-
-* Repository (Required): The owner and name of a repository.
-* Query (Required): The query to search for.`,
+  description: `Performs a semantic code search of the provided repository. Returns chunks of code that are semantically similar to the query. Results are ordred by cosine similarity.`,
   parameters: {
     type: "object",
     properties: {

@@ -197,11 +197,12 @@ export default function CopilotMessage({ message }: Props) {
                 }
                 switch (match[1]) {
                   case "notificationsList":
-                    return <NotificationsList threadString={children?.toString()} />;
+                    return (
+                      <NotificationsList threadString={children?.toString()} />
+                    );
                   default:
                     return (
                       <SyntaxHighlighter
-                        {...rest}
                         PreTag="div"
                         children={String(children).replace(/\n$/, "")}
                         language={match[1]}

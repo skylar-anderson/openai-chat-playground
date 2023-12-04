@@ -2,10 +2,7 @@ import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { retrieveDiffContents } from "@/app/utils/github";
 const meta: ChatCompletionCreateParams.Function = {
   name: "retrieveDiffFromPullRequest",
-  description: `Retrieves the diff content for a particular pull request. This function accepts 2 arguments:
-  
-  * Repository (Required): The owner and name of a repository.
-  * Pull Request ID (Required): The pull request ID to retrieve the diff from.`,
+  description: `Retrieves the diff content for a particular pull request.`,
   parameters: {
     type: "object",
     properties: {

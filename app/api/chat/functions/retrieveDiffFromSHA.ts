@@ -2,10 +2,7 @@ import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { retrieveDiffContents } from "@/app/utils/github";
 const meta: ChatCompletionCreateParams.Function = {
   name: "retrieveDiffFromSHA",
-  description: `Retrieves the diff content for a particular commit or branch. This function accepts 2 arguments:
-  
-  * Repository (Required): The owner and name of a repository.
-  * SHA (Required): SHA or branch to start listing commits from. Default: the repository's default branch (usually main).`,
+  description: `Retrieves the diff content for a particular commit or branch.`,
   parameters: {
     type: "object",
     properties: {

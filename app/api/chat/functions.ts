@@ -8,7 +8,9 @@ import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest
 import listNotifications from "./functions/listNotifications";
 import searchWithBing from "./functions/searchWithBing";
 import readFile from "./functions/readFile";
+import listPullRequests from "./functions/listPullRequests";
 export const availableFunctions = {
+  listPullRequests,
   readFile,
   searchWithBing,
   listNotifications,
@@ -69,6 +71,14 @@ export async function runFunction(name: string, args: any) {
         args["page"],
         args["assignee"],
         args["state"],
+      );
+    case "listPullRequests":
+      return await listIssues.run(
+        args["repository"],
+        args["page"],
+        args["assignee"],
+        args["state"],
+        "pull-request",
       );
     case "listIssueComments":
       return await listIssueComments.run(

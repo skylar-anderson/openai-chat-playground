@@ -20,7 +20,7 @@ function UserMessage({ message }: { message: MessageWithDebugData }) {
           backgroundColor: "canvas.subtle",
         }}
       >
-        <Text color="fg.default" sx={{ fontSize: 1 }}>
+        <Text color="fg.default" sx={{ lineHeight: "21px", fontSize: 1 }}>
           {message.message.content}
         </Text>
       </Box>
