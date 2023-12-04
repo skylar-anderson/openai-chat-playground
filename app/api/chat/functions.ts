@@ -5,7 +5,6 @@ import semanticCodeSearch from "./functions/semanticCodeSearch";
 import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
 import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
 import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
-import listNotifications from "./functions/listNotifications";
 import searchWithBing from "./functions/searchWithBing";
 import readFile from "./functions/readFile";
 import listPullRequests from "./functions/listPullRequests";
@@ -13,7 +12,6 @@ export const availableFunctions = {
   listPullRequests,
   readFile,
   searchWithBing,
-  listNotifications,
   retrieveDiffFromSHA,
   retrieveDiffFromPullRequest,
   semanticCodeSearch,
@@ -27,8 +25,8 @@ export type FunctionName = keyof typeof availableFunctions;
 
 export function selectFunctions(functions: FunctionName[]) {
   return functions.map((name) => {
-    return availableFunctions[name].meta;
-  });
+    return availableFunctions[name] ? availableFunctions[name].meta : false;
+  }).filter(Boolean);
 }
 
 export async function runFunction(name: string, args: any) {
@@ -37,12 +35,6 @@ export async function runFunction(name: string, args: any) {
       return await readFile.run(args["repository"], args["path"]);
     case "searchWithBing":
       return await searchWithBing.run(args["query"]);
-    case "listNotifications":
-      return await listNotifications.run(
-        args["all"],
-        args["participating"],
-        args["page"],
-      );
     case "retrieveDiffFromPullRequest":
       return await retrieveDiffFromPullRequest.run(
         args["repository"],

@@ -15,7 +15,6 @@ The model has the ability to retrieve content from GitHub. The model will genera
 - \`how do I use this thing?\`
 - \`summarize the last 3 changes to vercel/ai\`
 - \`summarize comments on the last 3 pull requests to primer/react\`
-- \`do I have any unread notifications?\`
 - \`what does hackernews say about GitHub Copilot?\`
 - \`what are some good first issues for vercel/swr?\`
 - \`search for all relevent files on the Dialog component in primer/react, then for the most interesting file, look at the last 3 commits and summarize their diffs\`
