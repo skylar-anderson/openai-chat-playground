@@ -39,6 +39,7 @@ function RepositoryOption({
         <Checkbox
           value={repository}
           name="repositories[]"
+          disabled={true}
           defaultChecked={checked}
         />
         <FormControl.Label>
@@ -207,8 +208,7 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
             <CheckboxGroup>
               <CheckboxGroup.Label>Retrieval</CheckboxGroup.Label>
               <CheckboxGroup.Caption>
-                Select which repositories to include when performing semantic
-                code search
+                Only the following repositories have been indexed for similarity search.
               </CheckboxGroup.Caption>
               <Box>
                 {Object.entries(indexedRepositories).map(
