@@ -17,7 +17,6 @@ const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
 function ChatColumn({
-  fullWidth,
   children,
 }: {
   fullWidth: boolean;

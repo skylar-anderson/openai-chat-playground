@@ -203,7 +203,9 @@ export default function CopilotMessage({ message }: Props) {
                   default:
                     return (
                       <SyntaxHighlighter
+                        {...rest as any}
                         PreTag="div"
+                        $props={{}}
                         children={String(children).replace(/\n$/, "")}
                         language={match[1]}
                       />
