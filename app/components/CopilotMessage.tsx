@@ -1,7 +1,7 @@
+import { Spinner, Box, IconButton, Text } from "@primer/react";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Spinner, Box, IconButton, Text } from "@primer/react";
 import { CheckIcon } from "@primer/octicons-react";
 import { Message } from "ai";
 //import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

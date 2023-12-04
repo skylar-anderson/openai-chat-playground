@@ -9,6 +9,7 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import { SettingsProps } from "./types";
 import MessageInput from "./components/MessageInput";
 import FunctionDebugger from "./components/FunctionDebugger";
+import Intro from "./components/Intro";
 const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
@@ -67,43 +68,49 @@ export default function Chat() {
   }
 
   return (
-    <ThemeProvider>
-      <BaseStyles>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            height: "100vh",
-            justifyContent: "center",
-          }}
-        >
-          <SettingsForm
-            initialValues={settings}
-            onSubmit={onSettingsChange}
-          />
-
+    <Box>
+      <ThemeProvider>
+        <BaseStyles>
           <Box
             sx={{
-              height: "100%",
-              flexGrow: 1,
               display: "flex",
-              p: 3,
-              flexDirection: "column",
+              flexDirection: "row",
+              height: "100vh",
+              justifyContent: "center",
             }}
           >
-            <MessageList messages={messages} />
-
-            <MessageInput
-              input={input}
-              onInputChange={handleInputChange}
-              onSubmit={onSubmit}
-              isLoading={isLoading}
+            <SettingsForm
+              initialValues={settings}
+              onSubmit={onSettingsChange}
             />
-          </Box>
 
-          <DebugColumn data={data} />
-        </Box>
-      </BaseStyles>
-    </ThemeProvider>
+            <Box
+              sx={{
+                height: "100%",
+                flexGrow: 1,
+                display: "flex",
+                p: 3,
+                flexDirection: "column",
+              }}
+            >
+              {messages.length ? (
+                <MessageList messages={messages} />
+              ) : (
+                <Intro />
+              )}
+
+              <MessageInput
+                input={input}
+                onInputChange={handleInputChange}
+                onSubmit={onSubmit}
+                isLoading={isLoading}
+              />
+            </Box>
+
+            <DebugColumn data={data} />
+          </Box>
+        </BaseStyles>
+      </ThemeProvider>
+    </Box>
   );
 }

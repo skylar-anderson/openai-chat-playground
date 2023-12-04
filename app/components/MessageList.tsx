@@ -1,7 +1,7 @@
 import { Text, Box } from "@primer/react";
 import { useRef, useEffect } from "react";
 import CopilotMessage from "./CopilotMessage";
-import { Message } from "ai";
+import { type Message } from "ai";
 function UserMessage({ message }: { message: Message }) {
   return (
     <Box
