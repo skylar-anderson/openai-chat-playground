@@ -16,6 +16,22 @@ export async function githubApiRequest<T>(
   return response as T;
 }
 
+export async function searchIssues<T>(q: string) {
+  if (!auth) {
+    throw new Error("GitHub PAT Not set!");
+  }
+  const octokit = new Octokit({ auth });
+  const response = await octokit.rest.search.issuesAndPullRequests({
+    q,
+    per_page: 100,
+  });
+
+  if (!response) {
+    throw new Error("Failed to load commits");
+  }
+  return response as T;
+}
+
 export async function retrieveDiffContents(url: string): Promise<string> {
   try {
     const response = await fetch(url, {

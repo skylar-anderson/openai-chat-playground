@@ -49,6 +49,7 @@ function DebugColumn({ data }: { data?: any[] }) {
         borderColor: "border.default",
         width: "640px",
         p: 0,
+        overflowY: "scroll",
         flexDirection: "column",
       }}
     >

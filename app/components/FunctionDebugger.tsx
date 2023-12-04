@@ -18,16 +18,14 @@ export default function FunctionDebugger({
   return (
     <Box
       sx={{
-        borderBottom: "1px solid",
-        borderColor: "border.default",
         padding: 0,
-        overflow: "hidden",
+        flexShrink: 0,
+        overflowY: "scroll",
       }}
     >
       <Box
         onClick={() => setIsOpen(!isOpen)}
         as="button"
-        borderRadius={2}
         py={2}
         sx={{
           paddingLeft: "12px",
@@ -41,6 +39,9 @@ export default function FunctionDebugger({
           fontFamily: "monospace",
           cursor: "pointer",
           fontSize: 0,
+          flexShrink: 0,
+          borderBottom: "1px solid",
+          borderColor: "border.default",
           "&:hover": { color: "fg.default" },
         }}
       >
@@ -52,8 +53,6 @@ export default function FunctionDebugger({
       {isOpen && (
         <Box
           sx={{
-            borderTop: "1px solid",
-            borderColor: "border.default",
             backgroundColor: "canvas.subtle",
           }}
         >
@@ -76,7 +75,9 @@ export default function FunctionDebugger({
           </UnderlineNav>
           <Box>
             {tab === "result" && (
-              <Box sx={{ p: 3, position: "relative", overflow: "scroll" }}>
+              <Box
+                sx={{ p: 3, position: "relative", overflow: "scroll", flex: 1 }}
+              >
                 <Box sx={{ position: "absolute", top: 1, right: 1 }}>
                   <IconButton
                     onClick={() =>

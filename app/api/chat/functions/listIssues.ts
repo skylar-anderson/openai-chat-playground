@@ -1,17 +1,13 @@
 ///repos/{owner}/{repo}/issues
-import { githubApiRequest } from "@/app/utils/github";
+import { searchIssues } from "@/app/utils/github";
 import { Endpoints } from "@octokit/types";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
-const ENDPOINT = "GET /repos/{owner}/{repo}/issues";
+const ENDPOINT = "GET /search/issues";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listIssues",
-  description: `Retrieves a paginated list of issues for a given repository. This function accepts 4 arguments:
-
-* Repository (Required): The owner and name of a repository.
-* Page (Optional): An optional page number to paginate through the results. Defaults to 1.
-* Assignee (Optional): An assignee to filter issues by.
-* State (Optional): The state of the issues to return, e.g. open or closed. Defaults to open. Must be one of open, closed, or all.`,
+  description: `Retrieves a paginated list of issues for a given repository.
+  Note: GitHub's REST API considers every pull request an issue, but not every issue is a pull request. For this reason, "Issues" endpoints may return both issues and pull requests in the response. You can identify pull requests by the pull_request key.`,
   parameters: {
     type: "object",
     properties: {
@@ -45,24 +41,24 @@ type ListIssuesResponse = Endpoints[typeof ENDPOINT]["response"];
 async function run(
   repository: string,
   page: number = 1,
-  assignee: string = "*",
+  assignee: string,
   state: State = "open",
 ) {
   const [owner, repo] = repository.split("/");
   try {
-    const issues = await githubApiRequest<ListIssuesResponse>(ENDPOINT, {
-      owner,
-      repo,
-      per_page: 10,
-      page,
-      state,
-      assignee,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    });
+    const filters = ["is:issue", `repo:${owner}/${repo}`];
+    if (state !== "all") {
+      filters.push(`state:${state}`);
+    }
+    if (assignee) {
+      filters.push(`assignee:${assignee}`);
+    }
 
-    return issues.data.map((data) => ({
+    console.log(filters.join(" "));
+    const issues = await searchIssues<ListIssuesResponse>(filters.join(" "));
+
+    console.log(issues.data.items);
+    return issues.data.items.map((data) => ({
       assignee_handle: data.assignee?.login,
       assignee_avatar: data.assignee?.avatar_url,
       assignee_url: data.assignee?.html_url,

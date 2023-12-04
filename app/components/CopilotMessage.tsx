@@ -24,7 +24,7 @@ function extractThreadIds(urls: string): number[] {
     .filter((id) => !isNaN(id));
 }
 
-function NotificationsList({ children }) {
+function NotificationsList({ children }: { children: string }) {
   const threadIds = extractThreadIds(children);
   return (
     <Box

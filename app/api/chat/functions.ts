@@ -7,7 +7,9 @@ import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
 import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
 import listNotifications from "./functions/listNotifications";
 import searchWithBing from "./functions/searchWithBing";
+import readFile from "./functions/readFile";
 export const availableFunctions = {
+  readFile,
   searchWithBing,
   listNotifications,
   retrieveDiffFromSHA,
@@ -29,6 +31,8 @@ export function selectFunctions(functions: FunctionName[]) {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "readFile":
+      return await readFile.run(args["repository"], args["path"]);
     case "searchWithBing":
       return await searchWithBing.run(args["query"]);
     case "listNotifications":

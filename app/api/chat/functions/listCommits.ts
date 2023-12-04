@@ -5,13 +5,7 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/commits";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listCommits",
-  description: `Retrieves a paginated list of commits for a given repository. This function accepts 2 arguments: 
-
-* Repository (Required): The owner and name of a repository. 
-* Page (Optional): An optional page number to paginate through the results. Defaults to 1.
-* SHA (Optional): SHA or branch to start listing commits from. Default: the repository's default branch (usually main).
-* Path (Optional): Only commits containing this file path will be returned.
-* Author (Optional): GitHub login or email address by which to filter by commit author.`,
+  description: `Retrieves a paginated list of commits for a given repository.`,
   parameters: {
     type: "object",
     properties: {
