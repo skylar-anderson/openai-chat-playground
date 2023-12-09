@@ -13,7 +13,7 @@ import {
 } from "@primer/react";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { availableFunctions, FunctionName } from "../api/chat/functions";
-import { SettingsProps } from "../types";
+import { type Model, type SettingsProps } from "../types";
 import { indexedRepositories } from "../repositories";
 import { FUNCTION_CALLING_MODELS } from "../models";
 
