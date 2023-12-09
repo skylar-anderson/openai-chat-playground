@@ -46,16 +46,6 @@ function getSystemMessage(
   * If the user is confused, be proactive about offering suggestions based on your capabilities. 
 `;
 
-  /*This conversation is rendered inside a markdown content area with access to special plugins. See below for guidance on plugin use:
-
-  ### Render notifications with the notification list block
-  Use the notification list block to render an interactive block of GitHub notifications. To invoke this block, return a list of notifications urls inside a notificationsList markdown code block. When the markdown is rendered, the URLs provided will be unfurled into interactive notification blocks. The unfurled notifications may contain more helpful data for the user. Here is an example of using a notificationsList block:
-
-\`\`\`notificationsList
-  - https://api.github.com/notifications/threads/1
-  - https://api.github.com/notifications/threads/2
-\`\`\`  */
-
   const instructions = `
     ${DEFAULT_INSTRUCTIONS}
     ${
@@ -78,15 +68,14 @@ export async function POST(req: Request) {
     messages,
     data: { settings },
   } = body;
-
+  const functions = selectFunctions(settings.tools) || [];
   const systemMessage = getSystemMessage(settings.customInstructions);
   // basic completion at start of turn
-  console.log(settings.model);
   const response = await openai.chat.completions.create({
     model: settings.model || MODEL,
     stream: true,
     messages: [systemMessage, ...messages],
-    functions: selectFunctions(settings.tools),
+    functions,
   });
 
   const data = new experimental_StreamData();
@@ -104,7 +93,7 @@ export async function POST(req: Request) {
 
       const signature = `${name}(${signatureFromArgs(args)})`;
       const result = functionResult;
-      const schema = selectFunctions([name as FunctionName])[0];
+      const schema = functions[0];
       data.append({ signature, result, schema } as any);
 
       return openai.chat.completions.create({
@@ -112,7 +101,7 @@ export async function POST(req: Request) {
         stream: true,
         model: MODEL,
         // providing functions here will allow the model to recursively loop through function calls
-        functions: selectFunctions(settings.tools),
+        functions,
       });
     },
     //onCompletion() {},

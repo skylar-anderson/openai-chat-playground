@@ -23,7 +23,7 @@ function DebugColumn({ data }: { data?: any[] }) {
         display: "flex",
         borderLeft: "1px solid",
         borderColor: "border.default",
-        width: "640px",
+        width: "480px",
         p: 0,
         overflowY: "scroll",
         flexDirection: "column",

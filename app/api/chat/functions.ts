@@ -8,7 +8,12 @@ import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest
 import searchWithBing from "./functions/searchWithBing";
 import readFile from "./functions/readFile";
 import listPullRequests from "./functions/listPullRequests";
+import getIssue from "./functions/getIssue";
+import getCommit from "./functions/getCommit";
+import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
+  getIssue,
+  getCommit,
   listPullRequests,
   readFile,
   searchWithBing,
@@ -23,16 +28,26 @@ export const availableFunctions = {
 
 export type FunctionName = keyof typeof availableFunctions;
 
-export function selectFunctions(functions: FunctionName[]) {
-  return functions.map((name) => {
-    return availableFunctions[name] ? availableFunctions[name].meta : false;
-  }).filter(Boolean);
+export function selectFunctions(
+  functions: FunctionName[],
+): ChatCompletionCreateParams.Function[] {
+  let funcs = [] as ChatCompletionCreateParams.Function[];
+  functions.forEach((name) => {
+    if (availableFunctions[name]) {
+      funcs.push(availableFunctions[name].meta);
+    }
+  });
+  return funcs;
 }
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
     case "readFile":
       return await readFile.run(args["repository"], args["path"]);
+    case "getCommit":
+      return await getCommit.run(args["repository"], args["ref"]);
+    case "getIssue":
+      return await getIssue.run(args["repository"], args["issue_number"]);
     case "searchWithBing":
       return await searchWithBing.run(args["query"]);
     case "retrieveDiffFromPullRequest":

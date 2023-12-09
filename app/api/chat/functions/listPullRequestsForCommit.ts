@@ -20,6 +20,7 @@ const meta: ChatCompletionCreateParams.Function = {
           "SHA of the commit to list the pull requests for. Default: the repository's default branch (usually main).",
       },
     },
+    required: ["repository", "commit_sha"],
   },
 };
 

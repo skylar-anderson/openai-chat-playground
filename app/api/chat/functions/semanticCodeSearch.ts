@@ -8,7 +8,11 @@ const meta: ChatCompletionCreateParams.Function = {
   name: "semanticCodeSearch",
   description: `Performs a semantic code search of the provided repository. Returns chunks of code that are semantically similar to the query. Results are ordered by cosine similarity.
   
-Semantic code search is only available for the following indexed repositories: ${Object.keys(indexedRepositories).join(', ')}. If the user attempts to search for any other repos, please inform them that you cannot search repos that are not indexed.
+Semantic code search is only available for the following indexed repositories: ${Object.keys(
+    indexedRepositories,
+  ).join(
+    ", ",
+  )}. If the user attempts to search for any other repos, please inform them that you cannot search repos that are not indexed.
 
   `,
   parameters: {

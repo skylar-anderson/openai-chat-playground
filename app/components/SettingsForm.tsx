@@ -208,7 +208,8 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
             <CheckboxGroup>
               <CheckboxGroup.Label>Retrieval</CheckboxGroup.Label>
               <CheckboxGroup.Caption>
-                Only the following repositories have been indexed for similarity search.
+                Only the following repositories have been indexed for similarity
+                search.
               </CheckboxGroup.Caption>
               <Box>
                 {Object.entries(indexedRepositories).map(

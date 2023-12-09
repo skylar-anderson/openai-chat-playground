@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 
 const source = `### How to use this prototype:
 
-- Messages are stored in your browser. Clear the conversation by restarting.
+- Messages are stored in your browser. Clear the conversation by refreshing.
 - Use the input box below to start a conversation with Copilot
 - On the right, you'll see the functions called by the model. Click on a function to reveal the raw response
 - On the left,  you can open a settings menu to further modify the models behavior.  I recommend experimenting with different custom instructions.
@@ -17,7 +17,7 @@ The model has the ability to retrieve content from GitHub. The model will genera
 - \`summarize comments on the last 3 pull requests to primer/react\`
 - \`what does hackernews say about GitHub Copilot?\`
 - \`what are some good first issues for vercel/swr?\`
-- \`search for all relevent files on the Dialog component in primer/react, then for the most interesting file, look at the last 3 commits and summarize their diffs\`
+- \`search for all relevent files on the Dialog component in primer/react, then for the most interesting file, summarize the diff for the files last commmit\`
   `;
 
 export default function Intro() {
