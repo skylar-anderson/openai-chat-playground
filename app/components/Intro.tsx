@@ -24,12 +24,10 @@ export default function Intro() {
   return (
     <Box
       sx={{
-        padding: 5,
+        padding: 3,
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
-        marginRight: "auto",
-        marginLeft: "auto",
         flexGrow: 1,
         overflowY: "scroll",
         paddingBottom: 0,
@@ -37,9 +35,23 @@ export default function Intro() {
         fontSize: 1,
       }}
     >
-      <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
-        {source}
-      </Markdown>
+      <Box
+        sx={{
+          border: "1px solid",
+          borderColor: "border.default",
+          p: 3,
+          borderRadius: 2,
+          marginRight: "auto",
+          marginLeft: "auto",
+          width: "640px",
+          backgroundColor: "canvas.default",
+          boxShadow: "rgba(31, 35, 40, 0.04) 0px 1px 0px",
+        }}
+      >
+        <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
+          {source}
+        </Markdown>
+      </Box>
     </Box>
   );
 }

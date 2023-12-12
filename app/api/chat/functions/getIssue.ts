@@ -16,8 +16,7 @@ const meta: ChatCompletionCreateParams.Function = {
       },
       issue_number: {
         type: "string",
-        description:
-          "The number that identifies the issue",
+        description: "The number that identifies the issue",
       },
     },
     required: ["repository", "issue_number"],
@@ -46,7 +45,6 @@ async function run(repository: string, issue_number: string) {
       state: response.data.state,
       assignee_login: response.data.assignee?.login,
       comments: response.data.comments,
-
     };
   } catch (error) {
     console.log("Failed to fetch commit!");

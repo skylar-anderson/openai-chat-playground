@@ -1,131 +1,12 @@
 import { Spinner, Box, IconButton, Text } from "@primer/react";
-import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { CheckIcon } from "@primer/octicons-react";
 import { Message } from "ai";
-//import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 type Props = {
   message: Message;
 };
-
-function extractThreadIds(urls: string): number[] {
-  if (!urls) return [];
-  urls = urls.trim();
-  urls = urls.replace(/\n+/g, "\n");
-  const lines = urls.split("\n");
-  return lines
-    .map((line) => {
-      const parts = line.split("/");
-      const threadId = parts[parts.length - 1];
-      return Number(threadId);
-    })
-    .filter((id) => !isNaN(id));
-}
-
-function NotificationsList({ threadString }: { threadString?: string }) {
-  if (!threadString) return null;
-  const threadIds = extractThreadIds(threadString);
-  return (
-    <Box
-      sx={{
-        border: "1px solid",
-        borderColor: "border.default",
-        borderRadius: 2,
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        sx={{
-          px: 3,
-          py: 2,
-          //backgroundColor: 'canvas.subtle',
-          //borderBottom: '1px solid',
-          //borderColor: 'border.default',
-          fontFamily: "sans-serif",
-          fontWeight: "bold",
-        }}
-      >
-        Notifications
-      </Box>
-      <Box>
-        {threadIds.map((tid) => (
-          <UnfurledThread key={`thread-${tid}`} threadId={tid} />
-        ))}
-      </Box>
-    </Box>
-  );
-}
-type Thread = {
-  subject: {
-    title: string;
-  };
-  repository: {
-    full_name: string;
-    private: boolean;
-  };
-  unread: boolean;
-};
-function UnfurledThread({ threadId }: { threadId: number }) {
-  const [thread, setThread] = useState<Thread | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/threads/${threadId}`)
-      .then((response) => response.json())
-      .then((data) => setThread(data.data))
-      .catch((error) => console.error("Error:", error));
-  }, [threadId]);
-
-  if (!thread) {
-    return (
-      <Box>
-        <Spinner size="small" />
-      </Box>
-    );
-  }
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 3,
-        flexDirection: "row",
-        fontFamily: "sans-serif",
-        px: 3,
-        py: 2,
-        borderBottom: "1px solid",
-        borderColor: "border.default",
-      }}
-    >
-      <Box sx={{ flex: 1 }}>
-        <Box sx={{ fontSize: 1, color: "fg.default", mb: 0 }}>
-          {thread.subject.title}
-        </Box>
-        <Box
-          sx={{
-            fontSize: 0,
-            display: "flex",
-            gap: 1,
-            flexDirection: "row",
-            color: "fg.subtle",
-          }}
-        >
-          <Text>{thread.repository.full_name}</Text>
-          <Text>·</Text>
-          <Text>{thread.repository.private ? "Private" : "Public"}</Text>
-        </Box>
-      </Box>
-      <Box>{thread.unread ? "Unread" : "Read"}</Box>
-      <Box>
-        <IconButton aria-label="Mark as done" icon={CheckIcon}>
-          Mark as done
-        </IconButton>
-      </Box>
-    </Box>
-  );
-}
 
 export default function CopilotMessage({ message }: Props) {
   const { content } = message;
@@ -167,52 +48,36 @@ export default function CopilotMessage({ message }: Props) {
         <Box
           color="fg.default"
           p={3}
-          sx={{ textAlign: "left", position: "relative" }}
+          sx={{ textAlign: "left", fontSize: 2, lineHeight: 1.5 }}
         >
-          {/* <IconButton
-            icon={ScreenFullIcon}
-            aria-label="Expand message"
-            variant="invisible"
-            size="small"
-            onClick={onClick}
-            sx={{ position: "absolute", top: "8px", right: "8px" }}
-          >
-            Expand message
-          </IconButton> */}
-          {/* <Box sx={{ fontWeight: "semibold", mb: 2 }}>Copilot</Box> */}
-
           <Markdown
             remarkPlugins={[remarkGfm]}
             className="markdownContainer"
-            // components={{
-            //   code(props) {
-            //     const { children, className, node, ...rest } = props;
-            //     const match = /language-(\w+)/.exec(className || "");
-            //     if (!match) {
-            //       return (
-            //         <code {...rest} className={className}>
-            //           {children}
-            //         </code>
-            //       );
-            //     }
-            //     switch (match[1]) {
-            //       case "notificationsList":
-            //         return (
-            //           <NotificationsList threadString={children?.toString()} />
-            //         );
-            //       default:
-            //         return (
-            //           <SyntaxHighlighter
-            //             {...rest as any}
-            //             PreTag="div"
-            //             $props={{}}
-            //             children={String(children).replace(/\n$/, "")}
-            //             language={match[1]}
-            //           />
-            //         );
-            //     }
-            //   },
-            // }}
+            components={{
+              code(props) {
+                const { children, className, node, ...rest } = props;
+                const match = /language-(\w+)/.exec(className || "");
+                if (!match) {
+                  return (
+                    <code {...rest} className={className}>
+                      {children}
+                    </code>
+                  );
+                }
+                switch (match[1]) {
+                  default:
+                    return (
+                      <SyntaxHighlighter
+                        {...(rest as any)}
+                        PreTag="div"
+                        $props={{}}
+                        children={String(children).replace(/\n$/, "")}
+                        language={match[1]}
+                      />
+                    );
+                }
+              },
+            }}
           >
             {content}
           </Markdown>

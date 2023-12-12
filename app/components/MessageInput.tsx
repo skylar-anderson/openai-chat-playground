@@ -1,7 +1,6 @@
 import { IconButton, Box, TextInput } from "@primer/react";
 import { PaperAirplaneIcon } from "@primer/octicons-react";
 
-
 type Props = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,14 +23,6 @@ export default function MessageInput({
         gap: 2,
       }}
     >
-      {/* <IconButton
-        icon={GearIcon}
-        size="large"
-        aria-label="Settings"
-        onClick={() => setShowSettings(!showSettings)}
-      >
-        Settings 
-      </IconButton> */}
       <TextInput
         sx={{ paddingRight: 1 }}
         trailingAction={
@@ -46,6 +37,7 @@ export default function MessageInput({
             Submit
           </IconButton>
         }
+        contrast={true}
         value={input}
         block={true}
         placeholder={isLoading ? "Loading..." : "Ask Copilot..."}

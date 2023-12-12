@@ -1,6 +1,7 @@
 "use client";
-import { Box, BaseStyles, ThemeProvider } from "@primer/react";
+import { Box, BaseStyles, IconButton, ThemeProvider } from "@primer/react";
 import { useChat } from "ai/react";
+import { useState } from "react";
 import MessageList from "./components/MessageList";
 import SettingsForm from "./components/SettingsForm";
 import { FUNCTION_CALLING_MODELS } from "./models";
@@ -10,6 +11,7 @@ import { SettingsProps } from "./types";
 import MessageInput from "./components/MessageInput";
 import FunctionDebugger from "./components/FunctionDebugger";
 import Intro from "./components/Intro";
+import TitleBar, { Visibility } from "./components/TitleBar";
 const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
@@ -41,6 +43,8 @@ function DebugColumn({ data }: { data?: any[] }) {
 }
 
 export default function Chat() {
+  const [settingsVisibility, setSettingsVisibility] =
+    useState<Visibility>("hidden");
   const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
     useChat();
 
@@ -51,7 +55,6 @@ export default function Chat() {
   });
 
   function onSettingsChange(settings: SettingsProps) {
-    console.log("settings changed", settings);
     setSettings(settings);
   }
 
@@ -74,40 +77,71 @@ export default function Chat() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              fontFamily: "sans-serif",
+              color: "fg.default",
+              flexDirection: "column",
               height: "100vh",
+              flexGrow: 0,
               justifyContent: "center",
             }}
           >
-            <SettingsForm
-              initialValues={settings}
-              onSubmit={onSettingsChange}
+            <TitleBar
+              currentSettings={settings}
+              settingsVisibility={settingsVisibility}
+              setSettingsVisibility={setSettingsVisibility}
             />
 
             <Box
               sx={{
-                height: "100%",
-                flexGrow: 1,
                 display: "flex",
-                p: 3,
-                flexDirection: "column",
+                flexGrow: 1,
+                width: "100%",
+                overflowY: "scroll",
+                flexDirection: "row",
+                justifyContent: "center",
               }}
             >
-              {messages.length ? (
-                <MessageList messages={messages} />
-              ) : (
-                <Intro />
+              {settingsVisibility === "visible" && (
+                <SettingsForm
+                  initialValues={settings}
+                  setSettingsVisibility={setSettingsVisibility}
+                  onSubmit={onSettingsChange}
+                />
               )}
+              <Box
+                sx={{
+                  height: "100%",
+                  overflowY: "scroll",
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  backgroundColor: "canvas.subtle",
+                }}
+              >
+                {messages.length ? (
+                  <MessageList messages={messages} />
+                ) : (
+                  <Intro />
+                )}
+                <Box
+                  sx={{
+                    borderTop: "1px solid",
+                    borderColor: "border.default",
+                    p: 3,
+                    backgroundColor: "canvas.default",
+                  }}
+                >
+                  <MessageInput
+                    input={input}
+                    onInputChange={handleInputChange}
+                    onSubmit={onSubmit}
+                    isLoading={isLoading}
+                  />
+                </Box>
+              </Box>
 
-              <MessageInput
-                input={input}
-                onInputChange={handleInputChange}
-                onSubmit={onSubmit}
-                isLoading={isLoading}
-              />
+              <DebugColumn data={data} />
             </Box>
-
-            <DebugColumn data={data} />
           </Box>
         </BaseStyles>
       </ThemeProvider>

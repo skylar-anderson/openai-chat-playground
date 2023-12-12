@@ -1,5 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
-import { SidebarExpandIcon, SidebarCollapseIcon } from "@primer/octicons-react";
+import React, { useRef, useCallback } from "react";
 import type { FormEvent } from "react";
 import {
   IconButton,
@@ -16,9 +15,11 @@ import { availableFunctions, FunctionName } from "../api/chat/functions";
 import { type Model, type SettingsProps } from "../types";
 import { indexedRepositories } from "../repositories";
 import { FUNCTION_CALLING_MODELS } from "../models";
+import { Visibility } from "./TitleBar";
 
 type Props = {
   initialValues: SettingsProps;
+  setSettingsVisibility: (visibility: Visibility) => void;
   onSubmit: (s: SettingsProps) => void;
 };
 
@@ -73,8 +74,11 @@ function ToolOption({
   );
 }
 
-export default function SettingsForm({ initialValues, onSubmit }: Props) {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+export default function SettingsForm({
+  initialValues,
+  setSettingsVisibility,
+  onSubmit,
+}: Props) {
   const form = useRef<HTMLFormElement>(null);
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
@@ -95,20 +99,6 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
     },
     [onSubmit],
   );
-
-  if (!isVisible)
-    return (
-      <IconButton
-        icon={SidebarExpandIcon}
-        aria-label="Show settings"
-        variant="invisible"
-        size="small"
-        onClick={() => setIsVisible(true)}
-        sx={{ position: "absolute", top: 3, left: 3 }}
-      >
-        Show settings
-      </IconButton>
-    );
 
   return (
     <Box
@@ -144,15 +134,6 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
               pb: 3,
             }}
           >
-            <IconButton
-              icon={SidebarCollapseIcon}
-              aria-label="Hide settings"
-              variant="invisible"
-              size="small"
-              onClick={() => setIsVisible(false)}
-            >
-              Hide settings
-            </IconButton>
             <Box sx={{ flexGrow: 1 }}>Settings</Box>
           </Box>
           <FormControl>
@@ -239,14 +220,15 @@ export default function SettingsForm({ initialValues, onSubmit }: Props) {
         >
           <Button
             type="reset"
+            size="large"
             variant="default"
             onClick={() => {
-              /*onDismiss*/
+              setSettingsVisibility("hidden");
             }}
           >
             Cancel
           </Button>
-          <Button type="submit" variant="primary">
+          <Button size="large" type="submit" variant="primary">
             Apply
           </Button>
         </Box>

@@ -46,7 +46,9 @@ export default function MessageList({ messages }: { messages: Message[] }) {
         marginLeft: "auto",
         flexGrow: 1,
         overflowY: "scroll",
-        paddingBottom: 0,
+        paddingBottom: 2,
+        paddingX: 4,
+        paddingTop: 4,
         width: "100%",
         fontSize: 1,
       }}
