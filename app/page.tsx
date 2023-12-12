@@ -115,7 +115,6 @@ export default function Chat() {
                   flexGrow: 1,
                   display: "flex",
                   flexDirection: "column",
-                  backgroundColor: "canvas.subtle",
                 }}
               >
                 {messages.length ? (

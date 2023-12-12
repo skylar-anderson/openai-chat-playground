@@ -1,7 +1,12 @@
-.markdownContainer > :first-child {
+.markdownContainer {
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+.markdownContainer > *:first-child {
   margin-top: 0;
 }
-.markdownContainer > :last-child {
+.markdownContainer > *:last-child {
   margin-bottom: 0;
 }
 
