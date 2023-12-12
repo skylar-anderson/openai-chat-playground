@@ -20,11 +20,11 @@ SERVICE_ROLE_SECRET=
 
 # From GitHub
 GITHUB_PAT=
+
+# From Azure (only necessary if you are using Bing search)
+BING_SEARCH_ENDPOINT=https://api.bing.microsoft.com/v7.0/search
+BING_SEARCH_SUBSCRIPTION_KEY=
 ```
-
-If you want to play with semantic code search, you can optionally download and index the vercel/swr library by running the following:
-
-`set -a && source .env.local && npm run embed`
 
 Start your local dev server with
 
