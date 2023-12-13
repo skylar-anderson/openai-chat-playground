@@ -12,6 +12,7 @@ import MessageInput from "./components/MessageInput";
 import FunctionDebugger from "./components/FunctionDebugger";
 import Intro from "./components/Intro";
 import TitleBar, { Visibility } from "./components/TitleBar";
+
 const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
@@ -45,8 +46,17 @@ function DebugColumn({ data }: { data?: any[] }) {
 export default function Chat() {
   const [settingsVisibility, setSettingsVisibility] =
     useState<Visibility>("hidden");
-  const { data, isLoading, messages, input, handleInputChange, handleSubmit } =
-    useChat();
+  const {
+    data,
+    isLoading,
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    append,
+    setMessages,
+    stop,
+  } = useChat();
 
   const [settings, setSettings] = useLocalStorage<SettingsProps>("settings", {
     customInstructions: defaultInstructions,
@@ -70,6 +80,15 @@ export default function Chat() {
     return handleSubmit(e, chatRequestOptions);
   }
 
+  async function appendMessage(message: string) {
+    const chatRequestOptions = {
+      data: {
+        settings: settings as any,
+      },
+    };
+    append({ role: "user", content: message }, chatRequestOptions);
+  }
+
   return (
     <Box>
       <ThemeProvider>
@@ -89,6 +108,10 @@ export default function Chat() {
               currentSettings={settings}
               settingsVisibility={settingsVisibility}
               setSettingsVisibility={setSettingsVisibility}
+              onClear={() => {
+                stop();
+                setMessages([]);
+              }}
             />
 
             <Box
@@ -120,7 +143,7 @@ export default function Chat() {
                 {messages.length ? (
                   <MessageList messages={messages} />
                 ) : (
-                  <Intro />
+                  <Intro appendMessage={appendMessage} />
                 )}
                 <Box
                   sx={{
@@ -134,6 +157,7 @@ export default function Chat() {
                     input={input}
                     onInputChange={handleInputChange}
                     onSubmit={onSubmit}
+                    onStop={stop}
                     isLoading={isLoading}
                   />
                 </Box>

@@ -10,17 +10,50 @@ const source = `### How to use this prototype:
 - On the left,  you can open a settings menu to further modify the models behavior.  I recommend experimenting with different custom instructions.
 
 ### Sample prompts
-The model has the ability to retrieve content from GitHub. The model will generally try to help you discover and correctly invoke these functions. Nonetheless, here are some interesting examples:
+The model has the ability to retrieve content from GitHub. The model will generally try to help you discover and correctly invoke these functions. Nonetheless, here are some interesting examples:`;
 
-- \`how do I use this thing?\`
-- \`summarize the last 3 changes to vercel/ai\`
-- \`summarize comments on the last 3 pull requests to primer/react\`
-- \`what does hackernews say about GitHub Copilot?\`
-- \`what are some good first issues for vercel/swr?\`
-- \`search for all relevent files on the Dialog component in primer/react, then for the most interesting file, summarize the diff for the files last commmit\`
-  `;
+const examples = [
+  `how do I use this thing?`,
+  `summarize the last 3 changes to vercel/ai`,
+  `summarize comments on the last 3 pull requests to primer/react`,
+  `what does hackernews say about GitHub Copilot?`,
+  `what are some good first issues for vercel/swr?`,
+  `search for all relevent files on the Dialog component in primer/react, then for the most interesting file, summarize the diff for the files last commmit`,
+];
+type Props = {
+  appendMessage: (s: string) => void;
+};
 
-export default function Intro() {
+export function SuggestedPrompt({
+  children,
+  onClick,
+}: {
+  children: string;
+  onClick: () => void;
+}) {
+  return (
+    <Box
+      sx={{
+        paddingY: 2,
+        paddingX: 3,
+        border: "1px solid",
+        borderColor: "border.default",
+        backgroundColor: "canvas.default",
+        borderRadius: 2,
+        width: "fit-content",
+        "&:hover": {
+          backgroundColor: "canvas.subtle",
+          cursor: "pointer",
+        },
+      }}
+      onClick={onClick}
+    >
+      {children}
+    </Box>
+  );
+}
+
+export default function Intro({ appendMessage }: Props) {
   return (
     <Box
       sx={{
@@ -51,6 +84,13 @@ export default function Intro() {
         <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
           {source}
         </Markdown>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 3 }}>
+          {examples.map((e, i) => (
+            <SuggestedPrompt key={i} onClick={() => appendMessage(e)}>
+              {e}
+            </SuggestedPrompt>
+          ))}
+        </Box>
       </Box>
     </Box>
   );

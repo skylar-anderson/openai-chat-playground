@@ -1,11 +1,12 @@
 import { IconButton, Box, TextInput } from "@primer/react";
-import { PaperAirplaneIcon } from "@primer/octicons-react";
+import { StopIcon, PaperAirplaneIcon } from "@primer/octicons-react";
 
 type Props = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
   input: string;
+  onStop: () => void;
 };
 
 export default function MessageInput({
@@ -13,6 +14,7 @@ export default function MessageInput({
   onInputChange,
   onSubmit,
   isLoading,
+  onStop,
 }: Props) {
   return (
     <Box
@@ -26,16 +28,28 @@ export default function MessageInput({
       <TextInput
         sx={{ paddingRight: 1 }}
         trailingAction={
-          <IconButton
-            icon={PaperAirplaneIcon}
-            aria-label="Default"
-            type="submit"
-            variant="invisible"
-            disabled={isLoading}
-            sx={{ marginTop: "-7px" }}
-          >
-            Submit
-          </IconButton>
+          isLoading ? (
+            <IconButton
+              icon={StopIcon}
+              aria-label="Default"
+              variant="invisible"
+              onClick={onStop}
+              sx={{ marginTop: "-7px" }}
+            >
+              Stop generating
+            </IconButton>
+          ) : (
+            <IconButton
+              icon={PaperAirplaneIcon}
+              aria-label="Default"
+              type="submit"
+              variant="invisible"
+              disabled={isLoading}
+              sx={{ marginTop: "-7px" }}
+            >
+              Submit
+            </IconButton>
+          )
         }
         contrast={true}
         value={input}
