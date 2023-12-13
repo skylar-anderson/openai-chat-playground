@@ -93,7 +93,7 @@ export async function POST(req: Request) {
 
       const signature = `${name}(${signatureFromArgs(args)})`;
       const result = functionResult;
-      const schema = functions[0];
+      const schema = functions.filter((f) => f.name === name);
       data.append({ signature, result, schema } as any);
 
       return openai.chat.completions.create({

@@ -41,7 +41,7 @@ export default function Message({ message }: Props) {
         display: "flex",
         flexDirection: "row",
         maxWidth: "960px",
-        width: '100%',
+        width: "100%",
         gap: 3,
       }}
     >
