@@ -34,7 +34,7 @@ function CopilotAvatar() {
 
 export default function Message({ message }: Props) {
   const { content, role } = message;
-  const title = role === "assistant" ? "Copilot" : "Skylar";
+  const title = role === "assistant" ? "Copilot" : "User";
   return (
     <Box
       sx={{
@@ -50,7 +50,7 @@ export default function Message({ message }: Props) {
       ) : (
         <Avatar
           sx={{ flexShrink: 0 }}
-          src={"https://avatars.githubusercontent.com/u/884151?v=4"}
+          src={"https://avatars.githubusercontent.com/u/90914?v=4"}
           size={24}
         />
       )}
