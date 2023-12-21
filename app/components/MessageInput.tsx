@@ -2,6 +2,7 @@ import { IconButton, Box, TextInput } from "@primer/react";
 import { StopIcon, PaperAirplaneIcon } from "@primer/octicons-react";
 
 type Props = {
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
@@ -15,6 +16,7 @@ export default function MessageInput({
   onSubmit,
   isLoading,
   onStop,
+  onFileChange
 }: Props) {
   return (
     <Box
@@ -25,6 +27,12 @@ export default function MessageInput({
         gap: 2,
       }}
     >
+      <input
+          type="file"
+          name="avatar"
+          accept="image/*"
+          onChange={onFileChange}
+        />
       <TextInput
         sx={{ paddingRight: 1 }}
         trailingAction={

@@ -1,5 +1,6 @@
 "use client";
-import { Box, BaseStyles, IconButton, ThemeProvider } from "@primer/react";
+import Image from "next/image";
+import { Box, BaseStyles, IconButton, ThemeProvider, Button } from "@primer/react";
 import { useChat } from "ai/react";
 import { useState } from "react";
 import MessageList from "./components/MessageList";
@@ -43,9 +44,27 @@ function DebugColumn({ data }: { data?: any[] }) {
   );
 }
 
+const toBase64 = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 export default function Chat() {
   const [settingsVisibility, setSettingsVisibility] =
     useState<Visibility>("hidden");
+  const [file, setFile] = useState<File | null>(null);
+  const [base64File, setBase64File] = useState<string | null>(null);
+
   const {
     data,
     isLoading,
@@ -64,6 +83,17 @@ export default function Chat() {
     model: FUNCTION_CALLING_MODELS[0],
   });
 
+  async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) {
+      return;
+    }
+    const file = e.target.files[0] as File;
+    const base64 = await toBase64(file);
+    setFile(file);
+    setBase64File(base64 as string);
+  };
+
+
   function onSettingsChange(settings: SettingsProps) {
     setSettings(settings);
   }
@@ -71,9 +101,11 @@ export default function Chat() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (isLoading) return false;
 
+    console.log(base64File)
     const chatRequestOptions = {
       data: {
         settings: settings as any,
+        imageUrl: base64File || ''
       },
     };
 
@@ -153,7 +185,20 @@ export default function Chat() {
                     backgroundColor: "canvas.default",
                   }}
                 >
+                  {base64File && (
+                    <>
+                    <Box as="img" sx={{
+                      borderRadius: 2,
+
+                    }} src={base64File} width={300} alt="Uploaded image" />
+                    <Button onClick={() => {
+                      setFile(null);
+                      setBase64File(null);
+                    }}>Remove</Button>
+                    </>
+                  )}
                   <MessageInput
+                    onFileChange={onFileChange}
                     input={input}
                     onInputChange={handleInputChange}
                     onSubmit={onSubmit}

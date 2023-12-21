@@ -14,7 +14,7 @@ const MODEL = process.env.MODEL_VERSION || "gpt-4-1106-preview";
 
 type RequestProps = {
   messages: ChatCompletionMessageParam[];
-  data: { settings: SettingsProps };
+  data: { imageUrl?: string, settings: SettingsProps };
 };
 
 type SettingsProps = {
@@ -62,12 +62,47 @@ function getSystemMessage(
   };
 }
 
+async function handleImageMessage(imageUrl:string, messages:OpenAI.Chat.Completions.ChatCompletionMessageParam[]) {
+  const initialMessages = messages.slice(0, -1);
+  const currentMessage = messages[messages.length - 1];
+  const newMessages = [
+    ...initialMessages,
+    {
+      ...currentMessage,
+      content: [
+        { type: 'text', text: currentMessage.content },
+
+        {
+          type: 'image_url',
+          image_url: imageUrl,
+        },
+      ],
+    },
+  ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4-vision-preview',
+    stream: true,
+    max_tokens: 2000,
+    messages: newMessages
+  })
+    // Convert the response into a friendly text-stream
+  const stream = OpenAIStream(response);
+  // Respond with the stream
+  return new StreamingTextResponse(stream);
+}
+
 export async function POST(req: Request) {
   const body: RequestProps = await req.json();
   const {
     messages,
-    data: { settings },
+    data: { imageUrl, settings },
   } = body;
+
+  if (imageUrl) {
+    return handleImageMessage(imageUrl, messages);
+  }
+  
   const functions = selectFunctions(settings.tools) || [];
   const systemMessage = getSystemMessage(settings.customInstructions);
   // basic completion at start of turn

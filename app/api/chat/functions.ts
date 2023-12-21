@@ -10,8 +10,12 @@ import readFile from "./functions/readFile";
 import listPullRequests from "./functions/listPullRequests";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
+import readMemories from "./functions/readMemories";
+import addMemory from "./functions/addMemory";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
+  addMemory,
+  readMemories,
   getIssue,
   getCommit,
   listPullRequests,
@@ -42,6 +46,10 @@ export function selectFunctions(
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "readMemories":
+      return await readMemories.run();
+    case "addMemory":
+      return await addMemory.run(args["memory"]);
     case "readFile":
       return await readFile.run(args["repository"], args["path"]);
     case "getCommit":
