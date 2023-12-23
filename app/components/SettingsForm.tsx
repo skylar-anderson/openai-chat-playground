@@ -173,11 +173,17 @@ export default function SettingsForm({
                 used.
               </CheckboxGroup.Caption>
               <FormControl>
-                <Radio value="parallel" defaultChecked={initialValues.parallelize} />
+                <Radio
+                  value="parallel"
+                  defaultChecked={initialValues.parallelize}
+                />
                 <FormControl.Label>Parallel</FormControl.Label>
               </FormControl>
               <FormControl>
-                <Radio value="serial" defaultChecked={!initialValues.parallelize} />
+                <Radio
+                  value="serial"
+                  defaultChecked={!initialValues.parallelize}
+                />
                 <FormControl.Label>Serial</FormControl.Label>
               </FormControl>
             </RadioGroup>
