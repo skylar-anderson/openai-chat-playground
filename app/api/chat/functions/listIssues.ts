@@ -6,7 +6,7 @@ const ENDPOINT = "GET /search/issues";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listIssues",
-  description: `Retrieves a paginated list of issues for a given repository.`,
+  description: `Retrieves a paginated list of issues for a given repository. Do NOT use this for listing pull requests`,
   parameters: {
     type: "object",
     properties: {

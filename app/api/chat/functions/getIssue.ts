@@ -5,7 +5,7 @@ const ENDPOINT = "GET /repos/{owner}/{repo}/issues/{issue_number}";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "getIssue",
-  description: `Retrieves details for a given issue or pull request:`,
+  description: `Retrieves details for a given issue or pull request. On GitHub, issues and pull requests are collectively called "issues".`,
   parameters: {
     type: "object",
     properties: {
