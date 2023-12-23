@@ -29,6 +29,7 @@ export const availableFunctions = {
   listIssueComments,
   listPullRequestsForCommit,
 };
+import { type Tool } from "ai";
 
 export type FunctionName = keyof typeof availableFunctions;
 
@@ -42,6 +43,16 @@ export function selectFunctions(
     }
   });
   return funcs;
+}
+
+export function selectTools(functions: FunctionName[]): Tool[] {
+  let tools = [] as Tool[];
+  functions.forEach((name) => {
+    if (availableFunctions[name]) {
+      tools.push({ type: "function", function: availableFunctions[name].meta });
+    }
+  });
+  return tools;
 }
 
 export async function runFunction(name: string, args: any) {

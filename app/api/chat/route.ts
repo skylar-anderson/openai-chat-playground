@@ -2,25 +2,33 @@ import {
   JSONValue,
   OpenAIStream,
   StreamingTextResponse,
+  ToolCallPayload,
   experimental_StreamData,
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-import { runFunction, selectFunctions, FunctionName } from "./functions";
+import {
+  runFunction,
+  selectTools,
+  selectFunctions,
+  FunctionName,
+  availableFunctions,
+} from "./functions";
 
 export const runtime = "edge";
 const MODEL = process.env.MODEL_VERSION || "gpt-4-1106-preview";
 
 type RequestProps = {
   messages: ChatCompletionMessageParam[];
-  data: { imageUrl?: string, settings: SettingsProps };
+  data: { imageUrl?: string; settings: SettingsProps };
 };
 
 type SettingsProps = {
   customInstructions: string;
   tools: FunctionName[];
   model: string;
+  parallelize: boolean;
 };
 
 function signatureFromArgs(args: Record<string, unknown>) {
@@ -62,7 +70,10 @@ function getSystemMessage(
   };
 }
 
-async function handleImageMessage(imageUrl:string, messages:OpenAI.Chat.Completions.ChatCompletionMessageParam[]) {
+async function handleImageMessage(
+  imageUrl: string,
+  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+) {
   const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
   const newMessages = [
@@ -70,25 +81,23 @@ async function handleImageMessage(imageUrl:string, messages:OpenAI.Chat.Completi
     {
       ...currentMessage,
       content: [
-        { type: 'text', text: currentMessage.content },
+        { type: "text", text: currentMessage.content },
 
         {
-          type: 'image_url',
+          type: "image_url",
           image_url: imageUrl,
         },
       ],
     },
-  ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[]
+  ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4-vision-preview',
+    model: "gpt-4-vision-preview",
     stream: true,
     max_tokens: 2000,
-    messages: newMessages
-  })
-    // Convert the response into a friendly text-stream
+    messages: newMessages,
+  });
   const stream = OpenAIStream(response);
-  // Respond with the stream
   return new StreamingTextResponse(stream);
 }
 
@@ -102,43 +111,88 @@ export async function POST(req: Request) {
   if (imageUrl) {
     return handleImageMessage(imageUrl, messages);
   }
-  
+
+  const tools = selectTools(settings.tools) || [];
   const functions = selectFunctions(settings.tools) || [];
+
   const systemMessage = getSystemMessage(settings.customInstructions);
-  // basic completion at start of turn
   const response = await openai.chat.completions.create({
     model: settings.model || MODEL,
     stream: true,
     messages: [systemMessage, ...messages],
-    functions,
+    tools: settings.parallelize ? tools : undefined,
+    tool_choice: settings.parallelize ? "auto" : undefined,
+    functions: settings.parallelize ? undefined : functions,
   });
 
   const data = new experimental_StreamData();
 
   const stream = OpenAIStream(response, {
-    experimental_onFunctionCall: async (
-      { name, arguments: args },
-      createFunctionCallMessages,
-    ) => {
-      // a function call was detected
-      const functionResult = await runFunction(name, args);
-      const newMessages = createFunctionCallMessages(
-        functionResult as JSONValue,
-      ) as ChatCompletionMessageParam[];
+    experimental_onToolCall: settings.parallelize
+      ? async (call: ToolCallPayload, appendToolCallMessage) => {
+          const promises = call.tools.map(async (tool) => {
+            const { name, arguments: args } = tool.func;
+            const extractedArgs = JSON.parse(args as unknown as string);
+            const result = runFunction(tool.func.name, extractedArgs);
+            const signature = `${name}(${signatureFromArgs(extractedArgs)})`;
+            const schema = availableFunctions[name as FunctionName]?.meta;
+            console.log("STARTED: " + signature);
+            const startTime = Date.now();
+            return result.then((res) => {
+              const endTime = Date.now();
+              const elapsedTime = `${endTime - startTime}ms`;
+              data.append({
+                elapsedTime,
+                strategy: "parallel",
+                signature,
+                result: result,
+                schema,
+              } as any);
+              console.log("FINISHED: " + signature);
+              appendToolCallMessage({
+                tool_call_id: tool.id,
+                function_name: tool.func.name,
+                tool_call_result: res as JSONValue,
+              });
+            });
+          });
 
-      const signature = `${name}(${signatureFromArgs(args)})`;
-      const result = functionResult;
-      const schema = functions.filter((f) => f.name === name);
-      data.append({ signature, result, schema } as any);
+          await Promise.all(promises);
 
-      return openai.chat.completions.create({
-        messages: [systemMessage, ...messages, ...newMessages],
-        stream: true,
-        model: MODEL,
-        // providing functions here will allow the model to recursively loop through function calls
-        functions,
-      });
-    },
+          return await openai.chat.completions.create({
+            model: MODEL,
+            stream: true,
+            messages: [
+              ...messages,
+              ...(appendToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
+            ],
+            tools,
+            tool_choice: "auto",
+          });
+        }
+      : undefined,
+
+    experimental_onFunctionCall: settings.parallelize
+      ? undefined
+      : async ({ name, arguments: args }, createFunctionCallMessages) => {
+          // a function call was detected
+          const functionResult = await runFunction(name, args);
+          const newMessages = createFunctionCallMessages(
+            functionResult as JSONValue,
+          ) as ChatCompletionMessageParam[];
+
+          const signature = `${name}(${signatureFromArgs(args)})`;
+          const result = functionResult;
+          const schema = functions.filter((f) => f.name === name);
+          data.append({ strategy: "serial", signature, result, schema } as any);
+
+          return openai.chat.completions.create({
+            messages: [systemMessage, ...messages, ...newMessages],
+            stream: true,
+            model: MODEL,
+            functions,
+          });
+        },
     //onCompletion() {},
     onFinal() {
       data.close();

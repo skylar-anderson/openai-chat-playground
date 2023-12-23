@@ -1,7 +1,8 @@
 import React, { useRef, useCallback } from "react";
 import type { FormEvent } from "react";
 import {
-  IconButton,
+  RadioGroup,
+  Radio,
   CheckboxGroup,
   FormControl,
   Box,
@@ -89,11 +90,12 @@ export default function SettingsForm({
       ).trim();
       const tools = data.getAll("tools[]") as string[];
       const model = data.get("model") as Model;
-
+      const parallelize = data.get("fcStrategy") === "parallel";
       onSubmit({
         customInstructions,
         tools,
         model,
+        parallelize,
       });
       //onDismiss();
     },
@@ -163,9 +165,26 @@ export default function SettingsForm({
               />
             </FormControl>
           </Box>
+          <Box pt={3}>
+            <RadioGroup name="fcStrategy">
+              <RadioGroup.Label>Calling strategy</RadioGroup.Label>
+              <CheckboxGroup.Caption>
+                Select whether a serial or parallel function calling strategy is
+                used.
+              </CheckboxGroup.Caption>
+              <FormControl>
+                <Radio value="parallel" checked={initialValues.parallelize} />
+                <FormControl.Label>Parallel</FormControl.Label>
+              </FormControl>
+              <FormControl>
+                <Radio value="serial" checked={!initialValues.parallelize} />
+                <FormControl.Label>Serial</FormControl.Label>
+              </FormControl>
+            </RadioGroup>
+          </Box>
           <Box display="grid" pt={3} sx={{ gap: 4 }}>
             <CheckboxGroup>
-              <CheckboxGroup.Label>Tools</CheckboxGroup.Label>
+              <CheckboxGroup.Label>Tool selection</CheckboxGroup.Label>
               <CheckboxGroup.Caption>
                 Select which tools are available to the model in this
                 conversation

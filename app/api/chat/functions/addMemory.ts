@@ -24,27 +24,29 @@ const meta: ChatCompletionCreateParams.Function = {
   },
 };
 
-const GIST_ID = process.env.MEMORY_GIST_ID
-const file = "memory.txt"
+const GIST_ID = process.env.MEMORY_GIST_ID;
+const file = "memory.txt";
 
-async function run(memory:string) {
+async function run(memory: string) {
   type GetGistResponse = Endpoints[typeof ENDPOINT]["response"] | undefined;
   const currentMemory = await readMemories.run();
   try {
     const response = await githubApiRequest<GetGistResponse>(ENDPOINT, {
       gist_id: GIST_ID,
-      description: 'Copilot wrote a new memory',
+      description: "Copilot wrote a new memory",
       files: {
         [file]: {
-          content: `${currentMemory}\n${memory}`
-        }
+          content: `${currentMemory}\n${memory}`,
+        },
       },
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
       },
     });
-    if (response?.status !== 200) { return "Error saving memory" }
-    return "Memory saved"
+    if (response?.status !== 200) {
+      return "Error saving memory";
+    }
+    return "Memory saved";
   } catch (error) {
     console.log("Failed to fetch memory!");
     console.log(error);

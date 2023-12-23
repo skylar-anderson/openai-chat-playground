@@ -12,16 +12,15 @@ const meta: ChatCompletionCreateParams.Function = {
   `,
   parameters: {
     type: "object",
-    properties: {
-    },
+    properties: {},
     required: [],
   },
 };
 
-const GIST_ID = process.env.MEMORY_GIST_ID
-const file = "memory.txt"
+const GIST_ID = process.env.MEMORY_GIST_ID;
+const file = "memory.txt";
 
-async function run():Promise<string> {
+async function run(): Promise<string> {
   type GetGistResponse = Endpoints[typeof ENDPOINT]["response"] | undefined;
   try {
     const response = await githubApiRequest<GetGistResponse>(ENDPOINT, {
@@ -30,7 +29,9 @@ async function run():Promise<string> {
         "X-GitHub-Api-Version": "2022-11-28",
       },
     });
-    if (!response?.data?.files || ! response.data.files[file]) { return "Error loading memory" }
+    if (!response?.data?.files || !response.data.files[file]) {
+      return "Error loading memory";
+    }
 
     return response.data.files[file].content as string;
   } catch (error) {

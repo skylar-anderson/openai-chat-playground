@@ -46,7 +46,11 @@ export default function FunctionDebugger({
         }}
       >
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>
-          <Text sx={{ color: "fg.subtle" }}>{functionData.signature}</Text>
+          <Text sx={{ color: "fg.subtle" }}>
+            {functionData.strategy === "parallel" ? "⚡️" : "🐌"}·
+            {functionData.signature}·
+            {functionData.elapsedTime ? `${functionData.elapsedTime}` : ""}
+          </Text>
         </Box>
         {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Box>

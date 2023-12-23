@@ -1,6 +1,12 @@
 "use client";
 import Image from "next/image";
-import { Box, BaseStyles, IconButton, ThemeProvider, Button } from "@primer/react";
+import {
+  Box,
+  BaseStyles,
+  IconButton,
+  ThemeProvider,
+  Button,
+} from "@primer/react";
 import { useChat } from "ai/react";
 import { useState } from "react";
 import MessageList from "./components/MessageList";
@@ -36,8 +42,15 @@ function DebugColumn({ data }: { data?: any[] }) {
       {data &&
         data.map((d, i) => <FunctionDebugger key={i} functionData={d} />)}
       {!data?.length && (
-        <Box p={3} sx={{ fontSize: 0, textAlign: "center", color: "fg.muted" }}>
-          Function calls will appear here
+        <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
+          <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
+            Function calls will appear here as they occur.
+          </Box>
+          <Box sx={{ fontSize: 0, color: "fg.muted" }}>
+            Functions marked with ⚡️ were run in parallel. Functions marked
+            with 🐌 were run sequentially. Open settings to change function
+            calling strategy.
+          </Box>
         </Box>
       )}
     </Box>
@@ -81,6 +94,7 @@ export default function Chat() {
     customInstructions: defaultInstructions,
     tools: tools,
     model: FUNCTION_CALLING_MODELS[0],
+    parallelize: true,
   });
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -91,21 +105,21 @@ export default function Chat() {
     const base64 = await toBase64(file);
     setFile(file);
     setBase64File(base64 as string);
-  };
-
+  }
 
   function onSettingsChange(settings: SettingsProps) {
     setSettings(settings);
+    setSettingsVisibility("hidden");
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (isLoading) return false;
 
-    console.log(base64File)
+    console.log(base64File);
     const chatRequestOptions = {
       data: {
         settings: settings as any,
-        imageUrl: base64File || ''
+        imageUrl: base64File || "",
       },
     };
 
@@ -187,14 +201,23 @@ export default function Chat() {
                 >
                   {base64File && (
                     <>
-                    <Box as="img" sx={{
-                      borderRadius: 2,
-
-                    }} src={base64File} width={300} alt="Uploaded image" />
-                    <Button onClick={() => {
-                      setFile(null);
-                      setBase64File(null);
-                    }}>Remove</Button>
+                      <Box
+                        as="img"
+                        sx={{
+                          borderRadius: 2,
+                        }}
+                        src={base64File}
+                        width={300}
+                        alt="Uploaded image"
+                      />
+                      <Button
+                        onClick={() => {
+                          setFile(null);
+                          setBase64File(null);
+                        }}
+                      >
+                        Remove
+                      </Button>
                     </>
                   )}
                   <MessageInput
