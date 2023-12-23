@@ -138,21 +138,21 @@ export async function POST(req: Request) {
             const schema = availableFunctions[name as FunctionName]?.meta;
             console.log("STARTED: " + signature);
             const startTime = Date.now();
-            return result.then((res) => {
+            return result.then((loadedResult) => {
               const endTime = Date.now();
               const elapsedTime = `${endTime - startTime}ms`;
               data.append({
                 elapsedTime,
                 strategy: "parallel",
                 signature,
-                result: result,
+                result: loadedResult,
                 schema,
               } as any);
               console.log("FINISHED: " + signature);
               appendToolCallMessage({
                 tool_call_id: tool.id,
                 function_name: tool.func.name,
-                tool_call_result: res as JSONValue,
+                tool_call_result: loadedResult as JSONValue,
               });
             });
           });
