@@ -167,7 +167,7 @@ export default function SettingsForm({
           </Box>
           <Box pt={3}>
             <RadioGroup name="fcStrategy">
-              <RadioGroup.Label>Calling strategy</RadioGroup.Label>
+              <RadioGroup.Label>Function calling strategy</RadioGroup.Label>
               <CheckboxGroup.Caption>
                 Select whether a serial or parallel function calling strategy is
                 used.
