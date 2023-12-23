@@ -14,7 +14,7 @@ import SettingsForm from "./components/SettingsForm";
 import { FUNCTION_CALLING_MODELS } from "./models";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
-import { SettingsProps } from "./types";
+import { SettingsProps, FunctionData } from "./types";
 import MessageInput from "./components/MessageInput";
 import FunctionDebugger from "./components/FunctionDebugger";
 import Intro from "./components/Intro";
@@ -24,7 +24,13 @@ const defaultInstructions = ``;
 
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
-function DebugColumn({ data }: { data?: any[] }) {
+function DebugColumn({
+  data,
+  imageAttached,
+}: {
+  data?: FunctionData[];
+  imageAttached: boolean;
+}) {
   return (
     <Box
       sx={{
@@ -39,19 +45,35 @@ function DebugColumn({ data }: { data?: any[] }) {
         flexDirection: "column",
       }}
     >
-      {data &&
-        data.map((d, i) => <FunctionDebugger key={i} functionData={d} />)}
-      {!data?.length && (
+      {imageAttached ? (
         <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
           <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
-            Function calls will appear here as they occur.
+            Function calling disabled!
           </Box>
           <Box sx={{ fontSize: 0, color: "fg.muted" }}>
-            Functions marked with ⚡️ were run in parallel. Functions marked
-            with 🐌 were run sequentially. Open settings to change function
-            calling strategy.
+            Vision utilizes <code>gpt-4-vision-preview</code> which does not
+            support function calling. You can enable function calling by first
+            submitting your message with the iamge, and then removing the
+            attached image from the message input.
           </Box>
         </Box>
+      ) : (
+        <>
+          {data &&
+            data.map((d, i) => <FunctionDebugger key={i} functionData={d} />)}
+          {!data?.length && (
+            <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
+              <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
+                Function calls will appear here as they occur.
+              </Box>
+              <Box sx={{ fontSize: 0, color: "fg.muted" }}>
+                Functions marked with ⚡️ were run in parallel. Functions marked
+                with 🐌 were run sequentially. Open settings to change function
+                calling strategy.
+              </Box>
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );
@@ -77,6 +99,7 @@ export default function Chat() {
     useState<Visibility>("hidden");
   const [file, setFile] = useState<File | null>(null);
   const [base64File, setBase64File] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState<string>("a");
 
   const {
     data,
@@ -89,6 +112,8 @@ export default function Chat() {
     setMessages,
     stop,
   } = useChat();
+
+  const debugData = data as FunctionData[];
 
   const [settings, setSettings] = useLocalStorage<SettingsProps>("settings", {
     customInstructions: defaultInstructions,
@@ -110,6 +135,12 @@ export default function Chat() {
   function onSettingsChange(settings: SettingsProps) {
     setSettings(settings);
     setSettingsVisibility("hidden");
+  }
+
+  function clearFile() {
+    setFile(null);
+    setBase64File(null);
+    setFileInputKey(fileInputKey === "a" ? "b" : "a"); // hack to reset file input
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -199,28 +230,10 @@ export default function Chat() {
                     backgroundColor: "canvas.default",
                   }}
                 >
-                  {base64File && (
-                    <>
-                      <Box
-                        as="img"
-                        sx={{
-                          borderRadius: 2,
-                        }}
-                        src={base64File}
-                        width={300}
-                        alt="Uploaded image"
-                      />
-                      <Button
-                        onClick={() => {
-                          setFile(null);
-                          setBase64File(null);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    </>
-                  )}
                   <MessageInput
+                    fileInputKey={fileInputKey}
+                    base64File={base64File}
+                    clearFile={clearFile}
                     onFileChange={onFileChange}
                     input={input}
                     onInputChange={handleInputChange}
@@ -231,7 +244,7 @@ export default function Chat() {
                 </Box>
               </Box>
 
-              <DebugColumn data={data} />
+              <DebugColumn imageAttached={!!base64File} data={debugData} />
             </Box>
           </Box>
         </BaseStyles>
