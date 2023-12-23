@@ -113,7 +113,7 @@ export default function Chat() {
     stop,
   } = useChat();
 
-  const debugData = data as FunctionData[];
+  const debugData = data as unknown as FunctionData[];
 
   const [settings, setSettings] = useLocalStorage<SettingsProps>("settings", {
     customInstructions: defaultInstructions,
