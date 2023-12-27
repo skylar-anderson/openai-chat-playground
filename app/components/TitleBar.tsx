@@ -70,7 +70,11 @@ export default function TitleBar({
         }}
       >
         Chatting with {currentSettings.model} using{" "}
-        {currentSettings.tools.length} tools
+        {currentSettings.tools.length}{" "}
+        {currentSettings.parallelize
+          ? "⚡️ parallelized tools"
+          : "🐌 serialized functions"}
+        .
       </Box>
       <Button onClick={onClear} leadingVisual={SyncIcon}>
         Clear

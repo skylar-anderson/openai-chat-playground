@@ -158,7 +158,7 @@ export default function SettingsForm({
               <Textarea
                 resize="vertical"
                 rows={8}
-                sx={{ width: "100%" }}
+                sx={{ width: "100%", whiteSpace: "pre-wrap" }}
                 name="customInstructions"
                 defaultValue={initialValues.customInstructions}
                 placeholder="Enter custom instructions"
