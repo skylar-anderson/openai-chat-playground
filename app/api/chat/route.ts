@@ -73,12 +73,14 @@ function getSystemMessage(
 async function handleImageMessage(
   imageUrl: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+  systemMessage: OpenAI.Chat.Completions.ChatCompletionMessageParam,
 ) {
   const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
   const newMessages = [
     ...initialMessages,
     {
+      systemMessage,
       ...currentMessage,
       content: [
         { type: "text", text: currentMessage.content },
@@ -107,15 +109,14 @@ export async function POST(req: Request) {
     messages,
     data: { imageUrl, settings },
   } = body;
+  const systemMessage = getSystemMessage(settings.customInstructions);
 
   if (imageUrl) {
-    return handleImageMessage(imageUrl, messages);
+    return handleImageMessage(imageUrl, messages, systemMessage);
   }
 
   const tools = selectTools(settings.tools) || [];
   const functions = selectFunctions(settings.tools) || [];
-
-  const systemMessage = getSystemMessage(settings.customInstructions);
   const response = await openai.chat.completions.create({
     model: settings.model || MODEL,
     stream: true,
@@ -163,6 +164,7 @@ export async function POST(req: Request) {
             model: MODEL,
             stream: true,
             messages: [
+              systemMessage,
               ...messages,
               ...(appendToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
             ],
