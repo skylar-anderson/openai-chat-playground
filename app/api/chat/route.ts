@@ -144,6 +144,7 @@ export async function POST(req: Request) {
               const elapsedTime = `${endTime - startTime}ms`;
               data.append({
                 elapsedTime,
+                args: extractedArgs,
                 strategy: "parallel",
                 signature,
                 result: loadedResult,
@@ -177,7 +178,7 @@ export async function POST(req: Request) {
     experimental_onFunctionCall: settings.parallelize
       ? undefined
       : async ({ name, arguments: args }, createFunctionCallMessages) => {
-          // a function call was detected
+          const startTime = Date.now();
           const functionResult = await runFunction(name, args);
           const newMessages = createFunctionCallMessages(
             functionResult as JSONValue,
@@ -185,8 +186,17 @@ export async function POST(req: Request) {
 
           const signature = `${name}(${signatureFromArgs(args)})`;
           const result = functionResult;
+          const endTime = Date.now();
+          const elapsedTime = `${endTime - startTime}ms`;
           const schema = functions.filter((f) => f.name === name);
-          data.append({ strategy: "serial", signature, result, schema } as any);
+          data.append({
+            elapsedTime,
+            strategy: "serial",
+            signature,
+            args,
+            result,
+            schema,
+          } as any);
 
           return openai.chat.completions.create({
             messages: [systemMessage, ...messages, ...newMessages],

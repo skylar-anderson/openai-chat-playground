@@ -14,7 +14,22 @@ export default function FunctionDebugger({
   functionData: FunctionData;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [tab, setTab] = useState<"schema" | "result">("result");
+  const [tab, setTab] = useState<"schema" | "response" | "request">("response");
+
+  let content: string;
+  switch (tab) {
+    case "response":
+      content = functionData.result;
+      break;
+    case "request":
+      content = functionData.args;
+      break;
+    case "schema":
+      content = functionData.schema;
+      break;
+  }
+  content = JSON.stringify(content, null, 2);
+
   return (
     <Box
       sx={{
@@ -65,10 +80,16 @@ export default function FunctionDebugger({
             sx={{ paddingLeft: 2, width: "100%", borderBottom: "1px solid" }}
           >
             <UnderlineNav.Item
-              onClick={() => setTab("result")}
-              aria-current={tab === "result" ? "page" : undefined}
+              onClick={() => setTab("response")}
+              aria-current={tab === "response" ? "page" : undefined}
             >
-              Results
+              Response
+            </UnderlineNav.Item>
+            <UnderlineNav.Item
+              onClick={() => setTab("request")}
+              aria-current={tab === "request" ? "page" : undefined}
+            >
+              Request
             </UnderlineNav.Item>
             <UnderlineNav.Item
               onClick={() => setTab("schema")}
@@ -77,36 +98,28 @@ export default function FunctionDebugger({
               Schema
             </UnderlineNav.Item>
           </UnderlineNav>
-          <Box>
-            {tab === "result" && (
-              <Box
-                sx={{ p: 3, position: "relative", overflow: "scroll", flex: 1 }}
+
+          <Box sx={{ p: 3, position: "relative", overflow: "scroll", flex: 1 }}>
+            <Box sx={{ position: "absolute", top: 1, right: 1 }}>
+              <IconButton
+                onClick={() => copy(content)}
+                aria-label="Copy response data"
+                icon={CopyIcon}
               >
-                <Box sx={{ position: "absolute", top: 1, right: 1 }}>
-                  <IconButton
-                    onClick={() =>
-                      copy(JSON.stringify(functionData.result, null, 2))
-                    }
-                    aria-label="Copy result"
-                    icon={CopyIcon}
-                  >
-                    Copy result
-                  </IconButton>
-                </Box>
-                <code>
-                  <Box as="pre" fontSize={0} p={0} m={0}>
-                    {JSON.stringify(functionData.result, null, 2)}
-                  </Box>
-                </code>
+                Copy {tab}
+              </IconButton>
+            </Box>
+            <code>
+              <Box
+                as="pre"
+                fontSize={0}
+                p={1}
+                m={0}
+                sx={{ whiteSpace: "break-spaces" }}
+              >
+                {content}
               </Box>
-            )}
-            {tab === "schema" && (
-              <code>
-                <Box as="pre" fontSize={0} p={0} m={0}>
-                  {JSON.stringify(functionData.schema, null, 2)}
-                </Box>
-              </code>
-            )}
+            </code>
           </Box>
         </Box>
       )}

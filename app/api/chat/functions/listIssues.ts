@@ -24,8 +24,14 @@ const meta: ChatCompletionCreateParams.Function = {
         description:
           "The log in of a user to filter issues by, e.g. mamuso. Pass in 'none' for issues with no assignee and * for issues assigned to any user. If no assignee is provided, it will default to *.",
       },
+      label: {
+        type: "string",
+        description:
+          "A label name to filter issues by. Pass in 'none' for issues with no labels. If no label is provided, it will default to *.",
+      },
       state: {
         type: "string",
+        enum: ["open", "closed", "all"],
         description:
           "The state of the issues to return, e.g. open or closed. Defaults to open. Must be one of open, closed, or all.",
       },
@@ -38,11 +44,12 @@ type State = "open" | "closed" | "all" | undefined;
 type ListIssuesResponse = Endpoints[typeof ENDPOINT]["response"];
 
 async function run(
+  is: "issue" | "pull-request" = "issue",
   repository: string,
   page: number = 1,
   assignee: string,
   state: State = "open",
-  is: "issue" | "pull-request" = "issue",
+  label?: string,
 ) {
   const [owner, repo] = repository.split("/");
   try {
@@ -52,6 +59,9 @@ async function run(
     }
     if (assignee) {
       filters.push(`assignee:${assignee}`);
+    }
+    if (label) {
+      filters.push;
     }
 
     const issues = await searchIssues<ListIssuesResponse>(

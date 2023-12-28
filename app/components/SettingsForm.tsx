@@ -105,7 +105,7 @@ export default function SettingsForm({
   return (
     <Box
       sx={{
-        width: "360px",
+        width: "480px",
         flexShrink: 0,
         height: "100%",
         borderRight: "1px solid",
@@ -157,7 +157,7 @@ export default function SettingsForm({
               <FormControl.Label>Custom instructions</FormControl.Label>
               <Textarea
                 resize="vertical"
-                rows={8}
+                rows={16}
                 sx={{ width: "100%", whiteSpace: "pre-wrap" }}
                 name="customInstructions"
                 defaultValue={initialValues.customInstructions}
