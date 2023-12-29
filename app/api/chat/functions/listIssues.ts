@@ -61,7 +61,7 @@ async function run(
       filters.push(`assignee:${assignee}`);
     }
     if (label) {
-      filters.push;
+      filters.push(`label:${label}`);
     }
 
     const issues = await searchIssues<ListIssuesResponse>(
