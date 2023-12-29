@@ -3,4 +3,5 @@ export const indexedRepositories = {
   "primer/react": "main",
   "vercel/ai": "main",
   "vercel/swr": "main",
+  "skylar-anderson/openai-chat-playground": "main",
 };

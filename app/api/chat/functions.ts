@@ -12,8 +12,14 @@ import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
 import readMemories from "./functions/readMemories";
 import addMemory from "./functions/addMemory";
+import createIssue from "./functions/createIssue";
+import createIssueComment from "./functions/createIssueComment";
+import updateIssue from "./functions/updateIssue";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
+  createIssue,
+  createIssueComment,
+  updateIssue,
   addMemory,
   readMemories,
   getIssue,
@@ -57,6 +63,30 @@ export function selectTools(functions: FunctionName[]): Tool[] {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "createIssueComment":
+      return await createIssueComment.run(
+        args["repository"],
+        args["body"],
+        args["issueNumber"],
+      );
+    case "createIssue":
+      return await createIssue.run(
+        args["repository"],
+        args["title"],
+        args["body"],
+        args["labels"],
+        args["assignees"],
+      );
+    case "updateIssue":
+      return await updateIssue.run(
+        args["repository"],
+        args["issueNumber"],
+        args["title"],
+        args["body"],
+        args["labels"],
+        args["assignees"],
+        args["state"],
+      );
     case "readMemories":
       return await readMemories.run();
     case "addMemory":
@@ -93,18 +123,20 @@ export async function runFunction(name: string, args: any) {
       );
     case "listIssues":
       return await listIssues.run(
+        "issue",
         args["repository"],
         args["page"],
         args["assignee"],
         args["state"],
+        args["label"],
       );
     case "listPullRequests":
       return await listIssues.run(
+        "pull-request",
         args["repository"],
         args["page"],
         args["assignee"],
         args["state"],
-        "pull-request",
       );
     case "listIssueComments":
       return await listIssueComments.run(
