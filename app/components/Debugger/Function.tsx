@@ -6,7 +6,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@primer/octicons-react";
-import { FunctionData } from "../types";
+import { FunctionData } from "../../types";
 
 export default function FunctionDebugger({
   functionData,
@@ -19,16 +19,15 @@ export default function FunctionDebugger({
   let content: string;
   switch (tab) {
     case "response":
-      content = functionData.result;
+      content = JSON.stringify(functionData.result, null, 2);
       break;
     case "request":
-      content = functionData.args;
+      content = JSON.stringify(functionData.args, null, 2);
       break;
     case "schema":
-      content = functionData.schema;
+      content = JSON.stringify(functionData.schema, null, 2);
       break;
   }
-  content = JSON.stringify(content, null, 2);
 
   return (
     <Box
@@ -36,6 +35,8 @@ export default function FunctionDebugger({
         padding: 0,
         flexShrink: 0,
         overflowY: "scroll",
+        borderBottom: "1px solid",
+        borderColor: "border.default",
       }}
     >
       <Box
@@ -55,11 +56,10 @@ export default function FunctionDebugger({
           cursor: "pointer",
           fontSize: 0,
           flexShrink: 0,
-          borderBottom: "1px solid",
-          borderColor: "border.default",
           "&:hover": { color: "fg.default" },
         }}
       >
+        {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>
           <Text sx={{ color: "fg.subtle" }}>
             {functionData.strategy === "parallel" ? "⚡️" : "🐌"}·
@@ -67,7 +67,6 @@ export default function FunctionDebugger({
             {functionData.elapsedTime ? `${functionData.elapsedTime}` : ""}
           </Text>
         </Box>
-        {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </Box>
       {isOpen && (
         <Box
