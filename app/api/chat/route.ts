@@ -41,7 +41,7 @@ function signatureFromArgs(args: Record<string, unknown>) {
 function getSystemMessage(
   customInstructions: string,
 ): ChatCompletionMessageParam {
-  const DEFAULT_INSTRUCTIONS = `You are a helpful coding assistant that assists users with coding questions.
+  const instructions = `You are a helpful coding assistant that assists users with coding questions.
 
   * You have been provided a number of functions that load data from GitHub.com. 
   * You have been provided access to perform web searches using Bing
@@ -51,12 +51,9 @@ function getSystemMessage(
   * Be concise and helpful in your responses.
   * Most users are developers. Use technical terms freely and avoid over simplification.
   * If the user asks about your capabilities, please respond with a summary based on the list of functions provided to you. Don't worry too much about specific functions, instead give them an overview of how you can use these functions to help the user.  
-  * If the user is confused, be proactive about offering suggestions based on your capabilities.`;
-
-  const instructions = `${DEFAULT_INSTRUCTIONS}${
+  * If the user is confused, be proactive about offering suggestions based on your capabilities.${
     customInstructions
-      ? `The user has provided the following additional instructions:
-        ${customInstructions}`
+      ? ` The user has provided the following additional instructions:${customInstructions}`
       : ``
   }`;
 
