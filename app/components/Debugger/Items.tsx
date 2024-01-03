@@ -24,7 +24,7 @@ export function DebugItem({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box
-      py={1}
+      py={2}
       sx={{
         flexShrink: 0,
         overflowY: "scroll",
@@ -43,7 +43,7 @@ export function DebugItem({
       >
         {isOpen ? <TriangleDownIcon /> : <TriangleRightIcon />}
 
-        <Box sx={{ textAlign: "left", flexGrow: "1" }}>{title}</Box>
+        <Box sx={{ textAlign: "left", flexGrow: "1", lineHeight: '16px' }}>{title}</Box>
       </Box>
 
       {isOpen ? <Box pt={2}>{children}</Box> : null}
