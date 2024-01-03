@@ -2,6 +2,11 @@ import { FUNCTION_CALLING_MODELS } from "./models";
 export type Model = (typeof FUNCTION_CALLING_MODELS)[number];
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 
+export type CompletionData = {
+  debugType: "completion";
+  completion: any;
+};
+
 export type FunctionData = {
   strategy: "parallel" | "serial";
   signature: string;

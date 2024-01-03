@@ -1,10 +1,11 @@
 import FunctionDebugger from "./Function";
 import MessageDebugger from "./Message";
+import CompletionDebugger from "./Completion";
 import { Box } from "@primer/react";
-import { FunctionData, MessageData } from "../../types";
+import { CompletionData, FunctionData, MessageData } from "../../types";
 
 type DebugColumnType = {
-  data?: (FunctionData | MessageData)[];
+  data?: (FunctionData | MessageData | CompletionData)[];
   imageAttached: boolean;
 };
 
@@ -43,6 +44,8 @@ export default function DebugColumn({ data, imageAttached }: DebugColumnType) {
                 return <FunctionDebugger key={i} functionData={d} />;
               } else if (d.debugType === "message") {
                 return <MessageDebugger key={i} messageData={d} />;
+              } else if (d.debugType === "completion") {
+                return <CompletionDebugger key={i} completionData={d} />;
               }
             })
           ) : (

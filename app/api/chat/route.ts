@@ -7,7 +7,7 @@ import {
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-import { MessageData, FunctionData } from "../../types";
+import { MessageData, FunctionData, CompletionData } from "../../types";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 import {
   runFunction,
@@ -234,12 +234,12 @@ export async function POST(req: Request) {
           });
         },
     onCompletion(completion) {
-      const messageDebug = {
+      const completionDebug: CompletionData = {
         debugType: "completion",
         completion,
       };
 
-      data.append(messageDebug as unknown as JSONValue);
+      data.append(completionDebug as unknown as JSONValue);
     },
     onFinal() {
       data.close();
