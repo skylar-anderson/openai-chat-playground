@@ -43,7 +43,9 @@ export function DebugItem({
       >
         {isOpen ? <TriangleDownIcon /> : <TriangleRightIcon />}
 
-        <Box sx={{ textAlign: "left", flexGrow: "1", lineHeight: '16px' }}>{title}</Box>
+        <Box sx={{ textAlign: "left", flexGrow: "1", lineHeight: "16px" }}>
+          {title}
+        </Box>
       </Box>
 
       {isOpen ? <Box pt={2}>{children}</Box> : null}

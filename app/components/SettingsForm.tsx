@@ -170,21 +170,21 @@ export default function SettingsForm({
               <RadioGroup.Label>Function calling strategy</RadioGroup.Label>
               <CheckboxGroup.Caption>
                 Select whether a serial or parallel function calling strategy is
-                used.
+                used. Parallel is not always better...or faster.
               </CheckboxGroup.Caption>
               <FormControl>
                 <Radio
                   value="parallel"
                   defaultChecked={initialValues.parallelize}
                 />
-                <FormControl.Label>⚡️ Parallel</FormControl.Label>
+                <FormControl.Label>Tools (parallel)</FormControl.Label>
               </FormControl>
               <FormControl>
                 <Radio
                   value="serial"
                   defaultChecked={!initialValues.parallelize}
                 />
-                <FormControl.Label>🐌 Serial</FormControl.Label>
+                <FormControl.Label>Functions (serial)</FormControl.Label>
               </FormControl>
             </RadioGroup>
           </Box>

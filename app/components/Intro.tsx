@@ -91,7 +91,7 @@ export default function Intro({ appendMessage }: Props) {
           borderRadius: 2,
           marginRight: "auto",
           marginLeft: "auto",
-          width: "768px",
+          maxWidth: "768px",
           backgroundColor: "canvas.default",
           boxShadow: "rgba(31, 35, 40, 0.04) 0px 1px 0px",
         }}

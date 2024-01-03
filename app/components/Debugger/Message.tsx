@@ -8,6 +8,7 @@ function MessageItem({ message }: { message: ChatCompletionMessageParam }) {
 
   let content;
   switch (message.role) {
+    case "function":
     case "tool":
       content = (
         <CodeBox>

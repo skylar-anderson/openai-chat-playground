@@ -48,12 +48,11 @@ export default function DebugColumn({ data, imageAttached }: DebugColumnType) {
           ) : (
             <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
               <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
-                Function calls will appear here as they occur.
+                Functions, tools, and prompts will appear here.
               </Box>
               <Box sx={{ fontSize: 0, color: "fg.muted" }}>
-                Functions marked with ⚡️ were run in parallel. Functions marked
-                with 🐌 were run sequentially. Open settings to change function
-                calling strategy.
+                Open settings to change function calling strategy. Tools are run
+                in parallel whereas functions run sequentially.
               </Box>
             </Box>
           )}
