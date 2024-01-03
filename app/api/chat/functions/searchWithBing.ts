@@ -54,7 +54,7 @@ async function run(query: string) {
   } catch (error) {
     console.log("Failed to search bing!");
     console.log(error);
-    return error
+    return "Failed to search with bing. Something went wrong.";
   }
 }
 
