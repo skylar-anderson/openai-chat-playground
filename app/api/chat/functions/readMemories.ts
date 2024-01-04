@@ -5,11 +5,7 @@ const ENDPOINT = "GET /gists/{gist_id}";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "readMemories",
-  description: `
-    As you are chatting with the user, you will have the ability to read and write memories.
-    Use memories to improve the experience of the user over time.
-    Use this function to read the memory file.
-  `,
+  description: `This function retrieves all memories that have been saved so far. You can use this to remind yourself of what you've learned about the user so far.`,
   parameters: {
     type: "object",
     properties: {},

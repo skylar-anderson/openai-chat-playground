@@ -6,11 +6,7 @@ const ENDPOINT = "PATCH /gists/{gist_id}";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "addMemory",
-  description: `
-    As you are chatting with the user, you will have the ability to read and write memories.
-    Use memories to improve the experience of the user over time.
-    Use this function to save a new memory. Only save memories that you think will be useful in the future.
-  `,
+  description: `Whenever the user says something interesting that helps you better understand their preferences, character, or personality, save it as a memory. In future conversations, you will be able to read these memories, so ensure you only write memories that actually help you better serve the user in the future.`,
   parameters: {
     type: "object",
     properties: {
