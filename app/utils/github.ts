@@ -7,6 +7,11 @@ const CREATE_ISSUE_COMMENT_ENDPOINT =
   "POST /repos/{owner}/{repo}/issues/{issue_number}/comments";
 const UPDATE_ISSUE_ENDPOINT =
   "PATCH /repos/{owner}/{repo}/issues/{issue_number}";
+
+export const headers = {
+  "X-GitHub-Api-Version": "2022-11-28",
+};
+
 export async function githubApiRequest<T>(
   endpoint: string,
   parameters: any,
@@ -14,7 +19,7 @@ export async function githubApiRequest<T>(
   if (!auth) {
     throw new Error("GitHub PAT Not set!");
   }
-  const response = await octokit.request(endpoint, parameters);
+  const response = await octokit.request(endpoint, { ...parameters, headers });
   return response as T;
 }
 
@@ -38,9 +43,7 @@ export async function searchIssues<T>(q: string, page: number = 1): Promise<T> {
 export async function retrieveDiffContents(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.github.diff",
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -103,9 +106,7 @@ export async function updateIssue({
         state_reason: stateReason,
         issue_number: issueNumber,
         state,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
+        headers,
       },
     );
     if (!response?.status) {
@@ -142,9 +143,7 @@ export async function createIssue({
         body,
         assignees,
         labels,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
+        headers,
       },
     );
     if (!response?.status) {
@@ -183,9 +182,7 @@ export async function createIssueComment({
         repo: "openai-chat-playground",
         issue_number: issueNumber,
         body,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
+        headers,
       },
     );
 
@@ -198,5 +195,28 @@ export async function createIssueComment({
     console.log("Failed to create issue comment!");
     console.log(error);
     return error;
+  }
+}
+
+const GIST_ID = process.env.MEMORY_GIST_ID;
+const file = "memory.txt";
+const ENDPOINT = "GET /gists/{gist_id}";
+
+export async function getMemory() {
+  type GetGistResponse = Endpoints[typeof ENDPOINT]["response"] | undefined;
+  try {
+    const response = await githubApiRequest<GetGistResponse>(ENDPOINT, {
+      gist_id: GIST_ID,
+      headers,
+    });
+    if (!response?.data?.files || !response.data.files[file]) {
+      return "Error loading memory";
+    }
+
+    return response.data.files[file].content as string;
+  } catch (error) {
+    console.log("Failed to fetch memory!");
+    console.log(error);
+    return "An error occured when trying to fetch memory.";
   }
 }

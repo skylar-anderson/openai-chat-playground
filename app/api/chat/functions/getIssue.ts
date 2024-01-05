@@ -31,9 +31,6 @@ async function run(repository: string, issue_number: string) {
       owner,
       repo,
       issue_number,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
     });
     if (!response?.data) {
       return "That commit could not be found";

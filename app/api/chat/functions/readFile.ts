@@ -32,9 +32,6 @@ async function run(repository: string, path: string) {
       owner,
       repo,
       path,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
     });
     if (response && response.data) {
       return response.data;

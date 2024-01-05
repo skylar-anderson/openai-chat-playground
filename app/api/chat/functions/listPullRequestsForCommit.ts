@@ -37,9 +37,6 @@ async function run(repository: string, commit_sha: string) {
         repo,
         per_page: 10,
         commit_sha,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
       },
     );
     return response?.data.map((pullRequest) => ({
