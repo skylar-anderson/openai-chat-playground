@@ -57,9 +57,6 @@ async function run(
       path,
       author,
       sha,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
     });
     return response?.data.map((commit) => ({
       message: commit.commit.message,

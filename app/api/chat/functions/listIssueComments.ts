@@ -39,9 +39,6 @@ async function run(repository: string, issue_number: number, page: number = 1) {
         repo,
         issue_number,
         per_page: 10,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
       },
     )) as GetIssueCommentsResponseType;
 

@@ -35,9 +35,6 @@ async function run(memory: string) {
           content: `${currentMemory}\n${memory}`,
         },
       },
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
     });
     if (response?.status !== 200) {
       return "Error saving memory";
