@@ -141,6 +141,7 @@ export type ReviewProps = {
 
 export async function createPullRequestReview({
   repository,
+  event,
   body,
   pullNumber,
   comments = [],
@@ -157,6 +158,7 @@ export async function createPullRequestReview({
         owner: "skylar-anderson",
         repo: "openai-chat-playground",
         body,
+        event,
         pull_number: pullNumber,
         comments,
         headers,

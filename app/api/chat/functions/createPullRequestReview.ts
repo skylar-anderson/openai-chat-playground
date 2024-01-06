@@ -56,7 +56,7 @@ const meta: ChatCompletionCreateParams.Function = {
         },
       },
     },
-    required: ["body", "repository", "event", "pullNumber"],
+    required: ["body", "repository", "event", "pullNumber", "comments"],
   },
 };
 
