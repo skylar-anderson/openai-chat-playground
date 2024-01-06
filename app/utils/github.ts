@@ -7,6 +7,7 @@ const CREATE_ISSUE_COMMENT_ENDPOINT =
   "POST /repos/{owner}/{repo}/issues/{issue_number}/comments";
 const UPDATE_ISSUE_ENDPOINT =
   "PATCH /repos/{owner}/{repo}/issues/{issue_number}";
+const CREATE_PULL_REQUEST_REVIEW_ENDPOINT = `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews`;
 
 export const headers = {
   "X-GitHub-Api-Version": "2022-11-28",
@@ -43,7 +44,9 @@ export async function searchIssues<T>(q: string, page: number = 1): Promise<T> {
 export async function retrieveDiffContents(url: string): Promise<string> {
   try {
     const response = await fetch(url, {
-      headers,
+      headers: {
+        Accept: "application/vnd.github.v3.diff",
+      },
     });
 
     if (!response.ok) {
@@ -116,6 +119,56 @@ export async function updateIssue({
     return response;
   } catch (error) {
     console.log("Failed to update issue!");
+    console.log(error);
+    return error;
+  }
+}
+export type ReviewCommentType = {
+  path: string;
+  position?: number;
+  body: string;
+};
+
+export type ReviewEvent = "APPROVE" | "REQUEST_CHANGES" | "COMMENT";
+
+export type ReviewProps = {
+  repository: string;
+  comments: ReviewCommentType[];
+  pullNumber: string;
+  event: ReviewEvent;
+  body: string;
+};
+
+export async function createPullRequestReview({
+  repository,
+  body,
+  pullNumber,
+  comments = [],
+}: ReviewProps) {
+  type CreatePullRequestReviewResponse =
+    | Endpoints[typeof CREATE_PULL_REQUEST_REVIEW_ENDPOINT]["response"]
+    | undefined;
+  //const [owner, repo] = repository.toLowerCase().split("/");
+  // Only create issues in the skylar-anderson/openai-chat-playground repo for now
+  try {
+    const response = await githubApiRequest<CreatePullRequestReviewResponse>(
+      CREATE_PULL_REQUEST_REVIEW_ENDPOINT,
+      {
+        owner: "skylar-anderson",
+        repo: "openai-chat-playground",
+        body,
+        pull_number: pullNumber,
+        comments,
+        headers,
+      },
+    );
+    if (!response?.status) {
+      return new Error("Failed to create pull request review");
+    }
+
+    return response;
+  } catch (error) {
+    console.log("Failed to create pull request review!");
     console.log(error);
     return error;
   }
