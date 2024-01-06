@@ -15,8 +15,12 @@ import addMemory from "./functions/addMemory";
 import createIssue from "./functions/createIssue";
 import createIssueComment from "./functions/createIssueComment";
 import updateIssue from "./functions/updateIssue";
+import listDiscussions from "./functions/listDiscussions";
+import getDiscussion from "./functions/getDiscussion";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
+  listDiscussions,
+  getDiscussion,
   createIssue,
   createIssueComment,
   updateIssue,
@@ -63,6 +67,10 @@ export function selectTools(functions: FunctionName[]): Tool[] {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "listDiscussions":
+      return await listDiscussions.run(args["repository"]);
+    case "getDiscussion":
+      return await getDiscussion.run(args["repository"], args["id"]);
     case "createIssueComment":
       return await createIssueComment.run(
         args["repository"],
