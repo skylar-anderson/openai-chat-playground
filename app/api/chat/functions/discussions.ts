@@ -29,7 +29,7 @@ const discussionByIdQuery = gql`
   query ($owner: String!, $name: String!, $number: Int!) {
     repository(owner: $owner, name: $name) {
       discussion(number: $number) {
-        comments(first: 50) {
+        comments(first: 20) {
           nodes {
             author {
               login
