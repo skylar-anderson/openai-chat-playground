@@ -85,15 +85,11 @@ export default function Intro({ appendMessage }: Props) {
     >
       <Box
         sx={{
-          border: "1px solid",
-          borderColor: "border.default",
           p: 3,
-          borderRadius: 2,
           marginRight: "auto",
           marginLeft: "auto",
-          maxWidth: "768px",
+          maxWidth: "960px",
           backgroundColor: "canvas.default",
-          boxShadow: "rgba(31, 35, 40, 0.04) 0px 1px 0px",
         }}
       >
         <Markdown remarkPlugins={[remarkGfm]} className="markdownContainer">
