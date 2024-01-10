@@ -86,7 +86,7 @@ export default function Chat() {
         settings: settings as any,
       },
     };
-    append({ role: "user", content: message }, chatRequestOptions);
+    append({ role: "system", content: message }, chatRequestOptions);
   }
 
   return (

@@ -34,7 +34,7 @@ function CopilotAvatar() {
 
 export default function Message({ message }: Props) {
   const { content, role } = message;
-  const title = role === "assistant" ? "Copilot" : "User";
+  const title = role == "assistant" ? "Copilot" : "User";
   return (
     <Box
       sx={{

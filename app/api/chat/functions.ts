@@ -10,7 +10,6 @@ import readFile from "./functions/readFile";
 import listPullRequests from "./functions/listPullRequests";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
-import readMemories from "./functions/readMemories";
 import addMemory from "./functions/addMemory";
 import createIssue from "./functions/createIssue";
 import createIssueComment from "./functions/createIssueComment";
@@ -27,7 +26,6 @@ export const availableFunctions = {
   createIssueComment,
   updateIssue,
   addMemory,
-  readMemories,
   getIssue,
   getCommit,
   listPullRequests,
@@ -105,8 +103,6 @@ export async function runFunction(name: string, args: any) {
         args["assignees"],
         args["state"],
       );
-    case "readMemories":
-      return await readMemories.run();
     case "addMemory":
       return await addMemory.run(args["memory"]);
     case "readFile":
