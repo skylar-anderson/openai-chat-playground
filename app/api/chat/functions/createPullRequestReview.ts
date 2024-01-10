@@ -42,11 +42,11 @@ const meta: ChatCompletionCreateParams.Function = {
               description:
                 "The relative path to the file that necessitates the comment.",
             },
-            position: {
-              type: "number",
-              description: `The line index in the diff to which the comment applies.
-              Note: To comment on a specific line in a file, you need to first determine the position of that line in the diff. The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.`,
-            },
+            // position: {
+            //   type: "number",
+            //   description: `The line index in the diff to which the comment applies.
+            //   Note: To comment on a specific line in a file, you need to first determine the position of that line in the diff. The position value equals the number of lines down from the first "@@" hunk header in the file you want to add a comment. The line just below the "@@" line is position 1, the next line is position 2, and so on. The position in the diff continues to increase through lines of whitespace and additional hunks until the beginning of a new file.`,
+            // },
             body: {
               type: "string",
               description: "The contents of the comment.",
