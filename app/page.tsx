@@ -13,7 +13,7 @@ import Intro from "./components/Intro";
 import TitleBar, { Visibility } from "./components/TitleBar";
 import DebugColumn from "./components/Debugger/Column";
 import { toBase64 } from "./utils/image";
-import { prompts } from './custom-prompts'
+import CustomPrompts from "./components/CustomPrompts";
 const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
@@ -132,22 +132,14 @@ export default function Chat() {
                   onSubmit={onSettingsChange}
                 />
               )}
-              <Box sx={{
-                width: '320px',
-                borderRight: '1px solid',
-                borderColor: 'border.default',
-                fontSize: 1,
-                p:3
-              }}>
-                <Box sx={{fontWeight: 600, color: 'fg.default'}}>Custom prompts</Box>
-                <Box sx={{ color: 'fg.muted', mb: 1, fontSize: 0 }}>Pre-written prompts that execute an interesting task.</Box>
-                <Box>
-                  {prompts.map(p => (
-                    <Box sx={{cursor: 'pointer'}} as="button" onClick={() => appendMessage(p.prompt)}>
-                      {p.title}
-                    </Box>
-                  ))}
-                </Box>
+              <Box
+                sx={{
+                  width: "320px",
+                  borderRight: "1px solid",
+                  borderColor: "border.default",
+                }}
+              >
+                <CustomPrompts appendMessage={appendMessage} />
               </Box>
               <Box
                 sx={{

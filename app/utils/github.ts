@@ -160,7 +160,7 @@ export async function createPullRequestReview({
         body,
         event,
         pull_number: pullNumber,
-        comments: comments.map(c => ({ ...c, position: 0 })), 
+        comments,
         headers,
       },
     );

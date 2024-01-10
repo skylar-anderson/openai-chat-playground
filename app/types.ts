@@ -5,7 +5,7 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat";
 export type CustomPrompt = {
   title: string;
   prompt: string;
-}
+};
 
 export type CompletionData = {
   debugType: "completion";
