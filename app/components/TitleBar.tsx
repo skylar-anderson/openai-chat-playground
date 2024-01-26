@@ -5,7 +5,9 @@ import {
   GearIcon,
 } from "@primer/octicons-react";
 import { Button, IconButton, Box } from "@primer/react";
-import { SettingsProps } from "../types";
+import { Provider, SettingsProps } from "../types";
+import { presentProvider } from "../utils/provider";
+import pluralize from "../utils/pluralize";
 export type Visibility = "visible" | "hidden";
 type Props = {
   settingsVisibility: Visibility;
@@ -69,9 +71,9 @@ export default function TitleBar({
           flex: 1,
         }}
       >
-        Chatting with {currentSettings.model} using{" "}
+        Chatting with {presentProvider(currentSettings.provider)} {currentSettings.provider === Provider.OPENAI && `(${currentSettings.model})`} using{" "}
         {currentSettings.tools.length}{" "}
-        {currentSettings.parallelize ? "tools" : "functions"}.
+        {pluralize(currentSettings.parallelize ? "tool" : "function", currentSettings.tools.length)}.
       </Box>
       <Button onClick={onClear} leadingVisual={SyncIcon}>
         Clear

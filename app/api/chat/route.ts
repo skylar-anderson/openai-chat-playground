@@ -7,8 +7,7 @@ import {
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-import { MessageData, FunctionData, CompletionData } from "../../types";
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { MessageData, FunctionData, CompletionData, Provider } from "../../types";
 import {
   runFunction,
   selectTools,
@@ -17,8 +16,23 @@ import {
   availableFunctions,
 } from "./functions";
 import { getMemory } from "@/app/utils/github";
+
 export const runtime = "edge";
-const MODEL = process.env.MODEL_VERSION || "gpt-4-1106-preview";
+
+const openaiClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const azureOpenaiClient = new OpenAI({
+  apiKey: process.env.AZURE_API_KEY,
+  baseURL: process.env.AZURE_MODEL_BASE_URL,
+  defaultHeaders: {
+    'ocp-apim-subscription-key': process.env.AZURE_API_KEY,
+    'api-key': process.env.AZURE_API_KEY,
+    'Openai-Internal-HarmonyVersion': 'harmony_v3',
+    'Openai-Internal-Experimental-AllowToolUse': 'true'
+  }
+});
 
 type RequestProps = {
   messages: ChatCompletionMessageParam[];
@@ -30,7 +44,12 @@ type SettingsProps = {
   tools: FunctionName[];
   model: string;
   parallelize: boolean;
+  provider: Provider;
 };
+
+function getOpenaiClient(provider: Provider): OpenAI {
+  return provider === Provider.AZURE ? azureOpenaiClient : openaiClient;
+}
 
 function signatureFromArgs(args: Record<string, unknown>) {
   return Object.entries(args)
@@ -70,6 +89,7 @@ async function handleImageMessage(
   imageUrl: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
   systemMessage: OpenAI.Chat.Completions.ChatCompletionMessageParam,
+  openai: OpenAI
 ) {
   const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
@@ -109,8 +129,11 @@ export async function POST(req: Request) {
   const data = new experimental_StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
 
+  const isAzure = settings.provider === Provider.AZURE;
+  const openai = getOpenaiClient(settings.provider);
+
   if (imageUrl) {
-    return handleImageMessage(imageUrl, messages, systemMessage);
+    return handleImageMessage(imageUrl, messages, systemMessage, openai);
   }
 
   const tools = selectTools(settings.tools) || [];
@@ -121,13 +144,16 @@ export async function POST(req: Request) {
     debugType: "message",
   };
   data.append(messageDebug as unknown as JSONValue);
+
   const response = await openai.chat.completions.create({
-    model: settings.model || MODEL,
+    // This value is ignored if using Azure OpenAI
+    model: settings.model,
     stream: true,
     messages: initialMessages,
-    tools: settings.parallelize ? tools : undefined,
-    tool_choice: settings.parallelize ? "auto" : undefined,
-    functions: settings.parallelize ? undefined : functions,
+    // Only functions (i.e. the serial flow), not tools (i.e. the parallel flow) are supported by Azure OpenAI
+    tools: !isAzure && settings.parallelize ? tools : undefined,
+    tool_choice: !isAzure && settings.parallelize ? "auto" : undefined,
+    functions: !isAzure && settings.parallelize ? undefined : functions,
   });
 
   const stream = OpenAIStream(response, {
@@ -182,7 +208,8 @@ export async function POST(req: Request) {
           data.append(messageDebug as unknown as JSONValue);
 
           return await openai.chat.completions.create({
-            model: MODEL,
+            // This value is ignored if using Azure OpenAI
+            model: settings.model,
             stream: true,
             messages: newMessages,
             tools,
@@ -232,7 +259,8 @@ export async function POST(req: Request) {
           return openai.chat.completions.create({
             messages: newMessages,
             stream: true,
-            model: MODEL,
+            // This value is ignored if using Azure OpenAI
+            model: settings.model,
             functions,
           });
         },
