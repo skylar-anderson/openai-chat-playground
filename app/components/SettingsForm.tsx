@@ -13,10 +13,11 @@ import {
 } from "@primer/react";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { availableFunctions, FunctionName } from "../api/chat/functions";
-import { type Model, type SettingsProps } from "../types";
+import { Provider, type Model, type SettingsProps } from "../types";
 import { indexedRepositories } from "../repositories";
 import { FUNCTION_CALLING_MODELS } from "../models";
 import { Visibility } from "./TitleBar";
+import { presentProvider } from "../utils/provider";
 
 type Props = {
   initialValues: SettingsProps;
@@ -90,17 +91,20 @@ export default function SettingsForm({
       ).trim();
       const tools = data.getAll("tools[]") as string[];
       const model = data.get("model") as Model;
+      const provider = data.get("provider") as Provider;
       const parallelize = data.get("fcStrategy") === "parallel";
       onSubmit({
         customInstructions,
         tools,
         model,
         parallelize,
+        provider,
       });
       //onDismiss();
     },
     [onSubmit],
   );
+
 
   return (
     <Box
@@ -139,19 +143,35 @@ export default function SettingsForm({
             <Box sx={{ flexGrow: 1 }}>Settings</Box>
           </Box>
           <FormControl>
-            <FormControl.Label>Model</FormControl.Label>
-            <Select name="model" sx={{ width: "100%" }}>
-              {FUNCTION_CALLING_MODELS.map((model) => (
+            <FormControl.Label>Provider</FormControl.Label>
+            <Select name="provider" sx={{ width: "100%" }}>
+              {Object.values(Provider).map((provider) => (
                 <Select.Option
-                  selected={model === initialValues.model}
-                  key={model}
-                  value={model}
+                  selected={provider == initialValues.provider}
+                  key={provider}
+                  value={provider}
                 >
-                  {model}
+                  {presentProvider(provider)}
                 </Select.Option>
               ))}
             </Select>
           </FormControl>
+          <Box pt={3}>
+            <FormControl>
+              <FormControl.Label>Model (OpenAI only)</FormControl.Label>
+              <Select name="model" sx={{ width: "100%" }}>
+                {FUNCTION_CALLING_MODELS.map((model) => (
+                  <Select.Option
+                    selected={model === initialValues.model}
+                    key={model}
+                    value={model}
+                  >
+                    {model}
+                  </Select.Option>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
           <Box pt={3}>
             <FormControl id="customInstructions">
               <FormControl.Label>Custom instructions</FormControl.Label>
@@ -167,7 +187,7 @@ export default function SettingsForm({
           </Box>
           <Box pt={3}>
             <RadioGroup name="fcStrategy">
-              <RadioGroup.Label>Function calling strategy</RadioGroup.Label>
+              <RadioGroup.Label>Function calling strategy (OpenAI only)</RadioGroup.Label>
               <CheckboxGroup.Caption>
                 Select whether a serial or parallel function calling strategy is
                 used. Parallel is not always better...or faster.

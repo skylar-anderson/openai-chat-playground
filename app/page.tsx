@@ -7,7 +7,7 @@ import SettingsForm from "./components/SettingsForm";
 import { FUNCTION_CALLING_MODELS } from "./models";
 import { availableFunctions, FunctionName } from "./api/chat/functions";
 import useLocalStorage from "./hooks/useLocalStorage";
-import { SettingsProps, FunctionData } from "./types";
+import { SettingsProps, FunctionData, Provider } from "./types";
 import MessageInput from "./components/MessageInput";
 import Intro from "./components/Intro";
 import TitleBar, { Visibility } from "./components/TitleBar";
@@ -43,6 +43,7 @@ export default function Chat() {
     tools: tools,
     model: FUNCTION_CALLING_MODELS[0],
     parallelize: true,
+    provider: Provider.OPENAI
   });
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {

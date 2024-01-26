@@ -22,9 +22,15 @@ export type MessageData = {
   messages: ChatCompletionMessageParam[];
 };
 
+export enum Provider {
+  OPENAI = 'openai',
+  AZURE = 'azure',
+}
+
 export type SettingsProps = {
   customInstructions: string;
   tools: string[];
   model: Model;
+  provider: Provider;
   parallelize: boolean;
 };
