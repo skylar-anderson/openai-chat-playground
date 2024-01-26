@@ -4,9 +4,14 @@ export const prompts: CustomPrompt[] = [
     title: "Ask docs",
     prompt:
       "Please complete the following steps in order:\n\n" +
-      "1. Establish the user's intent. Specifically you need to know the question they need answers and you need to know which repositories to search. If you are unclear, please ask.\n" +
+      "1. Establish the user's need. Specifically you need to know the question they need answered and you need to know which repositories to search on their behalf. If you are unclear, on either of these, please ask the user to clarify.\n" +
       "2. Use semantic code search tool to retrieve context and answer the user's question\n" +
       "Ensure your response is grounded in context retrieved from the tool call. Use all context available to you to answer the question fully.",
+  },
+  {
+    title: "Review git history",
+    prompt:
+      "You will help the user understand recent git history for a repository. This may optionally include a file path if necessary.  Please clarify with the user which repository and optionally which file path to check history for.  Once you have clarity, use the list commits function to retrieve relevant history.  Then, render a markdown table of commits.  Show four columns in the table: commit date, author, commit message, and link to view the diff with the short SHA as the link text. If you are unsure which repo to use, ask the user.",
   },
   {
     title: "Ask a codebase a question",
@@ -36,7 +41,7 @@ export const prompts: CustomPrompt[] = [
   {
     title: "Concise PR explanation",
     prompt:
-      "Do the following: - retrieve the provided pull request. - retrieve any mentioned issues - retrieve the pull requests diff.  Summarize the the result of these functions into a brief summary of the changes. Be concise. If you are unsure which PR to use, ask the user.",
+      "Do the following:\n\n- retrieve the provided pull request.\n- retrieve any mentioned issues that are closed by or related to the PR\n- retrieve comments on the pr\n- retrieve the pull requests diff.\n-Summarize the the result of these functions into a brief summary of the changes. Be concise. If you are unsure which PR to use, ask the user.",
   },
   {
     title: "Roast my PR",
@@ -62,6 +67,6 @@ export const prompts: CustomPrompt[] = [
     prompt:
       "You will act as a 10x engineering lead with an eye for detail and code quality. When provided a pull request, you will review the contents of the pull request diff step-by-step and perform a detailed analysis of the code changes. Utilize the comments field of the `createPullRequestReview` tool to provide your feedback within the context of the code changes. Share your overall feedback in the body field. And finally, if you find the code changes acceptable, set the event value to be `APPROVE`. If you wish to request changes from the author, set the event value to `REQUEST_CHANGES`. Only use the `COMMENT` event value if you truly have no opinion on whether the code changes should be accepted. It is strongly preferred that you either approve or request changes.\n\n" +
       "It's critical that you provide actionable feedback about the code. As a 10x engineering lead, it is your responsibility to ensure that developers are leveling up in their code quality and that low quality code is not accepted into the codebase. Do not merely summarize the code.\n\n" +
-      "If the user hasn't already provided a pull request to review, ask them to do so now. When you have prepared your review, submit feedback using the `createPullRequestReview` tool.",
+      "If the user hasn't already provided a pull request to review, ask them to do so now. When you have prepared your review, submit your review using the `createPullRequestReview` tool.",
   },
 ];
