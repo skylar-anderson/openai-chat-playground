@@ -1,4 +1,5 @@
 export const FUNCTION_CALLING_MODELS = [
+  "gpt-4-0125-preview",
   "gpt-4-1106-preview",
   "gpt-4",
   "gpt-4-0613",
