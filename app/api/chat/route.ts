@@ -6,7 +6,7 @@ import {
   experimental_StreamData,
 } from "ai";
 import OpenAI from "openai";
-import type { ChatCompletionMessageParam } from "openai/resources/chat";
+import type { ChatCompletionMessageParam, ChatCompletionToolChoiceOption} from "openai/resources/chat";
 import { MessageData, FunctionData, CompletionData, Provider } from "../../types";
 import {
   runFunction,
@@ -16,7 +16,7 @@ import {
   availableFunctions,
 } from "./functions";
 import { getMemory } from "@/app/utils/github";
-
+import analyzeImage from "./functions/analyzeImage";
 export const runtime = "edge";
 
 const openaiClient = new OpenAI({
@@ -85,40 +85,6 @@ async function getSystemMessage(
   };
 }
 
-async function handleImageMessage(
-  imageUrl: string,
-  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-  systemMessage: OpenAI.Chat.Completions.ChatCompletionMessageParam,
-  openai: OpenAI
-) {
-  const initialMessages = messages.slice(0, -1);
-  const currentMessage = messages[messages.length - 1];
-  const newMessages = [
-    ...initialMessages,
-    systemMessage,
-    {
-      role: "user",
-      content: [
-        { type: "text", text: currentMessage.content },
-
-        {
-          type: "image_url",
-          image_url: imageUrl,
-        },
-      ],
-    },
-  ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[];
-
-  const response = await openai.chat.completions.create({
-    model: "gpt-4-vision-preview",
-    stream: true,
-    max_tokens: 4096,
-    messages: newMessages,
-  });
-  const stream = OpenAIStream(response);
-  return new StreamingTextResponse(stream);
-}
-
 export async function POST(req: Request) {
   const body: RequestProps = await req.json();
   const {
@@ -128,41 +94,57 @@ export async function POST(req: Request) {
 
   const data = new experimental_StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
-
   const isAzure = settings.provider === Provider.AZURE;
   const openai = getOpenaiClient(settings.provider);
-
-  if (imageUrl) {
-    return handleImageMessage(imageUrl, messages, systemMessage, openai);
-  }
-
   const tools = selectTools(settings.tools) || [];
   const functions = selectFunctions(settings.tools) || [];
   const initialMessages = [systemMessage, ...messages];
+  
   const messageDebug: MessageData = {
     messages: initialMessages,
     debugType: "message",
   };
+  
   data.append(messageDebug as unknown as JSONValue);
 
+  // Only functions (i.e. the serial flow), not tools (i.e. the parallel flow) are supported by Azure OpenAI
+  const shouldUseTools = !isAzure && settings.parallelize;
+  const autoToolChoice = shouldUseTools ? "auto" : undefined;
+  const imageToolChoice = { type: 'function', function: { name: 'analyzeImage'} }
   const response = await openai.chat.completions.create({
     // This value is ignored if using Azure OpenAI
     model: settings.model,
     stream: true,
-    messages: initialMessages,
-    // Only functions (i.e. the serial flow), not tools (i.e. the parallel flow) are supported by Azure OpenAI
-    tools: !isAzure && settings.parallelize ? tools : undefined,
-    tool_choice: !isAzure && settings.parallelize ? "auto" : undefined,
-    functions: !isAzure && settings.parallelize ? undefined : functions,
+    messages: initialMessages,  
+    tools: shouldUseTools ? tools : undefined,
+    //@ts-ignore
+    tool_choice: shouldUseTools ? (imageUrl ? imageToolChoice : autoToolChoice) : undefined,
+    function_call: shouldUseTools ? undefined : { name: 'analyzeImage' },
+    //tool_choice: autoToolChoice,
+    functions: shouldUseTools ? undefined : functions,
   });
 
+  
+  console.log("image url", imageUrl)
   const stream = OpenAIStream(response, {
     experimental_onToolCall: settings.parallelize
       ? async (call: ToolCallPayload, appendToolCallMessage) => {
+        console.log("ON TOOL CALL")
           const promises = call.tools.map(async (tool) => {
             const { name, arguments: args } = tool.func;
+            console.log(args);
             const extractedArgs = JSON.parse(args as unknown as string);
-            const result = runFunction(tool.func.name, extractedArgs);
+            let result;
+
+            if (name === "analyzeImage" && imageUrl) {
+              const mostRecentMessage = messages[messages.length - 1];
+              const content = mostRecentMessage.content || 'What is this image?';
+              result = analyzeImage.run(content.toString(), imageUrl);
+            } else {
+              result = runFunction(tool.func.name, extractedArgs);
+            }
+
+            
             const signature = `${name}(${signatureFromArgs(extractedArgs)})`;
             const schema = availableFunctions[name as FunctionName]?.meta;
             console.log("STARTED: " + signature);
@@ -222,9 +204,19 @@ export async function POST(req: Request) {
       ? undefined
       : async ({ name, arguments: args }, createFunctionCallMessages) => {
           const startTime = Date.now();
-          const functionResult = await runFunction(name, args);
           const signature = `${name}(${signatureFromArgs(args)})`;
-          const result = functionResult;
+
+          let result;
+            
+          if (name === "analyzeImage" && imageUrl) {
+            const mostRecentMessage = messages[messages.length - 1];
+            const content = mostRecentMessage.content || 'What is this image?';
+            result = await analyzeImage.run(content.toString(), imageUrl);
+          } else {
+            result = await runFunction(name, args);
+          }
+
+
           const endTime = Date.now();
           const elapsedTime = `${endTime - startTime}ms`;
           const schema = availableFunctions[name as FunctionName]?.meta;
@@ -245,7 +237,7 @@ export async function POST(req: Request) {
             systemMessage,
             ...messages,
             ...(createFunctionCallMessages(
-              functionResult as JSONValue,
+              result as JSONValue,
             ) as ChatCompletionMessageParam[]),
           ];
 

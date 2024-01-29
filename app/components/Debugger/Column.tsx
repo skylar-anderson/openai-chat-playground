@@ -6,10 +6,9 @@ import { CompletionData, FunctionData, MessageData } from "../../types";
 
 type DebugColumnType = {
   data?: (FunctionData | MessageData | CompletionData)[];
-  imageAttached: boolean;
 };
 
-export default function DebugColumn({ data, imageAttached }: DebugColumnType) {
+export default function DebugColumn({ data }: DebugColumnType) {
   return (
     <Box
       sx={{
@@ -23,43 +22,27 @@ export default function DebugColumn({ data, imageAttached }: DebugColumnType) {
         overflowY: "scroll",
         flexDirection: "column",
       }}
-    >
-      {imageAttached ? (
+    >       
+      {data && data.length ? (
+        data.map((d, i) => {
+          if (d.debugType === "function") {
+            return <FunctionDebugger key={i} functionData={d} />;
+          } else if (d.debugType === "message") {
+            return <MessageDebugger key={i} messageData={d} />;
+          } else if (d.debugType === "completion") {
+            return <CompletionDebugger key={i} completionData={d} />;
+          }
+        })
+      ) : (
         <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
           <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
-            Function calling disabled!
+            Functions, tools, and prompts will appear here.
           </Box>
           <Box sx={{ fontSize: 0, color: "fg.muted" }}>
-            Vision utilizes <code>gpt-4-vision-preview</code> which does not
-            support function calling. You can enable function calling by first
-            submitting your message with the iamge, and then removing the
-            attached image from the message input.
+            Open settings to change function calling strategy. Tools are run
+            in parallel whereas functions run sequentially.
           </Box>
         </Box>
-      ) : (
-        <>
-          {data && data.length ? (
-            data.map((d, i) => {
-              if (d.debugType === "function") {
-                return <FunctionDebugger key={i} functionData={d} />;
-              } else if (d.debugType === "message") {
-                return <MessageDebugger key={i} messageData={d} />;
-              } else if (d.debugType === "completion") {
-                return <CompletionDebugger key={i} completionData={d} />;
-              }
-            })
-          ) : (
-            <Box p={4} sx={{ fontSize: 1, textAlign: "center" }}>
-              <Box sx={{ mb: 1, color: "fg.default", fontWeight: "bold" }}>
-                Functions, tools, and prompts will appear here.
-              </Box>
-              <Box sx={{ fontSize: 0, color: "fg.muted" }}>
-                Open settings to change function calling strategy. Tools are run
-                in parallel whereas functions run sequentially.
-              </Box>
-            </Box>
-          )}
-        </>
       )}
     </Box>
   );
