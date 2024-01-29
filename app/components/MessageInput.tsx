@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { IconButton, Box, TextInput } from "@primer/react";
+import { IconButton, Box, TextInput, Textarea } from "@primer/react";
 import {
   StopIcon,
   PaperAirplaneIcon,
@@ -120,40 +120,31 @@ export default function MessageInput({
       >
         <FileUpload fileInputKey={fileInputKey} onFileChange={onFileChange} />
 
-        <TextInput
+        <Textarea
           sx={{ paddingRight: 1 }}
-          trailingAction={
-            isLoading ? (
-              <IconButton
-                icon={StopIcon}
-                aria-label="Default"
-                variant="invisible"
-                onClick={onStop}
-                sx={{ marginTop: "-7px" }}
-              >
-                Stop generating
-              </IconButton>
-            ) : (
-              <IconButton
-                icon={PaperAirplaneIcon}
-                aria-label="Default"
-                type="submit"
-                variant="invisible"
-                disabled={isLoading}
-                sx={{ marginTop: "-7px" }}
-              >
-                Submit
-              </IconButton>
-            )
-          }
           contrast={true}
           value={input}
           block={true}
           placeholder={isLoading ? "Loading..." : "Ask Copilot..."}
           size="large"
           autoFocus={true}
-          loading={isLoading}
           onChange={onInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Esc') {
+              e.preventDefault();
+              if (!isLoading) onStop();
+            } else if (e.key === 'Enter' && (e.ctrlKey | e.shiftKey)) {
+              e.preventDefault();
+              const value = e.target.value;
+              const start = e.target.selectionStart;
+              const end = e.target.selectionEnd;
+              e.target.value = value.slice(0, start) + '\n' + value.slice(end);
+              e.target.selectionStart = e.target.selectionEnd = start + 1;
+            } else if (e.key === 'Enter') {
+              e.preventDefault();
+              if (!isLoading) onSubmit(e);
+            }
+          }}
         />
       </Box>
     </Box>
