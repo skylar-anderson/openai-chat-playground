@@ -23,6 +23,7 @@ export default function Chat() {
   const [file, setFile] = useState<File | null>(null);
   const [base64File, setBase64File] = useState<string | null>(null);
   const [fileInputKey, setFileInputKey] = useState<string>("a");
+  const [chatIndex, setChatIndex] = useState<number>(0);
 
   const {
     data,
@@ -34,7 +35,7 @@ export default function Chat() {
     append,
     setMessages,
     stop,
-  } = useChat();
+  } = useChat({ id: chatIndex.toString() });
 
   const debugData = data as unknown as FunctionData[];
 
@@ -112,6 +113,7 @@ export default function Chat() {
               onClear={() => {
                 stop();
                 setMessages([]);
+                setChatIndex(chatIndex + 1);
               }}
             />
 
