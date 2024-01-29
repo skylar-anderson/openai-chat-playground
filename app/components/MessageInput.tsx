@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { IconButton, Box, TextInput } from "@primer/react";
+import { useRef, useState } from "react";
+import { Spinner, IconButton, Box, Textarea } from "@primer/react";
 import {
   StopIcon,
   PaperAirplaneIcon,
@@ -10,7 +10,7 @@ import {
 type Props = {
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isLoading: boolean;
   input: string;
   onStop: () => void;
@@ -67,6 +67,8 @@ export default function MessageInput({
   clearFile,
   fileInputKey,
 }: Props) {
+  const formRef = useRef<HTMLFormElement | null>(null);
+
   return (
     <Box sx={{ flexDirection: "column" }}>
       {base64File && (
@@ -112,49 +114,68 @@ export default function MessageInput({
       )}
       <Box
         as="form"
+        ref={formRef}
         onSubmit={onSubmit}
         sx={{
           display: "flex",
+          position: 'relative',
           gap: 2,
         }}
       >
         <FileUpload fileInputKey={fileInputKey} onFileChange={onFileChange} />
 
-        <TextInput
-          sx={{ paddingRight: 1 }}
-          trailingAction={
-            isLoading ? (
-              <IconButton
-                icon={StopIcon}
-                aria-label="Default"
-                variant="invisible"
-                onClick={onStop}
-                sx={{ marginTop: "-7px" }}
-              >
-                Stop generating
-              </IconButton>
-            ) : (
-              <IconButton
-                icon={PaperAirplaneIcon}
-                aria-label="Default"
-                type="submit"
-                variant="invisible"
-                disabled={isLoading}
-                sx={{ marginTop: "-7px" }}
-              >
-                Submit
-              </IconButton>
-            )
-          }
+        <Textarea
           contrast={true}
           value={input}
           block={true}
           placeholder={isLoading ? "Loading..." : "Ask Copilot..."}
-          size="large"
           autoFocus={true}
-          loading={isLoading}
           onChange={onInputChange}
+          onKeyDown={(e) => {
+            console.log(e.key)
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              if (isLoading) onStop();
+            } else if (e.key === 'Enter' && (e.ctrlKey || e.shiftKey)) {
+              e.preventDefault();
+              const target = e.target as HTMLTextAreaElement;
+              const value = target.value;
+              const start = target.selectionStart;
+              const end = target.selectionEnd;
+              target.value = value.slice(0, start) + '\n' + value.slice(end);
+              target.selectionStart = target.selectionEnd = start + 1;
+            } else if (e.key === 'Enter') {
+              e.preventDefault();
+              if (!isLoading) formRef.current?.requestSubmit();
+            }
+          }}
         />
+
+        { isLoading ? (
+          <>
+          <Spinner size="small" sx={{ position: 'absolute', right: '64px', top: '12px' }} />
+          <IconButton
+            icon={StopIcon}
+            aria-label="Default"
+            size="large"
+            onClick={onStop}
+            sx={{ flexShrink: 0 }}
+          >
+            Stop generating
+          </IconButton>
+          </>
+        ) : (
+          <IconButton
+            icon={PaperAirplaneIcon}
+            aria-label="Default"
+            size="large"
+            type="submit"
+            disabled={isLoading}
+            sx={{ flexShrink: 0 }}
+          >
+            Submit
+          </IconButton>
+        )}
       </Box>
     </Box>
   );
