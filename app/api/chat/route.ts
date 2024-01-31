@@ -95,9 +95,9 @@ async function handleImageMessage(
   const currentMessage = messages[messages.length - 1];
   const newMessages = [
     ...initialMessages,
+    systemMessage,
     {
-      systemMessage,
-      ...currentMessage,
+      role: "user",
       content: [
         { type: "text", text: currentMessage.content },
 
@@ -112,7 +112,7 @@ async function handleImageMessage(
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
     stream: true,
-    max_tokens: 2000,
+    max_tokens: 4096,
     messages: newMessages,
   });
   const stream = OpenAIStream(response);
