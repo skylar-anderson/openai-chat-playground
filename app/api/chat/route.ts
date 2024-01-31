@@ -7,7 +7,7 @@ import {
   Tool
 } from "ai";
 import OpenAI from "openai";
-import type { ChatCompletionMessageParam, ChatCompletionToolChoiceOption} from "openai/resources/chat";
+import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import { MessageData, FunctionData, CompletionData, Provider } from "../../types";
 import {
   runFunction,
@@ -17,8 +17,11 @@ import {
   availableFunctions,
 } from "./functions";
 import { getMemory } from "@/app/utils/github";
-import analyzeImage from "./functions/analyzeImage";
+
 export const runtime = "edge";
+
+import analyzeImage from "./functions/analyzeImage";
+
 
 const openaiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -110,29 +113,25 @@ export async function POST(req: Request) {
   
   data.append(messageDebug as unknown as JSONValue);
 
-
   const toolChoices = shouldUseTools ? {
     tools,
-    //tool_choice: imageUrl ? { type: 'function', function: { name: 'analyzeImage'} } : 'auto'
-    tool_choice: 'auto'
+    tool_choice: imageUrl ? { type: 'function', function: { name: 'analyzeImage'} } : 'auto'
   } : {
     functions,
     function_call: imageUrl ? { name: 'analyzeImage' } : undefined
   }
 
   // @ts-ignore
-  const response = await openai.chat.completions.create({
+  const request = {
     model: settings.model, // This value is ignored if using Azure OpenAI
     stream: true,
     messages: initialMessages,  
     ...toolChoices,
-  });
+  }
+  const response = await openai.chat.completions.create(request);
   
-  console.log("completion requested")
-  console.log(response);
-  console.log(toolChoices);
   const stream = OpenAIStream(response, {
-    experimental_onToolCall: settings.parallelize
+    experimental_onToolCall: shouldUseTools
       ? async (call: ToolCallPayload, appendToolCallMessage) => {
           const promises = call.tools.map(async (tool) => {
             const { name, arguments: args } = tool.func;
@@ -202,7 +201,7 @@ export async function POST(req: Request) {
         }
       : undefined,
 
-    experimental_onFunctionCall: settings.parallelize
+    experimental_onFunctionCall: shouldUseTools
       ? undefined
       : async ({ name, arguments: args }, createFunctionCallMessages) => {
           const startTime = Date.now();

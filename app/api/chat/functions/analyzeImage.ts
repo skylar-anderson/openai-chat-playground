@@ -27,7 +27,7 @@ async function analyzeImage(
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
-  console.log("SEEING IMAGE")
+
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
     max_tokens: 4096,
@@ -45,9 +45,6 @@ async function analyzeImage(
     ] as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
   });
 
-  console.log("response")
-  console.log(response);
-  
   return response.choices[0].message.content;
 }
 
@@ -55,8 +52,8 @@ async function run(question:string, imageUrl?:string) {
   if(!imageUrl) {
     return 'Error! No image was provided.'
   }
-  return "The image is a black cat with white spots";
-  //return analyzeImage(question || 'what is this', imageUrl)
+
+  return analyzeImage(question || 'Describe what is captured by this image.', imageUrl)
 }
 
 export default { run, meta };
