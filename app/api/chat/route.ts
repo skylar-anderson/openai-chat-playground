@@ -4,6 +4,7 @@ import {
   StreamingTextResponse,
   ToolCallPayload,
   experimental_StreamData,
+  Tool
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam, ChatCompletionToolChoiceOption} from "openai/resources/chat";
@@ -96,10 +97,12 @@ export async function POST(req: Request) {
   const systemMessage = await getSystemMessage(settings.customInstructions);
   const isAzure = settings.provider === Provider.AZURE;
   const openai = getOpenaiClient(settings.provider);
-  const tools = selectTools(settings.tools) || [];
-  const functions = selectFunctions(settings.tools) || [];
   const initialMessages = [systemMessage, ...messages];
-  
+  const tools = selectTools(settings.tools);
+  const functions = selectFunctions(settings.tools);
+  // Only functions (i.e. the serial flow), not tools (i.e. the parallel flow) are supported by Azure OpenAI
+  const shouldUseTools = !isAzure && !imageUrl && settings.parallelize;
+
   const messageDebug: MessageData = {
     messages: initialMessages,
     debugType: "message",
@@ -107,32 +110,32 @@ export async function POST(req: Request) {
   
   data.append(messageDebug as unknown as JSONValue);
 
-  // Only functions (i.e. the serial flow), not tools (i.e. the parallel flow) are supported by Azure OpenAI
-  const shouldUseTools = !isAzure && settings.parallelize;
-  const autoToolChoice = shouldUseTools ? "auto" : undefined;
-  const imageToolChoice = { type: 'function', function: { name: 'analyzeImage'} }
+
+  const toolChoices = shouldUseTools ? {
+    tools,
+    //tool_choice: imageUrl ? { type: 'function', function: { name: 'analyzeImage'} } : 'auto'
+    tool_choice: 'auto'
+  } : {
+    functions,
+    function_call: imageUrl ? { name: 'analyzeImage' } : undefined
+  }
+
+  // @ts-ignore
   const response = await openai.chat.completions.create({
-    // This value is ignored if using Azure OpenAI
-    model: settings.model,
+    model: settings.model, // This value is ignored if using Azure OpenAI
     stream: true,
     messages: initialMessages,  
-    tools: shouldUseTools ? tools : undefined,
-    //@ts-ignore
-    tool_choice: shouldUseTools ? (imageUrl ? imageToolChoice : autoToolChoice) : undefined,
-    function_call: shouldUseTools ? undefined : { name: 'analyzeImage' },
-    //tool_choice: autoToolChoice,
-    functions: shouldUseTools ? undefined : functions,
+    ...toolChoices,
   });
-
   
-  console.log("image url", imageUrl)
+  console.log("completion requested")
+  console.log(response);
+  console.log(toolChoices);
   const stream = OpenAIStream(response, {
     experimental_onToolCall: settings.parallelize
       ? async (call: ToolCallPayload, appendToolCallMessage) => {
-        console.log("ON TOOL CALL")
           const promises = call.tools.map(async (tool) => {
             const { name, arguments: args } = tool.func;
-            console.log(args);
             const extractedArgs = JSON.parse(args as unknown as string);
             let result;
 
@@ -144,7 +147,6 @@ export async function POST(req: Request) {
               result = runFunction(tool.func.name, extractedArgs);
             }
 
-            
             const signature = `${name}(${signatureFromArgs(extractedArgs)})`;
             const schema = availableFunctions[name as FunctionName]?.meta;
             console.log("STARTED: " + signature);
@@ -215,7 +217,6 @@ export async function POST(req: Request) {
           } else {
             result = await runFunction(name, args);
           }
-
 
           const endTime = Date.now();
           const elapsedTime = `${endTime - startTime}ms`;

@@ -30,6 +30,7 @@ async function analyzeImage(
   console.log("SEEING IMAGE")
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
+    max_tokens: 4096,
     messages: [
       {
         role: "user",
@@ -54,8 +55,8 @@ async function run(question:string, imageUrl?:string) {
   if(!imageUrl) {
     return 'Error! No image was provided.'
   }
-
-  return analyzeImage(question || 'what is this', imageUrl)
+  return "The image is a black cat with white spots";
+  //return analyzeImage(question || 'what is this', imageUrl)
 }
 
 export default { run, meta };
