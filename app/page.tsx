@@ -70,8 +70,6 @@ export default function Chat() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (isLoading) return false;
-
-    console.log(base64File);
     const chatRequestOptions = {
       data: {
         settings: settings as any,
@@ -179,7 +177,7 @@ export default function Chat() {
                 </Box>
               </Box>
 
-              <DebugColumn imageAttached={!!base64File} data={debugData} />
+              <DebugColumn data={debugData} />
             </Box>
           </Box>
         </BaseStyles>

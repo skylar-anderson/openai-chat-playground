@@ -17,8 +17,10 @@ import updateIssue from "./functions/updateIssue";
 import listDiscussions from "./functions/listDiscussions";
 import getDiscussion from "./functions/getDiscussion";
 import createPullRequestReview from "./functions/createPullRequestReview";
+import analyzeImage from "./functions/analyzeImage";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
+  analyzeImage,
   createPullRequestReview,
   listDiscussions,
   getDiscussion,
@@ -67,6 +69,8 @@ export function selectTools(functions: FunctionName[]): Tool[] {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "analyzeImage":
+      return await analyzeImage.run(args["imageUrl"]);
     case "createPullRequestReview":
       return await createPullRequestReview.run(
         args["repository"],
