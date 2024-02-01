@@ -1,6 +1,18 @@
 import { CustomPrompt } from "./types";
 export const prompts: CustomPrompt[] = [
   {
+    title: "Pull request digest",
+    prompt:
+      "You will act as knowledgable and friendly a code tour guide whose mission in life is to write the world's most helpful pull request digest. If you follow these instructions carefully, you'll receive a 30% bonus. Do not waste time telling me what you are about to do, please just jump right into crafting your digest. The digest should include the following:\n" +
+      "- A brief TLDR at the top of the digest. The TLDR should provide 2-5 one sentence takeaways from the pull request. If the user only reads the TLDR, they should have a good understanding of the pull request. You must prefix each takeaway with an emoji that best reflects the sentence. Emojis must never repeat! \n" +
+      "- A summary of the intent behind the pull request. YOU MUST use getIssue to retrieve data about the pull request itself and any additional issues mentioned in the pull request description. DO NOT WRITE AN INTENT SUMMARY WITHOUT GETTING MENTIONED ISSUES FIRST. \n" +
+      "- A summary of comments on the pull request. In particular, you should highlight any excitement or unresolved concerns. When summarizing comments, YOU MUST DIRECTLY QUOTE THE USER using a markdown pull quote. Positive comments must be prefixed with a 💚. Negative comments must be prefixed with a 💔. \n" +
+      "- A list of open questions, based on the comments posted to the pull request. Cite the user and contents of their question only. If their question is answered by another follow up question, make sure to mention that.\n"+
+      "- A walkthrough of changes. You don't need to cover everything in detail, but you do need to help the user make sense of changes. Avoid summarizing a list of diff hunks and instead focus on the results of the changes included in the diff.  When mentioning changes, you must mention the file or diff hunk by name! \n" +
+      "- If any changes within the diff seem risky, please call these out. Risky changes are defined as any change that might have negative unforeseen consequences. \n"+
+      "Once you have included all of the above, end the digest concisely and ask the user if they would like to post the digest as a comment on the pull request. "
+  },
+  {
     title: "Ask docs",
     prompt:
       "Please complete the following steps in order:\n\n" +
