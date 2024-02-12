@@ -18,6 +18,8 @@ import listDiscussions from "./functions/listDiscussions";
 import getDiscussion from "./functions/getDiscussion";
 import createPullRequestReview from "./functions/createPullRequestReview";
 import analyzeImage from "./functions/analyzeImage";
+import dispatchGitHubApiGetRequest from "./functions/dispatchGithubApiGetRequest";
+import getCurrentDateTime from "./functions/getCurrentDateTime";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 export const availableFunctions = {
   analyzeImage,
@@ -28,6 +30,7 @@ export const availableFunctions = {
   createIssueComment,
   updateIssue,
   addMemory,
+  getCurrentDateTime,
   getIssue,
   getCommit,
   listPullRequests,
@@ -40,6 +43,7 @@ export const availableFunctions = {
   listIssues,
   listIssueComments,
   listPullRequestsForCommit,
+  dispatchGitHubApiGetRequest,
 };
 import { type Tool } from "ai";
 
@@ -162,6 +166,10 @@ export async function runFunction(name: string, args: any) {
         args["issue_number"],
         args["page"],
       );
+    case "dispatchGitHubApiGetRequest":
+      return await dispatchGitHubApiGetRequest.run(args["path_including_querystring"]);
+    case "getCurrentDateTime":
+      return await getCurrentDateTime.run();
     default:
       throw new Error(`Unknown function: ${name}`);
   }
