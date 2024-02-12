@@ -1,7 +1,9 @@
 import { Octokit } from "octokit";
 import { Endpoints } from "@octokit/types";
+import { retry } from "@octokit/plugin-retry";
+const OctokitWithPlugins = Octokit.plugin(retry);
 const auth = process.env.GITHUB_PAT;
-const octokit = new Octokit({ auth });
+const octokit = new OctokitWithPlugins({ auth });
 const CREATE_ISSUE_ENDPOINT = "POST /repos/{owner}/{repo}/issues";
 const CREATE_ISSUE_COMMENT_ENDPOINT =
   "POST /repos/{owner}/{repo}/issues/{issue_number}/comments";
