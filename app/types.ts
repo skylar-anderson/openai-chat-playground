@@ -1,7 +1,7 @@
 import { FUNCTION_CALLING_MODELS } from "./models";
 export type Model = (typeof FUNCTION_CALLING_MODELS)[number];
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-
+import { FunctionName } from "./api/chat/functions";
 export type CustomPrompt = {
   title: string;
   prompt: string;
@@ -34,8 +34,8 @@ export enum Provider {
 
 export type SettingsProps = {
   customInstructions: string;
-  tools: string[];
-  model: Model;
-  provider: Provider;
+  tools: FunctionName[];
+  model: string;
   parallelize: boolean;
+  provider: Provider;
 };

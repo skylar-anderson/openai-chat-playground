@@ -1,4 +1,5 @@
 "use client";
+
 import { Box, BaseStyles, ThemeProvider } from "@primer/react";
 import { useChat } from "ai/react";
 import { useState } from "react";
@@ -16,6 +17,7 @@ import { toBase64 } from "./utils/image";
 import CustomPrompts from "./components/CustomPrompts";
 const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
+import { handler } from './action';
 
 export default function Chat() {
   const [settingsVisibility, setSettingsVisibility] =
