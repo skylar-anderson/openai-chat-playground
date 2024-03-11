@@ -153,8 +153,6 @@ async function run(repository: string, pullRequestId: string) {
 
   try {
     const diffContents = await retrieveDiffContents(url);
-    //return "The following files were changed in the pull request: " + changedFiles.join(", ") + ".\n\n" + "Now let's walk through the diff and provide a summary.";
-
     const msg = await anthropic.messages.create({
       model: "claude-3-opus-20240229",
       max_tokens: 2000,
@@ -173,9 +171,9 @@ async function run(repository: string, pullRequestId: string) {
     });
     return msg.content;
   } catch (error) {
-    console.log("Failed to fetch diff content!");
+    console.log("Failed to perform walkthrough!");
     console.log(error);
-    return "An error occured when trying to fetch diff content.";
+    return error
   }
 }
 

@@ -29,7 +29,7 @@ export async function handler(
     data,
     ui({ content, data }) {
       console.log(data[0]);
-      return <div>lol wat{content}</div>;
+      
       if (data?.[0] != null) {
         const value = data[0] as any;
 
