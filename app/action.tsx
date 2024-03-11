@@ -27,9 +27,7 @@ export async function handler(
   console.log("Handler");
   return new experimental_StreamingReactResponse(stream, {
     data,
-    ui({ content, data }) {
-      console.log(data[0]);
-      
+    ui({ content, data }) {      
       if (data?.[0] != null) {
         const value = data[0] as any;
 
@@ -80,7 +78,7 @@ export async function handler(
       return (
         <div>
           <strong>Response!!</strong>
-          {}
+          {content}
         </div>
       );
     },
