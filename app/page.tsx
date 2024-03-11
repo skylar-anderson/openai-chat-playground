@@ -17,7 +17,7 @@ import { toBase64 } from "./utils/image";
 import CustomPrompts from "./components/CustomPrompts";
 const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
-import { handler } from './action';
+import { handler } from "./action";
 
 export default function Chat() {
   const [settingsVisibility, setSettingsVisibility] =
@@ -46,7 +46,7 @@ export default function Chat() {
     tools: tools,
     model: FUNCTION_CALLING_MODELS[0],
     parallelize: true,
-    provider: Provider.OPENAI
+    provider: Provider.OPENAI,
   });
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {

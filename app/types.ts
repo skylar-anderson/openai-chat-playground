@@ -28,8 +28,8 @@ export type MessageData = {
 };
 
 export enum Provider {
-  OPENAI = 'openai',
-  AZURE = 'azure',
+  OPENAI = "openai",
+  AZURE = "azure",
 }
 
 export type SettingsProps = {

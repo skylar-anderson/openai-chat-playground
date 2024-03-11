@@ -24,12 +24,12 @@ export async function handler(
     settings,
     imageUrl,
   );
-    console.log("Handler")
+  console.log("Handler");
   return new experimental_StreamingReactResponse(stream, {
     data,
     ui({ content, data }) {
-      console.log(data[0])
-      return <div>lol wat{content}</div>
+      console.log(data[0]);
+      return <div>lol wat{content}</div>;
       if (data?.[0] != null) {
         const value = data[0] as any;
 
@@ -77,7 +77,12 @@ export async function handler(
         }
       }
 
-      return <div><strong>Response!!</strong>{}</div>;
+      return (
+        <div>
+          <strong>Response!!</strong>
+          {}
+        </div>
+      );
     },
   });
 }

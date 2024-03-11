@@ -22,7 +22,7 @@ export default function DebugColumn({ data }: DebugColumnType) {
         overflowY: "scroll",
         flexDirection: "column",
       }}
-    >       
+    >
       {data && data.length ? (
         data.map((d, i) => {
           if (d.debugType === "function") {
@@ -39,8 +39,8 @@ export default function DebugColumn({ data }: DebugColumnType) {
             Functions, tools, and prompts will appear here.
           </Box>
           <Box sx={{ fontSize: 0, color: "fg.muted" }}>
-            Open settings to change function calling strategy. Tools are run
-            in parallel whereas functions run sequentially.
+            Open settings to change function calling strategy. Tools are run in
+            parallel whereas functions run sequentially.
           </Box>
         </Box>
       )}

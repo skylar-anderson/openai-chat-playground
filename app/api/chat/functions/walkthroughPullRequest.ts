@@ -5,7 +5,6 @@ import Anthropic from "@anthropic-ai/sdk";
 const READ_FILE = "GET /repos/{owner}/{repo}/contents/{path}";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 
-
 const meta: ChatCompletionCreateParams.Function = {
   name: "walkthroughPullRequest",
   description: `Retrieves the diff content for a particular pull request and then walks through the content of the diff to provide a summary and answer questions about the diff. Use this to summarize an entire diff.`,
@@ -27,17 +26,17 @@ const meta: ChatCompletionCreateParams.Function = {
 };
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
+  apiKey: process.env.ANTHROPIC_API_KEY || "",
 });
 
 function extractChangedFiles(diff: string): string[] {
   const changedFiles: string[] = [];
-  const lines = diff.split('\n');
+  const lines = diff.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.startsWith('diff --git')) {
-      const filePath = line.split(' b/')[1];
+    if (line.startsWith("diff --git")) {
+      const filePath = line.split(" b/")[1];
       changedFiles.push(filePath);
     }
   }
@@ -50,7 +49,10 @@ type HydratedFile = {
   path: string;
 };
 
-async function hydrateFile(repository: string, path: string):Promise<null|HydratedFile> {
+async function hydrateFile(
+  repository: string,
+  path: string,
+): Promise<null | HydratedFile> {
   const [owner, repo] = repository.split("/");
   type ContentsResponse = Endpoints[typeof READ_FILE]["response"] | undefined;
   try {
@@ -67,19 +69,24 @@ async function hydrateFile(repository: string, path: string):Promise<null|Hydrat
 
     return {
       // @ts-ignore
-      content: Buffer.from(response.data.content, 'base64').toString('utf8'),
-      path
+      content: Buffer.from(response.data.content, "base64").toString("utf8"),
+      path,
     };
   } catch (error) {
     console.log("Failed to load " + path);
-    return null;  
+    return null;
   }
-
 }
 
-async function generatePrompt(owner:string,repo:string, proposedChanges: string): Promise<string> {
+async function generatePrompt(
+  owner: string,
+  repo: string,
+  proposedChanges: string,
+): Promise<string> {
   const changedFiles = extractChangedFiles(proposedChanges);
-  const files = await Promise.all(changedFiles.map(path => hydrateFile(`${owner}/${repo}`, path))) 
+  const files = await Promise.all(
+    changedFiles.map((path) => hydrateFile(`${owner}/${repo}`, path)),
+  );
 
   return `
 <role>
@@ -121,14 +128,17 @@ Format your feedback as follows:
 </response_format>
 
 <files>
-  ${files.filter(f => f !== null).map(f => (
-    `
+  ${files
+    .filter((f) => f !== null)
+    .map(
+      (f) =>
+        `
     <file>
       <name>${f?.path}</name>
       <contents>${f?.content}</contents>
     </file>
-    `
-  ))}
+    `,
+    )}
   
 </files>
 <proposed_changes>
@@ -144,22 +154,22 @@ async function run(repository: string, pullRequestId: string) {
   try {
     const diffContents = await retrieveDiffContents(url);
     //return "The following files were changed in the pull request: " + changedFiles.join(", ") + ".\n\n" + "Now let's walk through the diff and provide a summary.";
-    
+
     const msg = await anthropic.messages.create({
       model: "claude-3-opus-20240229",
       max_tokens: 2000,
-      temperature: .7,
+      temperature: 0.7,
       messages: [
         {
-          "role": "user",
-          "content": [
+          role: "user",
+          content: [
             {
-              "type": "text",
-              "text": await generatePrompt(owner, repo, diffContents)
-            }
-          ]
+              type: "text",
+              text: await generatePrompt(owner, repo, diffContents),
+            },
+          ],
         },
-      ]
+      ],
     });
     return msg.content;
   } catch (error) {

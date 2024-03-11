@@ -1,4 +1,4 @@
-import {StreamingTextResponse } from "ai";
+import { StreamingTextResponse } from "ai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 import { SettingsProps } from "../../types";
 import { createOpenAIStream } from "@/app/openai-stream";
@@ -17,7 +17,11 @@ export async function POST(req: Request) {
     data: { imageUrl, settings },
   } = body;
 
-  const { stream, data } = await createOpenAIStream(messages, settings, imageUrl);
+  const { stream, data } = await createOpenAIStream(
+    messages,
+    settings,
+    imageUrl,
+  );
 
   return new StreamingTextResponse(stream, {}, data);
 }

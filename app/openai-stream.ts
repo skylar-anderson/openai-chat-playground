@@ -6,7 +6,13 @@ import {
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-import { SettingsProps, MessageData, FunctionData, CompletionData, Provider } from "@/app/types";
+import {
+  SettingsProps,
+  MessageData,
+  FunctionData,
+  CompletionData,
+  Provider,
+} from "@/app/types";
 import {
   runFunction,
   selectTools,
@@ -26,11 +32,11 @@ export function getOpenaiClient(provider: Provider): OpenAI {
     apiKey: process.env.AZURE_API_KEY,
     baseURL: process.env.AZURE_MODEL_BASE_URL,
     defaultHeaders: {
-      'ocp-apim-subscription-key': process.env.AZURE_API_KEY,
-      'api-key': process.env.AZURE_API_KEY,
-      'Openai-Internal-HarmonyVersion': 'harmony_v3',
-      'Openai-Internal-Experimental-AllowToolUse': 'true'
-    }
+      "ocp-apim-subscription-key": process.env.AZURE_API_KEY,
+      "api-key": process.env.AZURE_API_KEY,
+      "Openai-Internal-HarmonyVersion": "harmony_v3",
+      "Openai-Internal-Experimental-AllowToolUse": "true",
+    },
   });
 
   return provider === Provider.AZURE ? azureOpenaiClient : openaiClient;
@@ -42,7 +48,9 @@ export function signatureFromArgs(args: Record<string, unknown>) {
     .join(", ");
 }
 
-export async function getSystemMessage(customInstructions: string): Promise<ChatCompletionMessageParam> {
+export async function getSystemMessage(
+  customInstructions: string,
+): Promise<ChatCompletionMessageParam> {
   const instructions = `You are a helpful coding assistant that assists users with coding questions.
 
   * You have been provided a number of functions that load data from GitHub.com. 
@@ -56,7 +64,11 @@ export async function getSystemMessage(customInstructions: string): Promise<Chat
   * If the user is confused, be proactive about offering suggestions based on your capabilities.
   When you speak to users, you have the ability to record memories about the person and their preferences. Here are the memories you have previously recorded for the current user. Use these memories to improve the users experience:
   ${/*await getMemory()*/ ""}
-  ${customInstructions ? ` The user has provided the following additional instructions:${customInstructions}` : ``}`;
+  ${
+    customInstructions
+      ? ` The user has provided the following additional instructions:${customInstructions}`
+      : ``
+  }`;
 
   return {
     content: instructions,
@@ -64,18 +76,25 @@ export async function getSystemMessage(customInstructions: string): Promise<Chat
   };
 }
 
-export function extractFunctionsOrTools(settings: SettingsProps, imageUrl?: string) {
+export function extractFunctionsOrTools(
+  settings: SettingsProps,
+  imageUrl?: string,
+) {
   const isAzure = settings.provider === Provider.AZURE;
   const tools = selectTools(settings.tools);
   const functions = selectFunctions(settings.tools);
   const shouldUseTools = !isAzure && !imageUrl && settings.parallelize;
-  return shouldUseTools ? {
-    tools,
-    tool_choice: imageUrl ? { type: 'function', function: { name: 'analyzeImage'} } : 'auto'
-  } : {
-    functions,
-    function_call: imageUrl ? { name: 'analyzeImage' } : undefined
-  }
+  return shouldUseTools
+    ? {
+        tools,
+        tool_choice: imageUrl
+          ? { type: "function", function: { name: "analyzeImage" } }
+          : "auto",
+      }
+    : {
+        functions,
+        function_call: imageUrl ? { name: "analyzeImage" } : undefined,
+      };
 }
 
 export async function handleToolCall(
@@ -86,7 +105,7 @@ export async function handleToolCall(
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
   openai: OpenAI,
-  imageUrl?: string
+  imageUrl?: string,
 ) {
   const promises = call.tools.map(async (tool) => {
     const { name, arguments: args } = tool.func;
@@ -94,7 +113,7 @@ export async function handleToolCall(
 
     if (name === "analyzeImage" && imageUrl) {
       const mostRecentMessage = messages[messages.length - 1];
-      const content = mostRecentMessage.content || 'What is this image?';
+      const content = mostRecentMessage.content || "What is this image?";
       result = analyzeImage.run(content.toString(), imageUrl);
     } else {
       result = runFunction(tool.func.name, args);
@@ -161,16 +180,16 @@ export async function handleFunctionCall(
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
   openai: OpenAI,
-  imageUrl?: string
+  imageUrl?: string,
 ) {
   const startTime = Date.now();
   const signature = `${name}(${signatureFromArgs(args)})`;
 
   let result;
-    
+
   if (name === "analyzeImage" && imageUrl) {
     const mostRecentMessage = messages[messages.length - 1];
-    const content = mostRecentMessage.content || 'What is this image?';
+    const content = mostRecentMessage.content || "What is this image?";
     result = await analyzeImage.run(content.toString(), imageUrl);
   } else {
     result = await runFunction(name, args);
@@ -218,7 +237,7 @@ export async function handleFunctionCall(
 export async function createOpenAIStream(
   messages: ChatCompletionMessageParam[],
   settings: SettingsProps,
-  imageUrl?: string
+  imageUrl?: string,
 ) {
   const data = new experimental_StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
@@ -247,12 +266,30 @@ export async function createOpenAIStream(
   const stream = OpenAIStream(response, {
     experimental_onToolCall: toolChoices.tools
       ? (call, appendToolCallMessage) =>
-          handleToolCall(call, appendToolCallMessage, data, messages, settings, systemMessage, openai, imageUrl)
+          handleToolCall(
+            call,
+            appendToolCallMessage,
+            data,
+            messages,
+            settings,
+            systemMessage,
+            openai,
+            imageUrl,
+          )
       : undefined,
 
     experimental_onFunctionCall: toolChoices.functions
       ? (params, createFunctionCallMessages) =>
-          handleFunctionCall(params, createFunctionCallMessages, data, messages, settings, systemMessage, openai, imageUrl)
+          handleFunctionCall(
+            params,
+            createFunctionCallMessages,
+            data,
+            messages,
+            settings,
+            systemMessage,
+            openai,
+            imageUrl,
+          )
       : undefined,
     onCompletion(completion) {
       const completionDebug: CompletionData = {
