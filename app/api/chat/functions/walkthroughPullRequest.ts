@@ -114,7 +114,7 @@ Format your feedback as follows:
   <maintainability_review>
     •Readability: $readability_score/5
     •Modularity: $modularity_score/5
-    •Extensibility: $extensibility_score/5
+    •Extensibility: $extensibility_score/5*
     •Suggestions: $maintainability_suggestions
   </maintainability_review>
 
