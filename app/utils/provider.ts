@@ -7,4 +7,4 @@ export const presentProvider = (provider: Provider): string => {
     case Provider.AZURE:
       return "Azure OpenAI";
   }
-}
+};

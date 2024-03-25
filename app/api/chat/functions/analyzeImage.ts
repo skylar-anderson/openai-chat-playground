@@ -1,4 +1,4 @@
-import type { ChatCompletionCreateParams} from "openai/resources/chat";
+import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import OpenAI from "openai";
 
 const meta: ChatCompletionCreateParams.Function = {
@@ -13,17 +13,11 @@ const meta: ChatCompletionCreateParams.Function = {
           "Required. What do you want to know about the image? You can ask specific questions or for a general description. Use the user's questionining to help you determine an answer",
       },
     },
-    required: [
-      "question"
-    ],
+    required: ["question"],
   },
 };
 
-async function analyzeImage(
-  question: string,
-  imageUrl: string,
-) {
-
+async function analyzeImage(question: string, imageUrl: string) {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -35,7 +29,10 @@ async function analyzeImage(
       {
         role: "user",
         content: [
-          { type: "text", text: `Review the attached image and response with a detailed description of the image.  Ensure that you provide enough detail and clarity that the following question about the image can be answered: ${question}` },
+          {
+            type: "text",
+            text: `Review the attached image and response with a detailed description of the image.  Ensure that you provide enough detail and clarity that the following question about the image can be answered: ${question}`,
+          },
           {
             type: "image_url",
             image_url: imageUrl,
@@ -48,12 +45,15 @@ async function analyzeImage(
   return response.choices[0].message.content;
 }
 
-async function run(question:string, imageUrl?:string) {
-  if(!imageUrl) {
-    return 'Error! No image was provided.'
+async function run(question: string, imageUrl?: string) {
+  if (!imageUrl) {
+    return "Error! No image was provided.";
   }
 
-  return analyzeImage(question || 'Describe what is captured by this image.', imageUrl)
+  return analyzeImage(
+    question || "Describe what is captured by this image.",
+    imageUrl,
+  );
 }
 
 export default { run, meta };

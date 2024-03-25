@@ -71,9 +71,15 @@ export default function TitleBar({
           flex: 1,
         }}
       >
-        Chatting with {presentProvider(currentSettings.provider)} {currentSettings.provider === Provider.OPENAI && `(${currentSettings.model})`} using{" "}
-        {currentSettings.tools.length}{" "}
-        {pluralize(currentSettings.parallelize ? "tool" : "function", currentSettings.tools.length)}.
+        Chatting with {presentProvider(currentSettings.provider)}{" "}
+        {currentSettings.provider === Provider.OPENAI &&
+          `(${currentSettings.model})`}{" "}
+        using {currentSettings.tools.length}{" "}
+        {pluralize(
+          currentSettings.parallelize ? "tool" : "function",
+          currentSettings.tools.length,
+        )}
+        .
       </Box>
       <Button onClick={onClear} leadingVisual={SyncIcon}>
         Clear

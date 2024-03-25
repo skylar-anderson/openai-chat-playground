@@ -105,7 +105,6 @@ export default function SettingsForm({
     [onSubmit],
   );
 
-
   return (
     <Box
       sx={{
@@ -187,7 +186,9 @@ export default function SettingsForm({
           </Box>
           <Box pt={3}>
             <RadioGroup name="fcStrategy">
-              <RadioGroup.Label>Function calling strategy (OpenAI only)</RadioGroup.Label>
+              <RadioGroup.Label>
+                Function calling strategy (OpenAI only)
+              </RadioGroup.Label>
               <CheckboxGroup.Caption>
                 Select whether a serial or parallel function calling strategy is
                 used. Parallel is not always better...or faster.
