@@ -71,7 +71,7 @@ async function run(
     repository,
     body,
     pullNumber,
-    event: 'COMMENT', //hard coded for now because you can only comment your own PR and I am using my own PAT
+    event: "COMMENT", //hard coded for now because you can only comment your own PR and I am using my own PAT
     comments,
   });
 }

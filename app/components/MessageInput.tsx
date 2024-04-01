@@ -118,7 +118,7 @@ export default function MessageInput({
         onSubmit={onSubmit}
         sx={{
           display: "flex",
-          position: 'relative',
+          position: "relative",
           gap: 2,
         }}
       >
@@ -132,37 +132,40 @@ export default function MessageInput({
           autoFocus={true}
           onChange={onInputChange}
           onKeyDown={(e) => {
-            console.log(e.key)
-            if (e.key === 'Escape') {
+            console.log(e.key);
+            if (e.key === "Escape") {
               e.preventDefault();
               if (isLoading) onStop();
-            } else if (e.key === 'Enter' && (e.ctrlKey || e.shiftKey)) {
+            } else if (e.key === "Enter" && (e.ctrlKey || e.shiftKey)) {
               e.preventDefault();
               const target = e.target as HTMLTextAreaElement;
               const value = target.value;
               const start = target.selectionStart;
               const end = target.selectionEnd;
-              target.value = value.slice(0, start) + '\n' + value.slice(end);
+              target.value = value.slice(0, start) + "\n" + value.slice(end);
               target.selectionStart = target.selectionEnd = start + 1;
-            } else if (e.key === 'Enter') {
+            } else if (e.key === "Enter") {
               e.preventDefault();
               if (!isLoading) formRef.current?.requestSubmit();
             }
           }}
         />
 
-        { isLoading ? (
+        {isLoading ? (
           <>
-          <Spinner size="small" sx={{ position: 'absolute', right: '64px', top: '12px' }} />
-          <IconButton
-            icon={StopIcon}
-            aria-label="Default"
-            size="large"
-            onClick={onStop}
-            sx={{ flexShrink: 0 }}
-          >
-            Stop generating
-          </IconButton>
+            <Spinner
+              size="small"
+              sx={{ position: "absolute", right: "64px", top: "12px" }}
+            />
+            <IconButton
+              icon={StopIcon}
+              aria-label="Default"
+              size="large"
+              onClick={onStop}
+              sx={{ flexShrink: 0 }}
+            >
+              Stop generating
+            </IconButton>
           </>
         ) : (
           <IconButton

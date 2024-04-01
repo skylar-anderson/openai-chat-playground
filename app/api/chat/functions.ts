@@ -19,7 +19,9 @@ import getDiscussion from "./functions/getDiscussion";
 import createPullRequestReview from "./functions/createPullRequestReview";
 import analyzeImage from "./functions/analyzeImage";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
+import walkthroughPullRequest from "./functions/walkthroughPullRequest";
 export const availableFunctions = {
+  walkthroughPullRequest,
   analyzeImage,
   createPullRequestReview,
   listDiscussions,
@@ -61,6 +63,7 @@ export function selectTools(functions: FunctionName[]): Tool[] {
   let tools = [] as Tool[];
   functions.forEach((name) => {
     if (availableFunctions[name]) {
+      // @ts-ignore
       tools.push({ type: "function", function: availableFunctions[name].meta });
     }
   });
@@ -69,6 +72,11 @@ export function selectTools(functions: FunctionName[]): Tool[] {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
+    case "walkthroughPullRequest":
+      return await walkthroughPullRequest.run(
+        args["repository"],
+        args["pullRequestId"],
+      );
     case "analyzeImage":
       return await analyzeImage.run(args["imageUrl"]);
     case "createPullRequestReview":
