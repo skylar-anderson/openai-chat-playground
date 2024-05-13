@@ -1,4 +1,4 @@
-import { Box } from "@primer/react";
+import { Octicon, Box } from "@primer/react";
 import { PaperAirplaneIcon } from "@primer/octicons-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -62,7 +62,7 @@ export function SuggestedPrompt({
     >
       {children}
       <Box sx={{}}>
-        <PaperAirplaneIcon />
+        <Octicon icon={PaperAirplaneIcon} />
       </Box>
     </Box>
   );

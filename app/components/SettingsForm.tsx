@@ -89,7 +89,7 @@ export default function SettingsForm({
       const customInstructions = (
         data.get("customInstructions") as string
       ).trim();
-      const tools = data.getAll("tools[]") as string[];
+      const tools = data.getAll("tools[]") as FunctionName[];
       const model = data.get("model") as Model;
       const provider = data.get("provider") as Provider;
       const parallelize = data.get("fcStrategy") === "parallel";
@@ -223,7 +223,7 @@ export default function SettingsForm({
                     .meta as ChatCompletionCreateParams.Function;
                   return (
                     <ToolOption
-                      checked={initialValues.tools.includes(tool.name)}
+                      checked={initialValues.tools.includes(tool.name as FunctionName)}
                       tool={tool}
                     />
                   );

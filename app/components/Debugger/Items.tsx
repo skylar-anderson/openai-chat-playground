@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TriangleDownIcon, TriangleRightIcon } from "@primer/octicons-react";
-import { Box } from "@primer/react";
+import { Octicon, Box } from "@primer/react";
 
 const itemStyles = {
   background: "none",
@@ -41,7 +41,7 @@ export function DebugItem({
           ...itemStyles,
         }}
       >
-        {isOpen ? <TriangleDownIcon /> : <TriangleRightIcon />}
+        {isOpen ? <Octicon icon={TriangleDownIcon} /> : <Octicon icon={TriangleRightIcon} />}
 
         <Box sx={{ textAlign: "left", flexGrow: "1", lineHeight: "16px" }}>
           {title}
@@ -75,7 +75,7 @@ export function DebugSubItem({
       px={2}
     >
       <Box onClick={() => setIsOpen(!isOpen)} as="button" sx={itemStyles}>
-        {isOpen ? <TriangleDownIcon /> : <TriangleRightIcon />}
+        {isOpen ? <Octicon icon={TriangleDownIcon} /> : <Octicon icon={TriangleRightIcon} />}
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>{title}</Box>
       </Box>
       {isOpen ? children : null}
