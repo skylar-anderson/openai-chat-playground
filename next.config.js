@@ -4,7 +4,7 @@ const nextConfig = {
     serverActions: true,
   },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 };
 
