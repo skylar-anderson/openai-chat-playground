@@ -19,9 +19,7 @@ import getDiscussion from "./functions/getDiscussion";
 import createPullRequestReview from "./functions/createPullRequestReview";
 import analyzeImage from "./functions/analyzeImage";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
-import walkthroughPullRequest from "./functions/walkthroughPullRequest";
 export const availableFunctions = {
-  walkthroughPullRequest,
   analyzeImage,
   createPullRequestReview,
   listDiscussions,
