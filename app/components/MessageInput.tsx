@@ -132,7 +132,6 @@ export default function MessageInput({
           autoFocus={true}
           onChange={onInputChange}
           onKeyDown={(e) => {
-            console.log(e.key);
             if (e.key === "Escape") {
               e.preventDefault();
               if (isLoading) onStop();

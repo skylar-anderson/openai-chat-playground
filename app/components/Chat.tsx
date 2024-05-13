@@ -14,7 +14,6 @@ import Intro from "./Intro";
 import TitleBar, { Visibility } from "./TitleBar";
 import DebugColumn from "./Debugger/Column";
 import { toBase64 } from "../utils/image";
-import CustomPrompts from "./CustomPrompts";
 
 const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
@@ -37,7 +36,7 @@ export default function Chat({handler}:any) {
     append,
     setMessages,
     stop,
-  } = useChat({ id: chatIndex.toString(), api:handler });
+  } = useChat({ id: chatIndex.toString(), api:'/api/chat' });
 
   const debugData = data as unknown as FunctionData[];
 
