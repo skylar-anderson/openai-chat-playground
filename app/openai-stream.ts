@@ -20,7 +20,6 @@ import {
   FunctionName,
   availableFunctions,
 } from "@/app/api/chat/functions";
-import { getMemory } from "@/app/utils/github";
 import analyzeImage from "@/app/api/chat/functions/analyzeImage";
 
 export function getOpenaiClient(provider: Provider): OpenAI {
