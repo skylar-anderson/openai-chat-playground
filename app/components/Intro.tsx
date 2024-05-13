@@ -17,14 +17,13 @@ This is a prototype of OpenAI function calling with GPT 4 Turbo. [The code behin
 ### Try it`;
 
 const examples = [
-  `what are you?`,
-  `summarize the last 3 changes to vercel/ai`,
-  `search for all important files related to the Dialog component on primer/react, then retrieve the last commit for each file, then summarize the diff associated with that commit`,
-  `summarize comments on the last 3 pull requests to primer/react`,
-  `search hackernews and summarize sentiment for vercel and their role in AI development. Then look at the first 3 pages of issues in verce/ai and help me prioritize 3 new milestones.`,
-  `In as much detail as possible, summarize the intent behind pr #4035 in primer/react. If possible, use any related issues to find the answer.`,
-  `help me select a good first issue with primer/react
-  then, use code search to find the most relevant files related to this issue. Then, write 3 suggestions for how I should get started on this issue. Be specific and use code examples.`,
+  `How can you help me use GitHub?`,
+  `Summarize the last 3 changes to vercel/ai`,
+  `Search for all important files related to the Dialog component on primer/react, then retrieve the last commit for each file, then summarize the diff associated with that commit`,
+  `Summarize comments on the last 3 pull requests to primer/react`,
+  `Search hackernews and summarize sentiment for vercel and their role in AI development. Then look at the first 3 pages of issues in verce/ai and help me prioritize 3 new milestones.`,
+  `Summarize the intent behind pr #4035 in primer/react. If the PR mentions any related issues, fetch those issues to inform your answer.`,
+  `Find the most recent issue in primer/react, then use code search to suggest files related to that issue, then suggest changes to those files that help me get started with the issue you selected.`,
 ];
 
 type Props = {

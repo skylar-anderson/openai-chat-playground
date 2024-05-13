@@ -18,7 +18,7 @@ import { toBase64 } from "../utils/image";
 const defaultInstructions = ``;
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
-export default function Chat({handler}:any) {
+export default function Chat() {
   const [settingsVisibility, setSettingsVisibility] =
     useState<Visibility>("hidden");
   const [file, setFile] = useState<File | null>(null);
