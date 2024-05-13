@@ -88,7 +88,7 @@ export default function Chat({handler}:any) {
         settings: settings as any,
       },
     };
-    append({ role: "system", content: message }, chatRequestOptions);
+    append({ role: "user", content: message }, chatRequestOptions);
   }
 
   return (
@@ -131,15 +131,6 @@ export default function Chat({handler}:any) {
             onSubmit={onSettingsChange}
           />
         )}
-        <Box
-          sx={{
-            width: "320px",
-            borderRight: "1px solid",
-            borderColor: "border.default",
-          }}
-        >
-          <CustomPrompts appendMessage={appendMessage} />
-        </Box>
         <Box
           sx={{
             height: "100%",
