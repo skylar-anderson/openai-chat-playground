@@ -70,11 +70,6 @@ export function selectTools(functions: FunctionName[]): Tool[] {
 
 export async function runFunction(name: string, args: any) {
   switch (name) {
-    case "walkthroughPullRequest":
-      return await walkthroughPullRequest.run(
-        args["repository"],
-        args["pullRequestId"],
-      );
     case "analyzeImage":
       return await analyzeImage.run(args["imageUrl"]);
     case "createPullRequestReview":
