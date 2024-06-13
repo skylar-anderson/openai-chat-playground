@@ -84,7 +84,7 @@ export async function createPrimaryColumn(primaryQuery:string):Promise<Successfu
     const args = JSON.parse(toolCall.function.arguments);
 
     const toolResult = await runFunction(toolCall.function.name, args);
-    let column = (Array.isArray(toolResult) ? toolResult : [toolResult]).map(convertResultToPrimaryCell);
+    let column = (Array.isArray(toolResult) ? toolResult : [toolResult]).map(convertResultToPrimaryCell).slice(0,3);
     const grid = {
       title: primaryQuery,
       columns: [],
@@ -112,7 +112,6 @@ export async function addColumn(primaryQuery:string, currentGridState:GridState)
 //   \
 //   `
 // }
-
 
 type HydrateResponse = {
   promise: Promise<GridCell>
@@ -151,6 +150,9 @@ export async function hydrateCell(cell:GridCell):Promise<HydrateResponse> {
     const responseMessage = response.choices[0].message;
     return { ...cell, state: 'done', displayValue: responseMessage.content || 'Something went wrong' };
   }
+
+  // pause to prevent rate limiting
+  await new Promise(resolve => setTimeout(resolve, 200)); 
 
   // https://www.youtube.com/watch?v=CDZg3maL9q0
   // this is a hack to allow this action to be called in parallel. Otherwise, each call would be sequential

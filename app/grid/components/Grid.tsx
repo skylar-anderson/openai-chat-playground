@@ -27,6 +27,29 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
     setSelectedIndex(index);
   }
 
+  function updateCellState(columnKey:string, cellIndex:number, newCellContents:GridCell) {
+    setGridState((prevState) => {
+      if (prevState === null) { return null }
+      return {
+        ...prevState,
+        columns: prevState.columns.map(column => {
+          if (column.key === columnKey) {
+            return {
+              ...column,
+              cells: column.cells.map((c, i) => {
+                if (i === cellIndex) {
+                  return newCellContents;
+                }
+                return c;
+              })
+            }
+          }
+          return column;
+        })
+      }
+    });
+  }
+
   function addNewColumnHandler(title:string) {
     if (!gridState) {
       alert("Cant add column without grid state!");
@@ -35,11 +58,30 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
 
     const newColumn:GridCol = {
       key: title,
-      cells: gridState.primaryColumn.map(primaryCell => ({ state: 'empty', key: title, displayValue: 'loading...', context: primaryCell.context, primaryColumnType: 'issue' }))
+      cells: gridState.primaryColumn.map(primaryCell => {
+        const staticValue = primaryCell.context[title];
+        const emptyCellState:GridCell = {
+          state: staticValue ? 'done' : 'empty',
+          displayValue: staticValue || '',
+          key: title,
+          context: primaryCell.context,
+          primaryColumnType: 'issue',
+        }
+
+        return emptyCellState;
+      })
     }
+
     setGridState({
       ...gridState,
       columns: [...gridState.columns, newColumn]
+    });
+
+    newColumn.cells.forEach((cell, cellIndex) => {
+      if (cell.state !== 'empty') { return; }
+      hydrateCell(cell).then(c => c.promise).then(hydratedCell => {
+        updateCellState(title, cellIndex, hydratedCell)
+      });
     });
   }
 
@@ -67,7 +109,7 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
           <GridTable
             grid={gridState}
             addNewColumn={addNewColumnHandler}
-            hydrateCell={hydrateCell}
+            selectedIndex={selectedIndex}
             selectRow={selectRow}
           />
           {selectedIndex ? <SelectedContext grid={gridState} index={selectedIndex} /> : null}
