@@ -1,11 +1,24 @@
 .selected-context {
-  width: 480px;
+  width: 640px;
   border-right: 1px solid var(--border-color);
   height: 100vh; 
 }
 
+.next-prev {
+  height: 28px;
+  width: 28px;
+}
+
+
+.header-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-right: 8px;
+}
+
 .header {
-  padding: 8px 16px;
+  padding: 8px;
   font-weight: 600;
   border-bottom: 1px solid var(--border-color);
   height: 29px;
@@ -53,3 +66,12 @@
   word-wrap: break-word;
 }
 
+.sources {
+  color: var(--fg-subtle);
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.selected-context-section {
+  margin-bottom: 32px;
+}

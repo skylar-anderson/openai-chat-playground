@@ -28,8 +28,8 @@ export default function SelectedContext({ index, grid, selectRow }:Props) {
     <div className="selected-context">
       <div className="header">
         <div className="header-nav">
-          <button className="button" onClick={previousRow}>↑</button>
-          <button className="button" onClick={nextRow}>↓</button>
+          <button className="button next-prev" onClick={previousRow}>↑</button>
+          <button className="button next-prev" onClick={nextRow}>↓</button>
         </div>
         <div className="header-title">
           {primaryCell.displayValue}
@@ -42,6 +42,9 @@ export default function SelectedContext({ index, grid, selectRow }:Props) {
           <div className="selected-context-section" key={`context-${i}`}>
             <h3 className="section-title">{c.key}</h3>
             <p className="display-value">{c.cells[index].displayValue}</p>
+            {c.cells[index].hydrationSources.length > 0 && (
+              <div className="sources">Used {c.cells[index].hydrationSources.join(', ')}</div>
+            )}
           </div>
         ))}
 

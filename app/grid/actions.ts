@@ -1,14 +1,25 @@
 "use server"
-import OpenAI from "openai";
+import OpenAI, { } from "openai";
+import {
+  JSONValue,
+  OpenAIStream,
+  StreamingTextResponse,
+  ToolCallPayload,
+  experimental_StreamData,
+  Tool
+} from "ai";
 type PrimaryDataType = 'issue' | 'commit';
 type GridCellState = 'empty' | 'generating' | 'done';
+
 export type GridCell = {
   state: GridCellState,
   key: string;
   displayValue: string,
   context: any,
-  primaryColumnType: PrimaryDataType
+  primaryColumnType: PrimaryDataType,
+  hydrationSources: string[]
 }
+
 export type GridCol = {
   key: string;
   cells: GridCell[];
@@ -31,13 +42,6 @@ export type ActionResponse = {
   grid: GridState;
 };
 
-import { runFunction, availableFunctions, FunctionName } from "../api/chat/functions";
-
-const MODEL = 'gpt-4o';
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export type SuccessfulPrimaryColumnResponse = {
   success: true;
   grid: GridState;
@@ -56,6 +60,23 @@ function convertResultToPrimaryCell(result:any):GridPrimaryCell {
   }
 }
 
+function signatureFromArgs(args: Record<string, unknown>) {
+  return Object.entries(args)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(", ");
+}
+
+import { runFunction, availableFunctions, FunctionName } from "../api/chat/functions";
+
+const MODEL = 'gpt-4o';
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const tools:Tool[] = Object.keys(availableFunctions).map((f) => {
+  return { type: 'function', function: availableFunctions[f as FunctionName].meta } as Tool
+})
+
 export async function createPrimaryColumn(primaryQuery:string):Promise<SuccessfulPrimaryColumnResponse|ErrorResponse> {  
   const SYSTEM = `\
   You have access to a number of tools that allow you to retrieve context from GitHub.com.\
@@ -71,9 +92,7 @@ export async function createPrimaryColumn(primaryQuery:string):Promise<Successfu
       { role: 'system', content: SYSTEM },
       { role: 'user', content: primaryQuery }
     ],
-    tools: Object.keys(availableFunctions).map((f) => {
-      return { type: 'function', function: availableFunctions[f as FunctionName].meta }
-    }),
+    tools,
     tool_choice: "auto",
   });
 
@@ -128,27 +147,58 @@ export async function hydrateCell(cell:GridCell):Promise<HydrateResponse> {
   The user interface is not a conversational chat interface, so you should avoid introductions, goodbyes, or any other pleasentries. It's critical that you provide the answer as concisely as possible.
 
   Mardown rendering is not supported, so you should avoid using markdown in your responses.\
-  `
+`
 
   async function hydrate():Promise<GridCell> {
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      stream: false,
-      messages: [
-        { role: 'system', content: SYSTEM },
-        { role: 'user', content: `
-          Context: ${JSON.stringify(cell.context)}
-          Query: ${cell.key}
-        ` }
-      ],
-      tools: Object.keys(availableFunctions).map((f) => {
-        return { type: 'function', function: availableFunctions[f as FunctionName].meta }
-      }),
-      tool_choice: "auto",
-    });
-  
-    const responseMessage = response.choices[0].message;
-    return { ...cell, state: 'done', displayValue: responseMessage.content || 'Something went wrong' };
+    let hydrationSources:string[] = [];
+    let context:OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      { role: 'system', content: SYSTEM },
+      { role: 'user', content: `
+        Context: ${JSON.stringify(cell.context)}
+        Query: ${cell.key}
+      ` }
+    ];
+    
+    async function run() {
+      const response = await openai.chat.completions.create({
+        model: MODEL,
+        stream: false,
+        messages:context,
+        tools,
+        tool_choice: "auto",
+      });
+      const responseChoice = response.choices[0];
+      const toolCalls = responseChoice.message.tool_calls;
+
+      context.push(responseChoice.message)
+
+      if (toolCalls?.length) {
+        const toolCall = toolCalls[0];
+        const args = JSON.parse(toolCall.function.arguments);
+        const toolResult = await runFunction(toolCall.function.name, args);
+        const signature = `${toolCall.function.name}(${signatureFromArgs(args)})`;
+        hydrationSources.push(signature);
+        context.push({
+          role: "tool",
+          content: JSON.stringify(toolResult),
+          tool_call_id: toolCall.id
+        });
+
+        return run()
+      }
+
+    }
+
+    await run();
+
+    const assistantResponse = context[context.length - 1].content as string;
+
+    return {
+      ...cell,
+      state: "done",
+      hydrationSources,
+      displayValue: assistantResponse
+    }
   }
 
   // pause to prevent rate limiting
