@@ -1,0 +1,5 @@
+.selected-context {
+  width: 480px;
+  border-right: 1px solid var(--border-color);
+  height: 100vh; 
+}

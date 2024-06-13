@@ -66,6 +66,7 @@ async function run(
       committer_email: commit.commit.committer?.email,
       author_date: commit.commit.author?.date,
       sha: commit.sha,
+      value: `${commit.sha.substring(0,7)} - ${commit.commit.message.split("\n")[0]}`,
     }));
   } catch (error) {
     console.log("Failed to fetch commits!");

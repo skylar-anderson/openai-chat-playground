@@ -45,6 +45,7 @@ async function run(repository: string, commit_sha: string) {
       author_handle: pullRequest.user?.login,
       author_avatar: pullRequest.user?.avatar_url,
       author_email: pullRequest.user?.email,
+      value: `${pullRequest.title} (#${pullRequest.number})`
     }));
   } catch (error) {
     console.error("Failed to fetch pull requests!");

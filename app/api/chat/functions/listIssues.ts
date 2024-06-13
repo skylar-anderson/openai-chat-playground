@@ -79,6 +79,7 @@ async function run(
       body: data.body,
       number: data.number,
       url: data.html_url,
+      value: `${data.title} (#${data.number})`
     }));
   } catch (e) {
     console.log("Failed to fetch issues!");
