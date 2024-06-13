@@ -112,7 +112,7 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
             selectedIndex={selectedIndex}
             selectRow={selectRow}
           />
-          {selectedIndex ? <SelectedContext grid={gridState} index={selectedIndex} /> : null}
+          {selectedIndex ? <SelectedContext grid={gridState} index={selectedIndex} selectRow={selectRow} /> : null}
         </div>
       ) : (
         <div>

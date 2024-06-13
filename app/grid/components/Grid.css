@@ -6,6 +6,7 @@
   --fg-subtle: #858585;
   --bg-primary: #fff;
   --bg-subtle: #f0f0f0;
+  --bg-hover: #e0e0e0;
   --cell-width: 320px;
   --cell-height: 106px;
   --text-sm: 12px;
@@ -20,22 +21,6 @@
   flex-direction: row;
   width: 100vw;
   height: 100vh;
-}
-
-.button {
-  border: 1px solid var(--input-border);
-  height: 28px;
-  padding: 0 6px;
-  background: #f0f0f0;
-  border-radius: var(--rounded-md);
-  font-weight:500;
-  font-size: 13px;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.button:hover {
-  background: #e0e0e0;
 }
 
 .input {
@@ -89,15 +74,13 @@ button {
 .grid {
   border: 1px solid var(--border-color);
   flex: 1;
+  overflow-x: scroll;
 }
 
 .grid-columns {
   flex-direction: row;
   display: flex;
-  width: 100%;
-  /* height: calc(100vh - 45px); */
-  overflow: scroll;
-
+  width: fit-content;
 }
 
 .grid-title {
@@ -112,7 +95,6 @@ button {
 .grid-col {
   flex-direction: column;
   display: flex;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .grid-cell.grid-cell--header {
@@ -130,6 +112,7 @@ button {
 }
 
 .grid-cell {
+  word-wrap: break-word;
   display: flex;
   flex-shrink: 0;
   overflow-y: scroll;
@@ -137,7 +120,7 @@ button {
   position: relative;
   padding: 16px;
   box-sizing: border-box;
-  width: var(--cell-width);
+  min-width: var(--cell-width);
   height: var(--cell-height);
   border-right: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
@@ -175,7 +158,7 @@ button {
 }
 
 .grid-col--primary .grid-cell:hover {
-  background: var(--bg-subtle);
+  background: var(--bg-hover);
 }
 
 .grid-cell--selected {
