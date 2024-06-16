@@ -20,7 +20,7 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [selectedIndex, setSelectedIndex] = useState<number|null>(null);
 
-  function selectRow(index:number) {
+  function selectRow(index:number|null) {
     if (!gridState) {
       alert("Cant select column without grid state!");
       return;

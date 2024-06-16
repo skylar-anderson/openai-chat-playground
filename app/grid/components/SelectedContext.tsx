@@ -6,7 +6,7 @@ import './Button.css';
 type Props = {
   index: number;
   grid: GridState;
-  selectRow: (n:number) => void;
+  selectRow: (n:number|null) => void;
 }
 
 export default function SelectedContext({ index, grid, selectRow }:Props) {
@@ -34,7 +34,7 @@ export default function SelectedContext({ index, grid, selectRow }:Props) {
         <div className="header-title">
           {primaryCell.displayValue}
         </div>
-        <button className="header-close">Close</button>
+        <button className="header-close" onClick={() => selectRow(null)}>Close</button>
       </div>
 
       <div className="body">
