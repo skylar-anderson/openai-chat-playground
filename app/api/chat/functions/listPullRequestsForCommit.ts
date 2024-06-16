@@ -42,9 +42,8 @@ async function run(repository: string, commit_sha: string) {
     return response?.data.map((pullRequest) => ({
       title: pullRequest.title,
       body: pullRequest.body,
-      author_handle: pullRequest.user?.login,
-      author_avatar: pullRequest.user?.avatar_url,
-      author_email: pullRequest.user?.email,
+      user: pullRequest.user?.login,
+      url: pullRequest.html_url,
       value: `${pullRequest.title} (#${pullRequest.number})`
     }));
   } catch (error) {

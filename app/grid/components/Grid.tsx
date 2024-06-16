@@ -4,6 +4,8 @@ import type { SuccessfulPrimaryColumnResponse, ErrorResponse, GridState, GridCel
 import React, { useState } from "react";
 import GridTable from "./GridTable";
 import SelectedContext from "./SelectedContext";
+import GridIntroForm from "./GridIntroForm";
+
 import './Grid.css';
 
 type Props = {
@@ -14,7 +16,7 @@ type Props = {
 export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
   const [gridState, setGridState] = useState<GridState|null>(null);
   const [ state, setState] = useState<'empty'|'loading'|'done'>('empty');
-  const [inputValue, setInputValue] = useState<string>('open issues in primer/react');
+  const [inputValue, setInputValue] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [selectedIndex, setSelectedIndex] = useState<number|null>(null);
 
@@ -65,7 +67,6 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
           displayValue: staticValue || '',
           key: title,
           context: primaryCell.context,
-          primaryColumnType: 'issue',
           hydrationSources: []
         }
 
@@ -86,7 +87,7 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
     });
   }
 
-  async function createPrimaryColumnHandler() {
+  async function createPrimaryColumnHandler(inputValue:string) {
     if (!inputValue) {
       alert('Please enter a value');
       return;
@@ -117,23 +118,13 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
         </div>
       ) : (
         <div>
-          {state === 'loading' ? (
-            "Starting grid..."
-          ) : (
-            <div>
-              {errorMessage && <div className="error-message">{errorMessage}</div>}
-              <input
-                className="input"
-                type='text'
-                placeholder='e.g. open issues in primary/react'
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-              />
-              <button className='button' onClick={createPrimaryColumnHandler}>
-                Submit
-              </button>
-            </div>
-          )}
+          <GridIntroForm
+            state={state}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            createPrimaryColumnHandler={createPrimaryColumnHandler}
+            errorMessage={errorMessage}
+          />
         </div>
       )}
     </div>

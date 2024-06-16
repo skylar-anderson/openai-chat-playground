@@ -45,6 +45,8 @@ async function run(repository: string, ref: string) {
       committer_email: response.data.commit.committer?.email,
       author_date: response.data.commit.author?.date,
       sha: response.data.sha,
+      url: response.data.html_url,
+      type: 'commit'
     };
   } catch (error) {
     console.log("Failed to fetch commit!");

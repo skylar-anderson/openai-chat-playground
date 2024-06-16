@@ -8,7 +8,7 @@ import {
   experimental_StreamData,
   Tool
 } from "ai";
-type PrimaryDataType = 'issue' | 'commit';
+type PrimaryDataType = 'issue' | 'commit' | 'pull-request' | 'snippet' | 'item';
 type GridCellState = 'empty' | 'generating' | 'done';
 
 export type GridCell = {
@@ -16,7 +16,6 @@ export type GridCell = {
   key: string;
   displayValue: string,
   context: any,
-  primaryColumnType: PrimaryDataType,
   hydrationSources: string[]
 }
 
@@ -108,7 +107,7 @@ export async function createPrimaryColumn(primaryQuery:string):Promise<Successfu
       title: primaryQuery,
       columns: [],
       primaryColumn: column,
-      primaryColumnType: 'issue' as PrimaryDataType
+      primaryColumnType: column[0].context.type || 'Item' as PrimaryDataType
     }
 
     return { success: true, grid }

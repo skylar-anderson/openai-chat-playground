@@ -41,7 +41,9 @@ async function run(repository: string, issue_number: string) {
       number: response.data.number,
       state: response.data.state,
       assignee_login: response.data.assignee?.login,
+      user_login: response.data.user?.login,
       comments: response.data.comments,
+      type: response.data.pull_request ? "pull-request" : "issue",
     };
   } catch (error) {
     console.log("Failed to fetch commit!");
