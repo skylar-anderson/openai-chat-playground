@@ -1,50 +1,60 @@
 import { useState } from 'react';
-import { GridState } from '../actions';
+import './NewColumnForm.css';
 
 type Props = {
-  gridState:GridState;
-  addNewColumn: (s:string) => void;
+  addNewColumn: ({title,instructions}:{title:string,instructions:string}) => void;
   errorMessage?: string;
 }
 
-export default function NewColumnForm({addNewColumn, gridState, errorMessage}:Props) {
-  const [inputValue, setInputValue] = useState<string>('');
+export default function NewColumnForm({addNewColumn, errorMessage}:Props) {
+  const [title, setTitle] = useState<string>('');
+  const [instructions, setInstructions] = useState<string>('');
   const [message, setMessage] = useState<string>(errorMessage ? errorMessage : '');
   function addNewHandler(e:any) {
     e.preventDefault();
     setMessage('');
 
-    if (inputValue === '') {
+    if (title === '') {
       setMessage('enter a value');
       return;
     }
 
-    addNewColumn(inputValue)
-    setInputValue('');
+    addNewColumn({ title, instructions })
+    setTitle('');
+    setInstructions('')
     return false;
   }
 
   return (
     <div className="grid-col">
-    <div className="grid-cell grid-cell--header grid-cell--add-new-column">
-      {message && <div className="error-message">{message}</div>}
-      <form className="inline-form-group" onSubmit={addNewHandler}>
-        <input
-          className="input"
-          type='text'
-          placeholder='Add another column...'
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-        />
-        <button className='button' onClick={addNewHandler}>
-          Add
-        </button>
-      </form>
-    </div>
-
-    {gridState.primaryColumn.map((_, i) => (
-      <div className='grid-cell' key={i}></div>
-    ))}
+      <div className="grid-cell grid-cell--add-new-column">
+        {message && <div className="error-message">{message}</div>}
+        <form className="form" onSubmit={addNewHandler}>
+          <h3>New column</h3>
+          <div className="form-group">
+            <label>Column title</label>
+            <input
+              className="input"
+              type='text'
+              placeholder='Column title...'
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Instructions</label>
+            <textarea
+              className="input textarea"
+              placeholder='Describe how this field should be populated...'
+              value={instructions}
+              onChange={e => setInstructions(e.target.value)}
+            />
+          </div>
+          <button className='button' onClick={addNewHandler}>
+            Add column
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

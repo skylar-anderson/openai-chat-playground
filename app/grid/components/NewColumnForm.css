@@ -1,0 +1,36 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grid-cell.grid-cell--add-new-column {
+  padding-right: 8px;
+  padding-left: 8px;
+  height: 100%;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.input {
+  width: 100%;
+}
+
+.input.textarea {
+  height: 240px;
+  padding: 4px 6px;
+  font-family: var(--font-family);
+}
+
+.form h3 {
+  font-size: 16px;
+  margin: 0;
+}

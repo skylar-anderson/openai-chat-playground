@@ -8,19 +8,24 @@ import {
   experimental_StreamData,
   Tool
 } from "ai";
+
+const MAX_ROWS = 25;
+
 type PrimaryDataType = 'issue' | 'commit' | 'pull-request' | 'snippet' | 'item';
 type GridCellState = 'empty' | 'generating' | 'done';
 
 export type GridCell = {
   state: GridCellState,
-  key: string;
+  columnTitle: string;
+  columnInstructions: string;
   displayValue: string,
   context: any,
   hydrationSources: string[]
 }
 
 export type GridCol = {
-  key: string;
+  title: string;
+  instructions:string;
   cells: GridCell[];
 }
 
@@ -102,7 +107,7 @@ export async function createPrimaryColumn(primaryQuery:string):Promise<Successfu
     const args = JSON.parse(toolCall.function.arguments);
 
     const toolResult = await runFunction(toolCall.function.name, args);
-    let column = (Array.isArray(toolResult) ? toolResult : [toolResult]).map(convertResultToPrimaryCell).slice(0,3);
+    let column = (Array.isArray(toolResult) ? toolResult : [toolResult]).map(convertResultToPrimaryCell).slice(0,MAX_ROWS);
     const grid = {
       title: primaryQuery,
       columns: [],
@@ -116,20 +121,6 @@ export async function createPrimaryColumn(primaryQuery:string):Promise<Successfu
   return { success: false, message: responseMessage.content || 'Something went wrong' };
 }
 
-export async function addColumn(primaryQuery:string, currentGridState:GridState):Promise<ActionResponse> {
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  return { success: true, grid: currentGridState };
-}
-
-// export async function summarizeColumn(description:string):Promise<ErrorResponse|string> {
-//   const SYSTEM = `\
-//   You have access to a number of tools that allow you to retrieve context from GitHub.com.\
-//   When asked by users, utilize the correct tool to retrieve the data that the user is requesting.\
-//   You are only able to call one tool per user message. When a tool is used, the result of the tool use will be provided directly to the user.\
-//   If you are unclear which tool to use, ask the user for clarification. If the user is missing a required argument, ask the user to provide the missing information.\
-//   \
-//   `
-// }
 
 type HydrateResponse = {
   promise: Promise<GridCell>
@@ -145,7 +136,7 @@ export async function hydrateCell(cell:GridCell):Promise<HydrateResponse> {
   In some cases, the JSON object itself will contain the answer.  In other cases, you will need to use a single tool or a sequence of tools to find the answer.\
   The user interface is not a conversational chat interface, so you should avoid introductions, goodbyes, or any other pleasentries. It's critical that you provide the answer as concisely as possible.
 
-  Mardown rendering is not supported, so you should avoid using markdown in your responses.\
+  Markdown rendering is supported, but use it lightly. Only use lists, bold, italics, links. Never use headings.\
 `
 
   async function hydrate():Promise<GridCell> {
@@ -154,7 +145,7 @@ export async function hydrateCell(cell:GridCell):Promise<HydrateResponse> {
       { role: 'system', content: SYSTEM },
       { role: 'user', content: `
         Context: ${JSON.stringify(cell.context)}
-        Query: ${cell.key}
+        Query: ${cell.columnTitle}\n${cell.columnInstructions}
       ` }
     ];
     

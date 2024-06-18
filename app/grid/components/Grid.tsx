@@ -29,13 +29,13 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
     setSelectedIndex(index);
   }
 
-  function updateCellState(columnKey:string, cellIndex:number, newCellContents:GridCell) {
+  function updateCellState(columnTitle:string, cellIndex:number, newCellContents:GridCell) {
     setGridState((prevState) => {
       if (prevState === null) { return null }
       return {
         ...prevState,
         columns: prevState.columns.map(column => {
-          if (column.key === columnKey) {
+          if (column.title === columnTitle) {
             return {
               ...column,
               cells: column.cells.map((c, i) => {
@@ -52,20 +52,22 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
     });
   }
 
-  function addNewColumnHandler(title:string) {
+  function addNewColumnHandler({title,instructions}:{title:string,instructions:string}) {
     if (!gridState) {
       alert("Cant add column without grid state!");
       return;
     }
 
     const newColumn:GridCol = {
-      key: title,
+      title,
+      instructions,
       cells: gridState.primaryColumn.map(primaryCell => {
         const staticValue = primaryCell.context[title];
         const emptyCellState:GridCell = {
           state: staticValue ? 'done' : 'empty',
           displayValue: staticValue || '',
-          key: title,
+          columnTitle: title,
+          columnInstructions: instructions,
           context: primaryCell.context,
           hydrationSources: []
         }

@@ -50,13 +50,14 @@
 }
 
 .body {
-  padding: 16px;
+  
 }
 
 .section-title {
   font-size: 14px;
   font-weight: 600;
   margin: 0;
+  padding: 0 0 8px;
 }
 
 .display-value {
@@ -73,5 +74,18 @@
 }
 
 .selected-context-section {
-  margin-bottom: 32px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cell-value {
+  padding: 8px 0;
+}
+
+.markdownContainer {
+  font-size: 14px;
+}
+
+.more-details {
+  padding: 16px;
 }

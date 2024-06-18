@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { GridState } from '../actions';
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import './SelectedContext.css';
 import './Button.css';
 
@@ -40,29 +42,45 @@ export default function SelectedContext({ index, grid, selectRow }:Props) {
       <div className="body">
         {grid.columns.map((c,i) => (
           <div className="selected-context-section" key={`context-${i}`}>
-            <h3 className="section-title">{c.key}</h3>
-            <p className="display-value">{c.cells[index].displayValue}</p>
+            <h3 className="section-title" title={c.instructions}>
+              {c.title} 
+            </h3>
             {c.cells[index].hydrationSources.length > 0 && (
-              <div className="sources">Used {c.cells[index].hydrationSources.join(', ')}</div>
+              <div className="sources">Using {c.cells[index].hydrationSources.join(', ')}</div>
             )}
+            <div className="cell-value">
+              <Markdown
+                remarkPlugins={[remarkGfm]}
+                className="markdownContainer">
+                {c.cells[index].displayValue || ''}
+              </Markdown>
+            </div>
           </div>
         ))}
 
         {showDetails ? (
           <div className="details details--open">
-            <button className="button" onClick={() => setShowDetails(false)}>Hide details</button>
             {Object.keys(primaryCell.context).map(k => {
               const value = primaryCell.context[k];
               return (
                 <div className="selected-context-section" key={k}>
                   <h3 className="section-title">{k}</h3>
-                  <p className="display-value">{primaryCell.context[k]}</p>
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                    className="markdownContainer">
+                    {value ? value.toString() : ""}
+                  </Markdown>
                 </div>
               )
             })}
+            <div className="more-details">
+              <button className="button" onClick={() => setShowDetails(false)}>Hide details</button>
+            </div>
           </div>
         ):(
-          <button className="button" onClick={() => setShowDetails(true)}>Show {primaryCell.context.type} details</button>
+          <div className="more-details">
+            <button className="button" onClick={() => setShowDetails(true)}>Show {primaryCell.context.type} details</button>
+          </div>
         )}
       </div>
     </div>

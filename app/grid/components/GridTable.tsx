@@ -5,7 +5,7 @@ import './Grid.css';
 
 type Props = {
   grid:GridState;
-  addNewColumn: (s:string) => void;
+  addNewColumn: ({title,instructions}:{title:string,instructions:string}) => void;
   selectRow: (n:number) => void;
   selectedIndex: number|null;
 }
@@ -38,13 +38,13 @@ export default function GridTable({grid, addNewColumn, selectRow, selectedIndex 
         <PrimaryColumn primaryColumn={grid.primaryColumn} title={grid.primaryColumnType} selectRow={selectRow} selectedIndex={selectedIndex}/>
         {grid.columns.map((column:GridCol, rowIndex:number) => (
           <div className="grid-col" key={rowIndex}>
-            <div className="grid-cell grid-cell--header">{column.key}</div>
+            <div className="grid-cell grid-cell--header" title={column.instructions}>{column.title}</div>
             {column.cells.map((cell:GridCell, cellIndex:number) => (
               <Cell cell={cell} key={cellIndex} isSelected={selectedIndex === cellIndex} />
             ))}
           </div>
         ))}
-        <NewColumnForm gridState={grid} addNewColumn={addNewColumn} />
+        <NewColumnForm addNewColumn={addNewColumn} />
       </div>
     </div>
   );
