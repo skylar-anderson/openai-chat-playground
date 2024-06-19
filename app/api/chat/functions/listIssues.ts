@@ -74,11 +74,14 @@ async function run(
       assignee_avatar: data.assignee?.avatar_url,
       assignee_url: data.assignee?.html_url,
       assignee_name: data.assignee?.name,
+      user_handle: data.user?.login,
       state: data.state,
       title: data.title,
       body: data.body,
       number: data.number,
       url: data.html_url,
+      type: is,
+      value: `${data.title} (#${data.number})`
     }));
   } catch (e) {
     console.log("Failed to fetch issues!");

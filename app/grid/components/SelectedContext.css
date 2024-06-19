@@ -1,0 +1,91 @@
+.selected-context {
+  width: 640px;
+  border-right: 1px solid var(--border-color);
+  height: 100vh; 
+}
+
+.next-prev {
+  height: 28px;
+  width: 28px;
+}
+
+
+.header-nav {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.header {
+  padding: 8px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  height: 29px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.header-title {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.header-close {
+  border: 1px solid var(--input-border);
+  height: 28px;
+  padding: 0 6px;
+  background: var(--bg-subtle);
+  border-radius: var(--rounded-md);
+  font-weight:500;
+  font-size: 13px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.header-close:hover {
+  background: var(--bg-hover);
+}
+
+.body {
+  
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0 0 8px;
+}
+
+.display-value {
+  line-height: 1.44;
+  padding: 8px 0;
+  margin: 0;
+  word-wrap: break-word;
+}
+
+.sources {
+  color: var(--fg-subtle);
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.selected-context-section {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cell-value {
+  padding: 8px 0;
+}
+
+.markdownContainer {
+  font-size: 14px;
+}
+
+.more-details {
+  padding: 16px;
+}

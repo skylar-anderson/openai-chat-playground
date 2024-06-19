@@ -137,8 +137,6 @@ export async function handleToolCall(
 
       data.append(debugData as unknown as JSONValue);
 
-      console.log("FINISHED: " + signature);
-
       appendToolCallMessage({
         tool_call_id: tool.id,
         function_name: tool.func.name,

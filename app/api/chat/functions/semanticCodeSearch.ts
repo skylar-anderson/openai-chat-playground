@@ -67,6 +67,8 @@ async function run(repository: string, query: string): Promise<any> {
       path: chunk.path,
       similarity: chunk.similarity,
       title: chunk.title,
+      value: chunk.path,
+      type: "snippet"
     };
   });
   return answer;
