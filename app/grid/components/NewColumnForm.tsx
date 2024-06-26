@@ -42,6 +42,16 @@ export default function NewColumnForm({addNewColumn, errorMessage}:Props) {
             />
           </div>
           <div className="form-group">
+            <label>Type</label>
+            <input
+              className="input"
+              type='text'
+              placeholder='Selec type...'
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
             <label>Instructions</label>
             <textarea
               className="input textarea"
