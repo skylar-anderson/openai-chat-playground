@@ -1,16 +1,32 @@
+import { useState } from 'react';
+
 import './Button.css';
 import './Grid.css';
 import './Intro.css';
+import { useGridContext } from './GridContext';
 
-type Props = {
-  state: 'empty' | 'loading' | 'done';
-  setInputValue: (s:string) => void;
-  inputValue: string;
-  createPrimaryColumnHandler: (s:string) => void;
-  errorMessage?: string;
-}
+export default function CreateIntroForm() {
+  const [state, setState] = useState<'empty' | 'loading' | 'done'>('empty');
+  const [inputValue, setInputValue] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const { inititializeGrid, } = useGridContext();
 
-export default function CreateIntroForm({ state , setInputValue, inputValue, createPrimaryColumnHandler, errorMessage}:Props) {
+  async function createGrid(inputValue: string) {
+    if (!inputValue) {
+      alert('Please enter a value');
+      return;
+    }
+
+    setState('loading');
+    try {
+      const response = await inititializeGrid(inputValue);
+    } catch (e:any) {
+      setErrorMessage(e.message);
+
+    }
+    setState('done');
+  }
+
   if (state === 'loading') {
     return "Starting grid...";
   }
@@ -31,7 +47,7 @@ export default function CreateIntroForm({ state , setInputValue, inputValue, cre
           {' '}<a href="https://github.com/skylar-anderson/openai-chat-playground/tree/main/app/grid">Source</a>
         </p>
 
-        <form onSubmit={() => createPrimaryColumnHandler(inputValue)} className="intro-form">
+        <form onSubmit={() => createGrid(inputValue)} className="intro-form">
           {errorMessage && <div className="error-message">{errorMessage}</div>}
           <input
             className="input"
@@ -40,7 +56,7 @@ export default function CreateIntroForm({ state , setInputValue, inputValue, cre
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
           />
-          <button className='button' onClick={() => createPrimaryColumnHandler(inputValue)}>
+          <button className='button' onClick={() => createGrid(inputValue)}>
             Submit
           </button>
         </form>
@@ -49,7 +65,7 @@ export default function CreateIntroForm({ state , setInputValue, inputValue, cre
           <h3>Try it</h3>
           {suggestions.map(s => (
             <button className="suggestion" key={s} onClick={() => {
-              createPrimaryColumnHandler(s);
+              createGrid(s);
             }}>✨ {s}</button>
           ))}
         </div>
