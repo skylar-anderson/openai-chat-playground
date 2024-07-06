@@ -1,6 +1,7 @@
 "use client"
 
 import type { SuccessfulPrimaryColumnResponse, ErrorResponse, GridState, GridCell, GridCol } from "../actions";
+import { GridProvider, useGridContext } from "./GridContext";
 import React, { useState } from "react";
 import GridTable from "./GridTable";
 import SelectedContext from "./SelectedContext";
@@ -107,28 +108,30 @@ export default function Grid({createPrimaryColumn, hydrateCell }:Props) {
   }
 
   return (
-    <div className="grid-app">
-      {gridState ? (
-        <div className="grid-layout">
-          <GridTable
-            grid={gridState}
-            addNewColumn={addNewColumnHandler}
-            selectedIndex={selectedIndex}
-            selectRow={selectRow}
-          />
-          {selectedIndex !== null ? <SelectedContext grid={gridState} index={selectedIndex} selectRow={selectRow} /> : null}
-        </div>
-      ) : (
-        <div>
-          <GridIntroForm
-            state={state}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            createPrimaryColumnHandler={createPrimaryColumnHandler}
-            errorMessage={errorMessage}
-          />
-        </div>
-      )}
-    </div>
+    <GridProvider>
+      <div className="grid-app">
+        {gridState ? (
+          <div className="grid-layout">
+            <GridTable
+              grid={gridState}
+              addNewColumn={addNewColumnHandler}
+              selectedIndex={selectedIndex}
+              selectRow={selectRow}
+            />
+            {selectedIndex !== null ? <SelectedContext grid={gridState} index={selectedIndex} selectRow={selectRow} /> : null}
+          </div>
+        ) : (
+          <div>
+            <GridIntroForm
+              state={state}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              createPrimaryColumnHandler={createPrimaryColumnHandler}
+              errorMessage={errorMessage}
+            />
+          </div>
+        )}
+      </div>
+    </GridProvider>
   );
 }
