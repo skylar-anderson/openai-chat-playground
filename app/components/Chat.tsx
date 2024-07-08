@@ -36,7 +36,7 @@ export default function Chat() {
     append,
     setMessages,
     stop,
-  } = useChat({ id: chatIndex.toString(), api:'/api/chat' });
+  } = useChat({ id: chatIndex.toString(), api: "/api/chat" });
 
   const debugData = data as unknown as FunctionData[];
 

@@ -4,11 +4,16 @@ import {
   StreamingTextResponse,
   ToolCallPayload,
   experimental_StreamData,
-  Tool
+  Tool,
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
-import { MessageData, FunctionData, CompletionData, Provider } from "../../types";
+import {
+  MessageData,
+  FunctionData,
+  CompletionData,
+  Provider,
+} from "../../types";
 import {
   runFunction,
   selectTools,
@@ -22,7 +27,6 @@ export const runtime = "edge";
 
 import analyzeImage from "./functions/analyzeImage";
 
-
 const openaiClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -31,11 +35,11 @@ const azureOpenaiClient = new OpenAI({
   apiKey: process.env.AZURE_API_KEY,
   baseURL: process.env.AZURE_MODEL_BASE_URL,
   defaultHeaders: {
-    'ocp-apim-subscription-key': process.env.AZURE_API_KEY,
-    'api-key': process.env.AZURE_API_KEY,
-    'Openai-Internal-HarmonyVersion': 'harmony_v3',
-    'Openai-Internal-Experimental-AllowToolUse': 'true'
-  }
+    "ocp-apim-subscription-key": process.env.AZURE_API_KEY,
+    "api-key": process.env.AZURE_API_KEY,
+    "Openai-Internal-HarmonyVersion": "harmony_v3",
+    "Openai-Internal-Experimental-AllowToolUse": "true",
+  },
 });
 
 type RequestProps = {
@@ -110,27 +114,30 @@ export async function POST(req: Request) {
     messages: initialMessages,
     debugType: "message",
   };
-  
+
   data.append(messageDebug as unknown as JSONValue);
 
-  const toolChoices = shouldUseTools ? {
-    tools,
-    tool_choice: imageUrl ? { type: 'function', function: { name: 'analyzeImage'} } : 'auto'
-  } : {
-    functions,
-    function_call: imageUrl ? { name: 'analyzeImage' } : undefined
-  }
+  const toolChoices = shouldUseTools
+    ? {
+        tools,
+        tool_choice: imageUrl
+          ? { type: "function", function: { name: "analyzeImage" } }
+          : "auto",
+      }
+    : {
+        functions,
+        function_call: imageUrl ? { name: "analyzeImage" } : undefined,
+      };
 
-  
   const request = {
     model: settings.model, // This value is ignored if using Azure OpenAI
     stream: true,
-    messages: initialMessages,  
+    messages: initialMessages,
     ...toolChoices,
-  }
+  };
   // @ts-ignore
   const response = await openai.chat.completions.create(request);
-  
+
   const stream = OpenAIStream(response, {
     experimental_onToolCall: shouldUseTools
       ? async (call: ToolCallPayload, appendToolCallMessage) => {
@@ -141,7 +148,8 @@ export async function POST(req: Request) {
 
             if (name === "analyzeImage" && imageUrl) {
               const mostRecentMessage = messages[messages.length - 1];
-              const content = mostRecentMessage.content || 'What is this image?';
+              const content =
+                mostRecentMessage.content || "What is this image?";
               result = analyzeImage.run(content.toString(), imageUrl);
             } else {
               result = runFunction(tool.func.name, extractedArgs);
@@ -209,10 +217,10 @@ export async function POST(req: Request) {
           const signature = `${name}(${signatureFromArgs(args)})`;
 
           let result;
-            
+
           if (name === "analyzeImage" && imageUrl) {
             const mostRecentMessage = messages[messages.length - 1];
-            const content = mostRecentMessage.content || 'What is this image?';
+            const content = mostRecentMessage.content || "What is this image?";
             result = await analyzeImage.run(content.toString(), imageUrl);
           } else {
             result = await runFunction(name, args);

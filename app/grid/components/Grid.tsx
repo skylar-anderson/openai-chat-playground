@@ -1,18 +1,26 @@
-"use client"
+"use client";
 
-import type { SuccessfulPrimaryColumnResponse, ErrorResponse, GridState, GridCell, GridCol } from "../actions";
+import type {
+  SuccessfulPrimaryColumnResponse,
+  ErrorResponse,
+  GridState,
+  GridCell,
+  GridCol,
+} from "../actions";
 import { GridProvider, useGridContext } from "./GridContext";
 import React, { useState } from "react";
 import GridTable from "./GridTable";
 import SelectedContext from "./SelectedContext";
 import GridIntroForm from "./GridIntroForm";
 
-import './Grid.css';
+import "./Grid.css";
 
 type Props = {
-  createPrimaryColumn: (s: string) => Promise<SuccessfulPrimaryColumnResponse | ErrorResponse>,
-  hydrateCell: (s: GridCell) => Promise<{ promise: Promise<GridCell> }>
-}
+  createPrimaryColumn: (
+    s: string,
+  ) => Promise<SuccessfulPrimaryColumnResponse | ErrorResponse>;
+  hydrateCell: (s: GridCell) => Promise<{ promise: Promise<GridCell> }>;
+};
 
 function GridContent() {
   const { gridState } = useGridContext();
@@ -34,7 +42,10 @@ function GridContent() {
 
 export default function Grid(props: Props) {
   return (
-    <GridProvider hydrateCell={props.hydrateCell} createPrimaryColumn={props.createPrimaryColumn}>
+    <GridProvider
+      hydrateCell={props.hydrateCell}
+      createPrimaryColumn={props.createPrimaryColumn}
+    >
       <GridContent />
     </GridProvider>
   );

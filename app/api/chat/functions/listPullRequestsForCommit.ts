@@ -44,7 +44,7 @@ async function run(repository: string, commit_sha: string) {
       body: pullRequest.body,
       user: pullRequest.user?.login,
       url: pullRequest.html_url,
-      value: `${pullRequest.title} (#${pullRequest.number})`
+      value: `${pullRequest.title} (#${pullRequest.number})`,
     }));
   } catch (error) {
     console.error("Failed to fetch pull requests!");

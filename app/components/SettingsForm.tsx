@@ -223,7 +223,9 @@ export default function SettingsForm({
                     .meta as ChatCompletionCreateParams.Function;
                   return (
                     <ToolOption
-                      checked={initialValues.tools.includes(tool.name as FunctionName)}
+                      checked={initialValues.tools.includes(
+                        tool.name as FunctionName,
+                      )}
                       tool={tool}
                     />
                   );

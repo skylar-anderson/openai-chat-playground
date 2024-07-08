@@ -1,14 +1,13 @@
 .selected-context {
   width: 640px;
   border-right: 1px solid var(--border-color);
-  height: 100vh; 
+  height: 100vh;
 }
 
 .next-prev {
   height: 28px;
   width: 28px;
 }
-
 
 .header-nav {
   display: flex;
@@ -39,7 +38,7 @@
   padding: 0 6px;
   background: var(--bg-subtle);
   border-radius: var(--rounded-md);
-  font-weight:500;
+  font-weight: 500;
   font-size: 13px;
   cursor: pointer;
   box-sizing: border-box;
@@ -50,7 +49,6 @@
 }
 
 .body {
-  
 }
 
 .section-title {
