@@ -47,7 +47,7 @@ async function run(repository: string, issue_number: number, page: number = 1) {
       author_handle: comment.user?.login,
       author_avatar: comment.user?.avatar_url,
       author_email: comment.user?.email,
-      value: comment.body
+      value: comment.body,
     }));
   } catch (e) {
     console.log("Failed to fetch issue comments!");

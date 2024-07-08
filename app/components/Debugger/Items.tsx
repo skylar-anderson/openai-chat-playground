@@ -41,7 +41,11 @@ export function DebugItem({
           ...itemStyles,
         }}
       >
-        {isOpen ? <Octicon icon={TriangleDownIcon} /> : <Octicon icon={TriangleRightIcon} />}
+        {isOpen ? (
+          <Octicon icon={TriangleDownIcon} />
+        ) : (
+          <Octicon icon={TriangleRightIcon} />
+        )}
 
         <Box sx={{ textAlign: "left", flexGrow: "1", lineHeight: "16px" }}>
           {title}
@@ -75,7 +79,11 @@ export function DebugSubItem({
       px={2}
     >
       <Box onClick={() => setIsOpen(!isOpen)} as="button" sx={itemStyles}>
-        {isOpen ? <Octicon icon={TriangleDownIcon} /> : <Octicon icon={TriangleRightIcon} />}
+        {isOpen ? (
+          <Octicon icon={TriangleDownIcon} />
+        ) : (
+          <Octicon icon={TriangleRightIcon} />
+        )}
         <Box sx={{ textAlign: "left", flexGrow: "1" }}>{title}</Box>
       </Box>
       {isOpen ? children : null}

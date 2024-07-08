@@ -173,7 +173,7 @@ async function run(repository: string, pullRequestId: string) {
   } catch (error) {
     console.log("Failed to perform walkthrough!");
     console.log(error);
-    return error
+    return error;
   }
 }
 

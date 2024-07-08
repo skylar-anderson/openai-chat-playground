@@ -81,7 +81,7 @@ async function run(
       number: data.number,
       url: data.html_url,
       type: is,
-      value: `${data.title} (#${data.number})`
+      value: `${data.title} (#${data.number})`,
     }));
   } catch (e) {
     console.log("Failed to fetch issues!");

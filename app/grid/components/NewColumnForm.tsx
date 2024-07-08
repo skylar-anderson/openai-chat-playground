@@ -1,27 +1,35 @@
-import { useState } from 'react';
-import './NewColumnForm.css';
+import { useState } from "react";
+import "./NewColumnForm.css";
 
 type Props = {
-  addNewColumn: ({title,instructions}:{title:string,instructions:string}) => void;
+  addNewColumn: ({
+    title,
+    instructions,
+  }: {
+    title: string;
+    instructions: string;
+  }) => void;
   errorMessage?: string;
-}
+};
 
-export default function NewColumnForm({addNewColumn, errorMessage}:Props) {
-  const [title, setTitle] = useState<string>('');
-  const [instructions, setInstructions] = useState<string>('');
-  const [message, setMessage] = useState<string>(errorMessage ? errorMessage : '');
-  function addNewHandler(e:any) {
+export default function NewColumnForm({ addNewColumn, errorMessage }: Props) {
+  const [title, setTitle] = useState<string>("");
+  const [instructions, setInstructions] = useState<string>("");
+  const [message, setMessage] = useState<string>(
+    errorMessage ? errorMessage : "",
+  );
+  function addNewHandler(e: any) {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
 
-    if (title === '') {
-      setMessage('enter a value');
+    if (title === "") {
+      setMessage("enter a value");
       return;
     }
 
-    addNewColumn({ title, instructions })
-    setTitle('');
-    setInstructions('')
+    addNewColumn({ title, instructions });
+    setTitle("");
+    setInstructions("");
     return false;
   }
 
@@ -35,26 +43,26 @@ export default function NewColumnForm({addNewColumn, errorMessage}:Props) {
             <label>Column title</label>
             <input
               className="input"
-              type='text'
-              placeholder='Column title...'
+              type="text"
+              placeholder="Column title..."
               value={title}
-              onChange={e => setTitle(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           <div className="form-group">
             <label>Instructions</label>
             <textarea
               className="input textarea"
-              placeholder='Describe how this field should be populated...'
+              placeholder="Describe how this field should be populated..."
               value={instructions}
-              onChange={e => setInstructions(e.target.value)}
+              onChange={(e) => setInstructions(e.target.value)}
             />
           </div>
-          <button className='button' onClick={addNewHandler}>
+          <button className="button" onClick={addNewHandler}>
             Add column
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

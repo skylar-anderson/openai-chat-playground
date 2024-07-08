@@ -2,7 +2,7 @@ import { CopilotIcon } from "@primer/octicons-react";
 import { Avatar, Spinner, Box, Text } from "@primer/react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Message as AIMessage} from "ai";
+import { Message as AIMessage } from "ai";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 type Props = {
