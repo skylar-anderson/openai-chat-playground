@@ -1,28 +1,31 @@
 import { useState } from 'react';
 import { GridState } from '../actions';
+import { useGridContext } from './GridContext';
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import './SelectedContext.css';
 import './Button.css';
 
-type Props = {
-  index: number;
-  grid: GridState;
-  selectRow: (n:number|null) => void;
-}
+export default function SelectedContext() {
+  const { gridState, selectRow, selectedIndex } = useGridContext();
+  if (!gridState) { return null; }
+  if (selectedIndex === null ) { return null; }
 
-export default function SelectedContext({ index, grid, selectRow }:Props) {
-  const primaryColumn = grid.primaryColumn
-  const primaryCell = primaryColumn[index];
+  const { columns } = gridState;
+
+  const primaryColumn = gridState.primaryColumn
+  const primaryCell = primaryColumn[selectedIndex];
   const [showDetails, setShowDetails] = useState<boolean>(false);
   
   function previousRow() {
-    const targetRow = index === 0 ? grid.primaryColumn.length - 1 : index - 1;
+    if (selectedIndex === null ) { return null; }
+    const targetRow = selectedIndex === 0 ? primaryColumn.length - 1 : selectedIndex - 1;
     selectRow(targetRow);
   }
 
   function nextRow() {
-    const targetRow = index === grid.primaryColumn.length - 1 ? 0 : index + 1;
+    if (selectedIndex === null ) { return null; }
+    const targetRow = selectedIndex === primaryColumn.length - 1 ? 0 : selectedIndex + 1;
     selectRow(targetRow);
   }
 
@@ -40,19 +43,19 @@ export default function SelectedContext({ index, grid, selectRow }:Props) {
       </div>
 
       <div className="body">
-        {grid.columns.map((c,i) => (
+        {columns.map((c,i) => (
           <div className="selected-context-section" key={`context-${i}`}>
             <h3 className="section-title" title={c.instructions}>
               {c.title} 
             </h3>
-            {c.cells[index].hydrationSources.length > 0 && (
-              <div className="sources">Using {c.cells[index].hydrationSources.join(', ')}</div>
+            {c.cells[selectedIndex].hydrationSources.length > 0 && (
+              <div className="sources">Using {c.cells[selectedIndex].hydrationSources.join(', ')}</div>
             )}
             <div className="cell-value">
               <Markdown
                 remarkPlugins={[remarkGfm]}
                 className="markdownContainer">
-                {c.cells[index].displayValue || ''}
+                {c.cells[selectedIndex].displayValue || ''}
               </Markdown>
             </div>
           </div>

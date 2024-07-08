@@ -1,4 +1,5 @@
 import type { GridPrimaryCell, GridState, GridCol, GridCell} from "../actions";
+import { useGridContext } from "./GridContext";
 import Cell from "./Cell";
 import NewColumnForm from "./NewColumnForm";
 import './Grid.css';
@@ -30,13 +31,17 @@ export function PrimaryColumn({ primaryColumn, title, selectRow, selectedIndex }
   )
 }
 
-export default function GridTable({grid, addNewColumn, selectRow, selectedIndex }:Props) {
+export default function GridTable() {
+  const { gridState, addNewColumn, selectRow, selectedIndex } = useGridContext();
+  if (!gridState) {return null}
+  const { columns, title, primaryColumn, primaryColumnType } = gridState;
+  
   return (
     <div className="grid">
-      <div className="grid-title">{grid.title}</div>
+      <div className="grid-title">{title}</div>
       <div className="grid-columns">
-        <PrimaryColumn primaryColumn={grid.primaryColumn} title={grid.primaryColumnType} selectRow={selectRow} selectedIndex={selectedIndex}/>
-        {grid.columns.map((column:GridCol, rowIndex:number) => (
+        <PrimaryColumn primaryColumn={primaryColumn} title={primaryColumnType} selectRow={selectRow} selectedIndex={selectedIndex}/>
+        {columns.map((column:GridCol, rowIndex:number) => (
           <div className="grid-col" key={rowIndex}>
             <div className="grid-cell grid-cell--header" title={column.instructions}>{column.title}</div>
             {column.cells.map((cell:GridCell, cellIndex:number) => (
