@@ -19,20 +19,22 @@ const meta: ChatCompletionCreateParams.Function = {
 };
 
 async function run(owner: string): Promise<any> {
-  const projects = await listProjects(owner);
-  console.log(projects);
-  return projects;
-  // return projects.map((project) => ({
-  //   id: project.id,
-  //   title: project.title,
-  //   closed: project.closed,
-  //   closedAt: project.closedAt,
-  //   createdAt: project.createdAt,
-  //   updatedAt: project.updatedAt,
-  //   public: project.public,
-  //   shortDescription: project.shortDescription,
-  //   url: project.url,
-  // }));
+  try {
+    const projects = await listProjects(owner);
+    return projects.map((project) => ({
+      id: project.id,
+      title: project.title,
+      closed: project.closed,
+      closedAt: project.closedAt,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      public: project.public,
+      shortDescription: project.shortDescription,
+      url: project.url,
+    }));
+  } catch (error) {
+    return error;
+  }
 }
 
 export default { run, meta };

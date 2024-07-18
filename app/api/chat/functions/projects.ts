@@ -8,6 +8,18 @@ const headers = {
 const endpoint = "https://api.github.com/graphql";
 const client = new GraphQLClient(endpoint, { fetch, headers });
 
+export type ProjectType = {
+  id: string;
+  title: string;
+  closed: string;
+  closedAt: string;
+  createdAt: string;
+  public: string;
+  shortDescription: string;
+  updatedAt: string;
+  url: string;
+};
+
 const projectListQuery = gql`
   query ($owner: String!) {
     organization(login: $owner) {
@@ -15,6 +27,13 @@ const projectListQuery = gql`
         nodes {
           id
           title
+          closed
+          closedAt
+          createdAt
+          public
+          shortDescription
+          updatedAt
+          url
         }
       }
     }
@@ -169,20 +188,14 @@ const projectItems = gql`
 `;
 
 export async function listProjects(owner: string) {
-  try {
-    const {
-      organization: {
-        projectsV2: { nodes },
-      },
-    }: any = await client.request(projectListQuery, {
-      owner: owner,
-    });
-    return nodes;
-  } catch (error: any) {
-    console.log("Failed to fetch projects!", error);
-    console.log(error);
-    return "An error occured when trying to fetch projects.";
-  }
+  const {
+    organization: {
+      projectsV2: { nodes },
+    },
+  }: any = await client.request(projectListQuery, {
+    owner: owner,
+  });
+  return nodes as ProjectType[];
 }
 
 export async function getProject(id: string) {
