@@ -1,6 +1,5 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { createProjectStatusUpdate } from "./projects";
-import { CreateProjectV2StatusUpdateInput } from "@/app/types";
 
 // export type CreateProjectV2StatusUpdateInput = {
 //   clientMutationId: string;
@@ -19,7 +18,8 @@ const meta: ChatCompletionCreateParams.Function = {
     properties: {
       projectId: {
         type: "string",
-        description: "The id of the project to post the status update to",
+        description: `The id of the project to post the status update to.
+          Don't make this up, use the id from the project.`,
       },
       startDate: {
         type: "string",
@@ -53,13 +53,17 @@ async function run(
   startDate?: string,
   targetDate?: string
 ): Promise<any> {
-  return await createProjectStatusUpdate({
-    projectId,
-    startDate,
-    targetDate,
-    status,
-    body,
-  });
+  try {
+    return await createProjectStatusUpdate({
+      projectId,
+      startDate,
+      targetDate,
+      status,
+      body,
+    });
+  } catch (error) {
+    return error as any; // any doesn't feel right here but can't figure out the type
+  }
 }
 
 export default { run, meta };

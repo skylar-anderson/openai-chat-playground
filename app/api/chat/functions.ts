@@ -12,7 +12,7 @@ import listProjects from "./functions/listProjects";
 import getProject from "./functions/getProject";
 import listProjectViews from "./functions/listProjectViews";
 import listProjectStatusUpdates from "./functions/listProjectStatusUpdates";
-import listProjectItems from "./functions/listProjectItems";
+import listProjectIssuesPullRequestsDrafts from "./functions/listProjectIssuesPullRequestsDrafts";
 import createProjectStatusUpdate from "./functions/createProjectStatusUpdate";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
@@ -41,7 +41,7 @@ export const availableFunctions = {
   getProject,
   listProjectViews,
   listProjectStatusUpdates,
-  listProjectItems,
+  listProjectIssuesPullRequestsDrafts,
   createProjectStatusUpdate,
   readFile,
   searchWithBing,
@@ -142,8 +142,8 @@ export async function runFunction(name: string, args: any) {
         args["repository"],
         args["commit_sha"]
       );
-    case "listProjectItems":
-      return await listProjectItems.run(args["project_id"]);
+    case "listProjectIssuesPullRequestsDrafts":
+      return await listProjectIssuesPullRequestsDrafts.run(args["project_id"]);
     case "semanticCodeSearch":
       return await semanticCodeSearch.run(args["repository"], args["query"]);
     case "listCommits":

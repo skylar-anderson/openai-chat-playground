@@ -4,7 +4,7 @@ import { url } from "inspector";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listProjects",
-  description: `Retrieves a list of projects`,
+  description: `Retrieves a list of projects. The ID that is returned is the ID of the project. This ID might be needed to retrieve other project details.`,
   parameters: {
     type: "object",
     properties: {
@@ -18,7 +18,7 @@ const meta: ChatCompletionCreateParams.Function = {
   },
 };
 
-async function run(owner: string): Promise<any> {
+async function run(owner: string): Promise<ProjectType[]> {
   try {
     const projects = await listProjects(owner);
     return projects.map((project) => ({
@@ -33,7 +33,7 @@ async function run(owner: string): Promise<any> {
       url: project.url,
     }));
   } catch (error) {
-    return error;
+    return error as any; // any doesn't feel right here but can't figure out the type
   }
 }
 

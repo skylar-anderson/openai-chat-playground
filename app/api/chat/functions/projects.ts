@@ -18,6 +18,76 @@ export type ProjectType = {
   shortDescription: string;
   updatedAt: string;
   url: string;
+  fields?: FieldType[];
+};
+
+export type FieldType = {
+  id: string;
+  name: string;
+  updatedAt: string;
+  options?: any; // to do- add specific types for iteration/single select fields
+};
+
+export type ViewType = {
+  name: string;
+  id: string;
+  filter: string;
+  number: number;
+  createdAt: string;
+  updatedAt: string;
+  layout: string;
+};
+
+export type StatusUpdate = {
+  id: string;
+  project: string;
+  startDate: string;
+  targetDate: string;
+  updatedAt: string;
+  body: string;
+  createdAt: string;
+  // creator: {
+  //   login: string;
+  // };
+  status: string;
+};
+
+export type ProjectItem = {
+  id: string;
+  type: "ISSUE" | "PULL_REQUEST" | "DRAFT_ISSUE" | "REDACTED";
+  content: DraftIssueType | IssueType | PullRequestType;
+};
+
+export type DraftIssueType = {
+  title: string;
+  body: string;
+};
+
+export type IssueType = {
+  title: string;
+  number: number;
+  repository: {
+    name: string;
+    owner: {
+      login: string;
+    };
+  };
+  assignees: {
+    nodes: {
+      login: string;
+    }[];
+  };
+};
+
+export type PullRequestType = {
+  title: string;
+  number: number;
+  repository: {
+    name: string;
+    owner: {
+      login: string;
+    };
+  };
 };
 
 const projectListQuery = gql`
@@ -44,15 +114,26 @@ const projectByIdQuery = gql`
   query ($id: ID!) {
     node(id: $id) {
       ... on ProjectV2 {
+        id
+        title
+        closed
+        closedAt
+        createdAt
+        public
+        shortDescription
+        updatedAt
+        url
         fields(first: 20) {
           nodes {
             ... on ProjectV2Field {
               id
               name
+              updatedAt
             }
             ... on ProjectV2IterationField {
               id
               name
+              updatedAt
               configuration {
                 iterations {
                   startDate
@@ -63,6 +144,7 @@ const projectByIdQuery = gql`
             ... on ProjectV2SingleSelectField {
               id
               name
+              updatedAt
               options {
                 id
                 name
@@ -83,6 +165,11 @@ const viewsByProjectID = gql`
           nodes {
             name
             id
+            filter
+            number
+            createdAt
+            updatedAt
+            layout
           }
         }
       }
@@ -123,34 +210,7 @@ const projectItems = gql`
         items(first: 20) {
           nodes {
             id
-            fieldValues(first: 8) {
-              nodes {
-                ... on ProjectV2ItemFieldTextValue {
-                  text
-                  field {
-                    ... on ProjectV2FieldCommon {
-                      name
-                    }
-                  }
-                }
-                ... on ProjectV2ItemFieldDateValue {
-                  date
-                  field {
-                    ... on ProjectV2FieldCommon {
-                      name
-                    }
-                  }
-                }
-                ... on ProjectV2ItemFieldSingleSelectValue {
-                  name
-                  field {
-                    ... on ProjectV2FieldCommon {
-                      name
-                    }
-                  }
-                }
-              }
-            }
+            type
             content {
               ... on DraftIssue {
                 title
@@ -199,88 +259,56 @@ export async function listProjects(owner: string) {
 }
 
 export async function getProject(id: string) {
-  try {
-    const {
-      node: { fields },
-    }: any = await client.request(projectByIdQuery, {
-      id: id,
-    });
-    return fields.nodes;
-  } catch (error: any) {
-    console.log("Failed to fetch project!", error);
-    console.log(error);
-    return "An error occured when trying to fetch project.";
-  }
+  const { node }: any = await client.request(projectByIdQuery, {
+    id: id,
+  });
+  return node as ProjectType;
 }
 
 export async function listProjectViews(id: string) {
-  try {
-    const {
-      node: { views },
-    }: any = await client.request(viewsByProjectID, {
-      id: id,
-    });
-    return views.nodes;
-  } catch (error: any) {
-    console.log("Failed to fetch project views!", error);
-    console.log(error);
-    return "An error occured when trying to fetch project views.";
-  }
+  const {
+    node: { views },
+  }: any = await client.request(viewsByProjectID, {
+    id: id,
+  });
+  return views.nodes as ViewType[];
 }
 
 export async function listProjectStatusUpdates(id: string) {
-  try {
-    const {
-      node: { statusUpdates },
-    }: any = await client.request(statusUpdatesByProjectID, {
-      id: id,
-    });
-    return statusUpdates.edges.map((edge: any) => edge.node);
-  } catch (error: any) {
-    console.log("Failed to fetch project status updates!", error);
-    console.log(error);
-    return `An error occured when trying to fetch project status updates. ${error.message}`;
-  }
+  const {
+    node: { statusUpdates },
+  }: any = await client.request(statusUpdatesByProjectID, {
+    id: id,
+  });
+  return statusUpdates.edges.map((edge: any) => edge.node) as StatusUpdate[];
 }
 
 export async function createProjectStatusUpdate(
   input: CreateProjectV2StatusUpdateInput
 ) {
   const { startDate, targetDate } = input;
-  try {
-    // if startDate or targetDate isn't provided, remove them from the input. If they are then convert them to ISO strings
-    if (startDate) {
-      input.startDate = new Date(parseInt(startDate)).toISOString();
-    } else {
-      delete input.startDate;
-    }
-    if (targetDate) {
-      input.targetDate = new Date(parseInt(targetDate)).toISOString();
-    } else {
-      delete input.targetDate;
-    }
-    const response = await client.request(postStatusUpdate, {
-      input: input,
-    });
-    return response;
-  } catch (error: any) {
-    console.log("Failed to create project status update!", error);
-    console.log(error);
-    return `An error occured when trying to create project status update. ${error.message}`;
+  // if startDate or targetDate isn't provided, remove them from the input. If they are then convert them to ISO strings
+  if (startDate) {
+    input.startDate = new Date(parseInt(startDate)).toISOString();
+  } else {
+    delete input.startDate;
   }
+  if (targetDate) {
+    input.targetDate = new Date(parseInt(targetDate)).toISOString();
+  } else {
+    delete input.targetDate;
+  }
+  const response = await client.request(postStatusUpdate, {
+    input: input,
+  });
+  return response;
 }
 
-export async function listProjectItems(project_id: string) {
-  try {
-    const {
-      node: { items },
-    }: any = await client.request(projectItems, {
-      project_id: project_id,
-    });
-    return items.nodes;
-  } catch (error: any) {
-    console.log("Failed to fetch project items!", error);
-    console.log(error);
-    return `An error occured when trying to fetch project items.. ${error.message}`;
-  }
+export async function listProjectIssuesPullRequestsDrafts(project_id: string) {
+  const {
+    node: { items },
+  }: any = await client.request(projectItems, {
+    project_id: project_id,
+  });
+  return items.nodes as ProjectItem[];
 }

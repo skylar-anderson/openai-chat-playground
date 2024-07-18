@@ -18,7 +18,23 @@ const meta: ChatCompletionCreateParams.Function = {
 };
 
 async function run(id: string): Promise<any> {
-  return listProjectStatusUpdates(id);
+  try {
+    const statusUpdates = await listProjectStatusUpdates(id);
+    console.log("statusUpdates", statusUpdates);
+    return statusUpdates.map((statusUpdate) => ({
+      id: statusUpdate.id,
+      projectId: statusUpdate.project,
+      startDate: statusUpdate.startDate,
+      targetDate: statusUpdate.targetDate,
+      status: statusUpdate.status,
+      body: statusUpdate.body,
+      createdAt: statusUpdate.createdAt,
+      updatedAt: statusUpdate.updatedAt,
+      // author: statusUpdate.creator.login,
+    }));
+  } catch (error) {
+    return error as any; // any doesn't feel right here but can't figure out the type
+  }
 }
 
 export default { run, meta };
