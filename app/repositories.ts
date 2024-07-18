@@ -1,5 +1,3 @@
 export const indexedRepositories = {
-  "primer/design": "main",
-  "primer/react": "main",
-  "skylar-anderson/openai-chat-playground": "main",
+  "loveland-org/Just-testing-issues-experience": "main",
 };

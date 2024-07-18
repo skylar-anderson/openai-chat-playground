@@ -5,8 +5,8 @@ import type { ChatCompletionCreateParams } from "openai/resources/chat";
 const ENDPOINT = "GET /search/issues";
 
 const meta: ChatCompletionCreateParams.Function = {
-  name: "listIssues",
-  description: `Retrieves a paginated list of issues for a given repository. Do NOT use this for listing pull requests`,
+  name: "listRepositoryIssues",
+  description: `Retrieves a paginated list of issues for a given repository. Do NOT use this for listing pull requests. Do NOT use this when a user is getting a list of issues from a project`,
   parameters: {
     type: "object",
     properties: {
@@ -49,7 +49,7 @@ async function run(
   page: number = 1,
   assignee: string,
   state: State = "open",
-  label?: string,
+  label?: string
 ) {
   const [owner, repo] = repository.split("/");
   try {
@@ -66,7 +66,7 @@ async function run(
 
     const issues = await searchIssues<ListIssuesResponse>(
       filters.join(" "),
-      page,
+      page
     );
 
     return issues.data.items.map((data) => ({
