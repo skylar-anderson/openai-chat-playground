@@ -15,7 +15,7 @@ import TitleBar, { Visibility } from "./TitleBar";
 import DebugColumn from "./Debugger/Column";
 import { toBase64 } from "../utils/image";
 
-const defaultInstructions = ``;
+const defaultInstructions = `We are in the context of a project called "Demo octoarcade project". The project ID is PVT_kwDOBiNF1s4Aav9u. Always use this project.`;
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
 export default function Chat() {

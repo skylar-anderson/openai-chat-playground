@@ -189,11 +189,14 @@ export async function createIssue({
   //const [owner, repo] = repository.toLowerCase().split("/");
   // Only create issues in the skylar-anderson/openai-chat-playground repo for now
   try {
+    const [owner, name] = repository.split("/");
     const response = await githubApiRequest<CreateIssueResponse>(
       CREATE_ISSUE_ENDPOINT,
       {
-        owner: "loveland-org",
-        repo: "Just-testing-issues-experience",
+        // owner: owner,
+        // repo: name,
+        owner: "loveland-org", // hardcoding for damage control... just in case
+        repo: "Just-testing-issues-experience", // hardcoding for damage control... just in case
         title,
         body,
         assignees,

@@ -11,13 +11,18 @@ const meta: ChatCompletionCreateParams.Function = {
   description: `
     Retrieves a list of issues, pulls requests and draft issues for a given project.
     This is NOT for repository level items.
+    To run this you require a project id. Never make this up, it should usually start with PVT_.
+    If you don't know it view the previous context and see if the project ID is known.
+    If you can't find it, say to the user you don't have it, don't guess, this will fail.
   `,
   parameters: {
     type: "object",
     properties: {
       project_id: {
         type: "string",
-        description: "The id of the project to retrieve",
+        description: `
+            The id of the project to retrieve
+          `,
       },
     },
     required: ["project_id"],
