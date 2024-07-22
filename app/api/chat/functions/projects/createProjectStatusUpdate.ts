@@ -1,15 +1,6 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
 import { createProjectStatusUpdate } from "./projectsGQL";
 
-// export type CreateProjectV2StatusUpdateInput = {
-//   clientMutationId: string;
-//   projectId: string;
-//   startDate: string;
-//   targetDate: string;
-//   status: INACTIVE, ON_TRACK, AT_RISK, OFF_TRACK, COMPLETE;
-//   body: string;
-// };
-
 const meta: ChatCompletionCreateParams.Function = {
   name: "createProjectStatusUpdate",
   description: `Creates a new status update on a project.`,
