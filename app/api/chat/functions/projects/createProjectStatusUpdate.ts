@@ -1,5 +1,5 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
-import { createProjectStatusUpdate } from "./projects";
+import { createProjectStatusUpdate } from "./projectsGQL";
 
 // export type CreateProjectV2StatusUpdateInput = {
 //   clientMutationId: string;

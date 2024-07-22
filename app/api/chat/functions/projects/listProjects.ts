@@ -1,6 +1,5 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
-import { listProjects, ProjectType } from "./projects";
-import { url } from "inspector";
+import { listProjects, ProjectType } from "./projectsGQL";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listProjects",

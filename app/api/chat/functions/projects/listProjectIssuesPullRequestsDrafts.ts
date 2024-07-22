@@ -4,7 +4,7 @@ import {
   IssueType,
   listProjectIssuesPullRequestsDrafts,
   PullRequestType,
-} from "./projects";
+} from "./projectsGQL";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listProjectIssuesPullRequestsDrafts",
