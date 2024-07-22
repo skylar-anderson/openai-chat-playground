@@ -54,7 +54,7 @@ async function run(
   page: number = 1,
   assignee: string,
   state: State = "open",
-  label?: string
+  label?: string,
 ) {
   const [owner, repo] = repository.split("/");
   try {
@@ -71,7 +71,7 @@ async function run(
 
     const issues = await searchIssues<ListIssuesResponse>(
       filters.join(" "),
-      page
+      page,
     );
 
     return issues.data.items.map((data) => ({
