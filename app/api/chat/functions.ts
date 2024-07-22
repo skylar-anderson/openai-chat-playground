@@ -12,7 +12,7 @@ import listProjects from "./functions/projects/listProjects";
 import getProject from "./functions/projects/getProject";
 import listProjectViews from "./functions/projects/listProjectViews";
 import listProjectStatusUpdates from "./functions/projects/listProjectStatusUpdates";
-import listProjectIssuesPullRequestsDrafts from "./functions/projects/listProjectIssuesPullRequestsDrafts";
+import listProjectIssuesPullRequestsDrafts from "./functions/projects/listProjectItems";
 import createProjectStatusUpdate from "./functions/projects/createProjectStatusUpdate";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";

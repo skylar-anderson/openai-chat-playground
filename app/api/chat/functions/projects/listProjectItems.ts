@@ -7,7 +7,7 @@ import {
 } from "./projectsGQL";
 
 const meta: ChatCompletionCreateParams.Function = {
-  name: "listProjectIssuesPullRequestsDrafts",
+  name: "listProjectItems",
   description: `
     Retrieves a list of issues, pulls requests and draft issues for a given project.
     This is NOT for repository level items.
