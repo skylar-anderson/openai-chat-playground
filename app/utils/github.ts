@@ -15,7 +15,7 @@ export const headers = {
 
 export async function githubApiRequest<T>(
   endpoint: string,
-  parameters: any
+  parameters: any,
 ): Promise<T> {
   if (!auth) {
     throw new Error("GitHub PAT Not set!");
@@ -110,7 +110,7 @@ export async function updateIssue({
         issue_number: issueNumber,
         state,
         headers,
-      }
+      },
     );
     if (!response?.status) {
       return new Error("Failed to update issue");
@@ -162,7 +162,7 @@ export async function createPullRequestReview({
         pull_number: pullNumber,
         comments,
         headers,
-      }
+      },
     );
     if (!response?.status) {
       return new Error("Failed to create pull request review");
@@ -189,20 +189,17 @@ export async function createIssue({
   //const [owner, repo] = repository.toLowerCase().split("/");
   // Only create issues in the skylar-anderson/openai-chat-playground repo for now
   try {
-    const [owner, name] = repository.split("/");
     const response = await githubApiRequest<CreateIssueResponse>(
       CREATE_ISSUE_ENDPOINT,
       {
-        // owner: owner,
-        // repo: name,
-        owner: "loveland-org", // hardcoding for damage control... just in case
-        repo: "Just-testing-issues-experience", // hardcoding for damage control... just in case
+        owner: "skylar-anderson",
+        repo: "openai-chat-playground",
         title,
         body,
         assignees,
         labels,
         headers,
-      }
+      },
     );
     if (!response?.status) {
       return new Error("Failed to create issue");
@@ -241,7 +238,7 @@ export async function createIssueComment({
         issue_number: issueNumber,
         body,
         headers,
-      }
+      },
     );
 
     if (!response?.status) {
