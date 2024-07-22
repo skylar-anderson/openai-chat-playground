@@ -3,14 +3,19 @@ import { listProjectStatusUpdates } from "./projectsGQL";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listProjectStatusUpdates",
-  description: `Retrieves a list of status updates for a project`,
+  description: `
+    Retrieves a list of status updates for a project.
+    Do not make up a project id.
+    Confirm with the user if you are unsure.
+    This field may have been returned by listProjects.  
+  `,
   parameters: {
     type: "object",
     properties: {
       id: {
         type: "string",
         description:
-          "Required. The id of the project. Do not guess. Confirm with the user if you are unsure.",
+          "Required. The project id. Do not guess. Confirm with the user if you are unsure.",
       },
     },
     required: ["id"],

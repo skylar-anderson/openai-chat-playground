@@ -3,7 +3,12 @@ import { listProjects, ProjectType } from "./projectsGQL";
 
 const meta: ChatCompletionCreateParams.Function = {
   name: "listProjects",
-  description: `Retrieves a list of projects. The ID that is returned is the ID of the project. This ID might be needed to retrieve other project details.`,
+  description: `
+    Retrieves a list of projects.
+    The ID that is returned is the project id of the project.
+    This ID might be needed to retrieve other project details.
+    ALWAYS return in the format of: 'title (id)'.
+  `,
   parameters: {
     type: "object",
     properties: {
