@@ -1,5 +1,5 @@
 import listCommits from "./functions/listCommits";
-import listIssues from "./functions/listIssues";
+import listRepositoryIssues from "./functions/listRepositoryIssues";
 import listIssueComments from "./functions/listIssueComments";
 import semanticCodeSearch from "./functions/semanticCodeSearch";
 import listPullRequestsForCommit from "./functions/listPullRequestsForCommit";
@@ -8,6 +8,14 @@ import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest
 import searchWithBing from "./functions/searchWithBing";
 import readFile from "./functions/readFile";
 import listPullRequests from "./functions/listPullRequests";
+import listProjects from "./functions/projects/listProjects";
+import getProject from "./functions/projects/getProject";
+import listProjectViews from "./functions/projects/listProjectViews";
+import listProjectStatusUpdates from "./functions/projects/listProjectStatusUpdates";
+import listProjectItems from "./functions/projects/listProjectItems";
+import listLabels from "./functions/repository/listLabels";
+import listIssueTemplates from "./functions/repository/listIssueTemplates";
+import createProjectStatusUpdate from "./functions/projects/createProjectStatusUpdate";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
 import addMemory from "./functions/addMemory";
@@ -31,13 +39,21 @@ export const availableFunctions = {
   getIssue,
   getCommit,
   listPullRequests,
+  listProjects,
+  getProject,
+  listProjectViews,
+  listProjectStatusUpdates,
+  listProjectItems,
+  listLabels,
+  createProjectStatusUpdate,
   readFile,
   searchWithBing,
   retrieveDiffFromSHA,
   retrieveDiffFromPullRequest,
   semanticCodeSearch,
   listCommits,
-  listIssues,
+  listIssueTemplates,
+  listRepositoryIssues,
   listIssueComments,
   listPullRequestsForCommit,
 };
@@ -46,7 +62,7 @@ import { type Tool } from "ai";
 export type FunctionName = keyof typeof availableFunctions;
 
 export function selectFunctions(
-  functions: FunctionName[],
+  functions: FunctionName[]
 ): ChatCompletionCreateParams.Function[] {
   let funcs = [] as ChatCompletionCreateParams.Function[];
   functions.forEach((name) => {
@@ -130,6 +146,8 @@ export async function runFunction(name: string, args: any) {
         args["repository"],
         args["commit_sha"],
       );
+    case "listProjectItems":
+      return await listProjectItems.run(args["project_id"]);
     case "semanticCodeSearch":
       return await semanticCodeSearch.run(args["repository"], args["query"]);
     case "listCommits":
@@ -140,8 +158,8 @@ export async function runFunction(name: string, args: any) {
         args["sha"],
         args["page"],
       );
-    case "listIssues":
-      return await listIssues.run(
+    case "listRepositoryIssues":
+      return await listRepositoryIssues.run(
         "issue",
         args["repository"],
         args["page"],
@@ -150,13 +168,33 @@ export async function runFunction(name: string, args: any) {
         args["label"],
       );
     case "listPullRequests":
-      return await listIssues.run(
+      return await listRepositoryIssues.run(
         "pull-request",
         args["repository"],
         args["page"],
         args["assignee"],
         args["state"],
       );
+    case "listProjects":
+      return await listProjects.run(args["owner"]);
+    case "listLabels":
+      return await listLabels.run(args["repository"]);
+    case "listIssueTemplates":
+      return await listIssueTemplates.run(args["repository"]);
+    case "listProjectStatusUpdates":
+      return await listProjectStatusUpdates.run(args["id"]);
+    case "createProjectStatusUpdate":
+      return await createProjectStatusUpdate.run(
+        args["projectId"],
+        args["status"],
+        args["body"],
+        args["startDate"],
+        args["targetDate"],
+      );
+    case "getProject":
+      return await getProject.run(args["id"]);
+    case "listProjectViews":
+      return await listProjectViews.run(args["id"]);
     case "listIssueComments":
       return await listIssueComments.run(
         args["repository"],
