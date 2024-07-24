@@ -13,6 +13,8 @@ import getProject from "./functions/projects/getProject";
 import listProjectViews from "./functions/projects/listProjectViews";
 import listProjectStatusUpdates from "./functions/projects/listProjectStatusUpdates";
 import listProjectItems from "./functions/projects/listProjectItems";
+import listLabels from "./functions/repository/listLabels";
+import listIssueTemplates from "./functions/repository/listIssueTemplates";
 import createProjectStatusUpdate from "./functions/projects/createProjectStatusUpdate";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
@@ -42,6 +44,7 @@ export const availableFunctions = {
   listProjectViews,
   listProjectStatusUpdates,
   listProjectItems,
+  listLabels,
   createProjectStatusUpdate,
   readFile,
   searchWithBing,
@@ -49,6 +52,7 @@ export const availableFunctions = {
   retrieveDiffFromPullRequest,
   semanticCodeSearch,
   listCommits,
+  listIssueTemplates,
   listRepositoryIssues,
   listIssueComments,
   listPullRequestsForCommit,
@@ -173,6 +177,10 @@ export async function runFunction(name: string, args: any) {
       );
     case "listProjects":
       return await listProjects.run(args["owner"]);
+    case "listLabels":
+      return await listLabels.run(args["repository"]);
+    case "listIssueTemplates":
+      return await listIssueTemplates.run(args["repository"]);
     case "listProjectStatusUpdates":
       return await listProjectStatusUpdates.run(args["id"]);
     case "createProjectStatusUpdate":
