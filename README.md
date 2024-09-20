@@ -1,4 +1,6 @@
-# Basic chat + function calling playground
+# GitHub Agent Playground
+
+https://github.com/user-attachments/assets/56867194-675d-4154-a86a-029189ec21c2
 
 ## Getting started
 
