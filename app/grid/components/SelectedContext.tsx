@@ -1,10 +1,45 @@
 import { useState } from "react";
-import { GridState } from "../actions";
+import { GridCol, GridCell, GridState } from "../actions";
 import { useGridContext } from "./GridContext";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "./SelectedContext.css";
 import "./Button.css";
+
+function CellValue({column, cell}: {column: GridCol, cell: GridCell}) {
+  const sources = cell.hydrationSources;
+  const [open, setOpen] = useState<boolean>(false);
+  return (
+    <div className="selected-context-section">
+      <h3 className="section-title" title={column.instructions}>
+        {column.title}
+      </h3>
+      
+      {sources.length > 0 && (
+        <div className="sources">
+          Using {sources.join(", ")}
+        </div>
+      )}
+
+      <div className="cell-value">
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          className="markdownContainer"
+        >
+          {cell.displayValue || ""}
+        </Markdown>
+      </div>
+      {open ? (
+        <div>
+          <pre className="instructions">{column.instructions}</pre>
+          <button className="button" onClick={() => setOpen(false)}>Hide prompt</button>
+        </div>
+      ) : (
+        <button className="button" onClick={() => setOpen(true)}>Show prompt</button>
+      )}
+    </div>
+  )
+}
 
 export default function SelectedContext() {
   const { gridState, selectRow, selectedIndex } = useGridContext();
@@ -58,24 +93,7 @@ export default function SelectedContext() {
 
       <div className="body">
         {columns.map((c, i) => (
-          <div className="selected-context-section" key={`context-${i}`}>
-            <h3 className="section-title" title={c.instructions}>
-              {c.title}
-            </h3>
-            {c.cells[selectedIndex].hydrationSources.length > 0 && (
-              <div className="sources">
-                Using {c.cells[selectedIndex].hydrationSources.join(", ")}
-              </div>
-            )}
-            <div className="cell-value">
-              <Markdown
-                remarkPlugins={[remarkGfm]}
-                className="markdownContainer"
-              >
-                {c.cells[selectedIndex].displayValue || ""}
-              </Markdown>
-            </div>
-          </div>
+          <CellValue column={c} cell={c.cells[selectedIndex]} />
         ))}
 
         {showDetails ? (
