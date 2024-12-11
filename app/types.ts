@@ -39,3 +39,11 @@ export type SettingsProps = {
   parallelize: boolean;
   provider: Provider;
 };
+
+export type CreateProjectV2StatusUpdateInput = {
+  projectId: string;
+  body: string;
+  startDate?: string;
+  targetDate?: string;
+  status?: "INACTIVE" | "ON_TRACK" | "AT_RISK" | "OFF_TRACK" | "COMPLETE";
+};

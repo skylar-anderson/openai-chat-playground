@@ -16,6 +16,7 @@ import DebugColumn from "./Debugger/Column";
 import { toBase64 } from "../utils/image";
 
 const defaultInstructions = ``;
+
 const tools = Object.keys(availableFunctions) as FunctionName[];
 
 export default function Chat() {
