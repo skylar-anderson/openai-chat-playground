@@ -139,7 +139,7 @@ export async function POST(req: Request) {
   const response = await openai.chat.completions.create(request);
 
   const stream = OpenAIStream(response, {
-    experimental_onToolCall: shouldUseTools
+    onToolCall: shouldUseTools
       ? async (call: ToolCallPayload, appendToolCallMessage) => {
           const promises = call.tools.map(async (tool) => {
             const { name, arguments: args } = tool.func;
@@ -210,7 +210,7 @@ export async function POST(req: Request) {
         }
       : undefined,
 
-    experimental_onFunctionCall: shouldUseTools
+    onFunctionCall: shouldUseTools
       ? undefined
       : async ({ name, arguments: args }, createFunctionCallMessages) => {
           const startTime = Date.now();
@@ -276,7 +276,7 @@ export async function POST(req: Request) {
     onFinal() {
       data.close();
     },
-    experimental_streamData: true,
+    streamData: true,
   });
 
   return new StreamingTextResponse(stream, {}, data);

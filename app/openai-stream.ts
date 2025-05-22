@@ -261,7 +261,7 @@ export async function createOpenAIStream(
   const response = await openai.chat.completions.create(request);
 
   const stream = OpenAIStream(response, {
-    experimental_onToolCall: toolChoices.tools
+    onToolCall: toolChoices.tools
       ? (call, appendToolCallMessage) =>
           handleToolCall(
             call,
@@ -275,7 +275,7 @@ export async function createOpenAIStream(
           )
       : undefined,
 
-    experimental_onFunctionCall: toolChoices.functions
+    onFunctionCall: toolChoices.functions
       ? (params, createFunctionCallMessages) =>
           handleFunctionCall(
             params,
@@ -299,7 +299,7 @@ export async function createOpenAIStream(
     onFinal() {
       data.close();
     },
-    experimental_streamData: true,
+    streamData: true,
   });
 
   return { stream, data };
