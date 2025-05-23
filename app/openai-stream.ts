@@ -2,7 +2,7 @@ import {
   JSONValue,
   OpenAIStream,
   ToolCallPayload,
-  experimental_StreamData,
+  StreamData,
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
@@ -99,7 +99,7 @@ export function extractFunctionsOrTools(
 export async function handleToolCall(
   call: ToolCallPayload,
   appendToolCallMessage: any,
-  data: experimental_StreamData,
+  data: StreamData,
   messages: ChatCompletionMessageParam[],
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
@@ -172,7 +172,7 @@ export async function handleToolCall(
 export async function handleFunctionCall(
   { name, arguments: args }: { name: string; arguments: any },
   createFunctionCallMessages: any,
-  data: experimental_StreamData,
+  data: StreamData,
   messages: ChatCompletionMessageParam[],
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
@@ -236,7 +236,7 @@ export async function createOpenAIStream(
   settings: SettingsProps,
   imageUrl?: string,
 ) {
-  const data = new experimental_StreamData();
+  const data = new StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
   const openai = getOpenaiClient(settings.provider);
   const initialMessages = [systemMessage, ...messages];
@@ -261,7 +261,7 @@ export async function createOpenAIStream(
   const response = await openai.chat.completions.create(request);
 
   const stream = OpenAIStream(response, {
-    experimental_onToolCall: toolChoices.tools
+    onToolCall: toolChoices.tools
       ? (call, appendToolCallMessage) =>
           handleToolCall(
             call,
@@ -275,7 +275,7 @@ export async function createOpenAIStream(
           )
       : undefined,
 
-    experimental_onFunctionCall: toolChoices.functions
+    onFunctionCall: toolChoices.functions
       ? (params, createFunctionCallMessages) =>
           handleFunctionCall(
             params,
@@ -299,7 +299,7 @@ export async function createOpenAIStream(
     onFinal() {
       data.close();
     },
-    experimental_streamData: true,
+    streamData: true,
   });
 
   return { stream, data };
