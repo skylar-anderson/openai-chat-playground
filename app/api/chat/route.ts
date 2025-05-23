@@ -1,10 +1,9 @@
 import {
   JSONValue,
-  OpenAIStream,
-  StreamingTextResponse,
-  ToolCallPayload,
-  experimental_StreamData,
-  Tool,
+  StreamData,
+  createDataStreamResponse,
+  streamText,
+  tool,
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
@@ -100,7 +99,7 @@ export async function POST(req: Request) {
     data: { imageUrl, settings },
   } = body;
 
-  const data = new experimental_StreamData();
+  const data = new StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
   const isAzure = settings.provider === Provider.AZURE;
   const openai = getOpenaiClient(settings.provider);
@@ -135,13 +134,18 @@ export async function POST(req: Request) {
     messages: initialMessages,
     ...toolChoices,
   };
-  // @ts-ignore
-  const response = await openai.chat.completions.create(request);
-
-  const stream = OpenAIStream(response, {
+  
+  // Create a stream using the new streamText API with OpenAI client
+  const stream = await streamText({
+    model: openai,
+    messages: initialMessages,
+    options: {
+      ...toolChoices,
+    },
+    // Handle tool/function calls
     experimental_onToolCall: shouldUseTools
-      ? async (call: ToolCallPayload, appendToolCallMessage) => {
-          const promises = call.tools.map(async (tool) => {
+      ? async ({ tools: toolCalls, addToolCallMessage }) => {
+          const promises = toolCalls.map(async (tool) => {
             const { name, arguments: args } = tool.func;
             const extractedArgs = JSON.parse(args as unknown as string);
             let result;
@@ -176,7 +180,7 @@ export async function POST(req: Request) {
 
               console.log("FINISHED: " + signature);
 
-              appendToolCallMessage({
+              addToolCallMessage({
                 tool_call_id: tool.id,
                 function_name: tool.func.name,
                 tool_call_result: loadedResult as JSONValue,
@@ -186,10 +190,10 @@ export async function POST(req: Request) {
 
           await Promise.all(promises);
 
-          const newMessages: ChatCompletionMessageParam[] = [
+          const newMessages = [
             systemMessage,
             ...messages,
-            ...(appendToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
+            ...(addToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
           ];
 
           const messageDebug: MessageData = {
@@ -209,7 +213,6 @@ export async function POST(req: Request) {
           });
         }
       : undefined,
-
     experimental_onFunctionCall: shouldUseTools
       ? undefined
       : async ({ name, arguments: args }, createFunctionCallMessages) => {
@@ -276,8 +279,9 @@ export async function POST(req: Request) {
     onFinal() {
       data.close();
     },
-    experimental_streamData: true,
   });
 
-  return new StreamingTextResponse(stream, {}, data);
+  return createDataStreamResponse(stream, {
+    headers: {}
+  }, data);
 }
