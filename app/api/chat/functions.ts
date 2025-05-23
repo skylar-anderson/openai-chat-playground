@@ -57,10 +57,9 @@ export function selectFunctions(
 }
 
 export function selectTools(functions: FunctionName[]): any[] {
-  let tools = [] as Tool[];
+  let tools = [] as any[];
   functions.forEach((name) => {
     if (availableFunctions[name]) {
-      // @ts-ignore
       tools.push({ type: "function", function: availableFunctions[name].meta });
     }
   });
