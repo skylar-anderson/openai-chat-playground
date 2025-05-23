@@ -19,6 +19,7 @@ import getDiscussion from "./functions/getDiscussion";
 import createPullRequestReview from "./functions/createPullRequestReview";
 import analyzeImage from "./functions/analyzeImage";
 import type { ChatCompletionCreateParams } from "openai/resources/chat";
+import { tool } from "ai";
 export const availableFunctions = {
   analyzeImage,
   createPullRequestReview,
@@ -41,8 +42,6 @@ export const availableFunctions = {
   listIssueComments,
   listPullRequestsForCommit,
 };
-import { type Tool } from "ai";
-
 export type FunctionName = keyof typeof availableFunctions;
 
 export function selectFunctions(
@@ -57,11 +56,10 @@ export function selectFunctions(
   return funcs;
 }
 
-export function selectTools(functions: FunctionName[]): Tool[] {
-  let tools = [] as Tool[];
+export function selectTools(functions: FunctionName[]): any[] {
+  let tools = [] as any[];
   functions.forEach((name) => {
     if (availableFunctions[name]) {
-      // @ts-ignore
       tools.push({ type: "function", function: availableFunctions[name].meta });
     }
   });

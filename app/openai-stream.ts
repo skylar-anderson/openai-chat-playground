@@ -1,8 +1,8 @@
 import {
   JSONValue,
-  OpenAIStream,
-  ToolCallPayload,
-  experimental_StreamData,
+  StreamData,
+  streamText,
+  createDataStreamResponse
 } from "ai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
@@ -97,9 +97,9 @@ export function extractFunctionsOrTools(
 }
 
 export async function handleToolCall(
-  call: ToolCallPayload,
-  appendToolCallMessage: any,
-  data: experimental_StreamData,
+  call: { tools: Array<{id: string, func: {name: string, arguments: any}}>},
+  addToolCallMessage: any,
+  data: StreamData,
   messages: ChatCompletionMessageParam[],
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
@@ -137,7 +137,7 @@ export async function handleToolCall(
 
       data.append(debugData as unknown as JSONValue);
 
-      appendToolCallMessage({
+      addToolCallMessage({
         tool_call_id: tool.id,
         function_name: tool.func.name,
         tool_call_result: loadedResult as JSONValue,
@@ -150,7 +150,7 @@ export async function handleToolCall(
   const newMessages: ChatCompletionMessageParam[] = [
     systemMessage,
     ...messages,
-    ...(appendToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
+    ...(addToolCallMessage() as OpenAI.Chat.Completions.ChatCompletionMessageParam[]),
   ];
 
   const messageDebug: MessageData = {
@@ -172,7 +172,7 @@ export async function handleToolCall(
 export async function handleFunctionCall(
   { name, arguments: args }: { name: string; arguments: any },
   createFunctionCallMessages: any,
-  data: experimental_StreamData,
+  data: StreamData,
   messages: ChatCompletionMessageParam[],
   settings: SettingsProps,
   systemMessage: ChatCompletionMessageParam,
@@ -236,7 +236,7 @@ export async function createOpenAIStream(
   settings: SettingsProps,
   imageUrl?: string,
 ) {
-  const data = new experimental_StreamData();
+  const data = new StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
   const openai = getOpenaiClient(settings.provider);
   const initialMessages = [systemMessage, ...messages];
@@ -250,22 +250,16 @@ export async function createOpenAIStream(
 
   const toolChoices = extractFunctionsOrTools(settings, imageUrl);
 
-  const request = {
-    model: settings.model,
-    stream: true,
+  // Create stream with the streamText API
+  const stream = await streamText({
+    model: openai,
     messages: initialMessages,
-    ...toolChoices,
-  };
-
-  // @ts-ignore
-  const response = await openai.chat.completions.create(request);
-
-  const stream = OpenAIStream(response, {
+    options: toolChoices,
     experimental_onToolCall: toolChoices.tools
-      ? (call, appendToolCallMessage) =>
+      ? (toolCalls, addToolCallMessage) =>
           handleToolCall(
-            call,
-            appendToolCallMessage,
+            { tools: toolCalls },
+            addToolCallMessage,
             data,
             messages,
             settings,
@@ -299,7 +293,6 @@ export async function createOpenAIStream(
     onFinal() {
       data.close();
     },
-    experimental_streamData: true,
   });
 
   return { stream, data };

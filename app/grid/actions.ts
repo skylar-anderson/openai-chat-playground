@@ -2,11 +2,10 @@
 import OpenAI from "openai";
 import {
   JSONValue,
-  OpenAIStream,
-  StreamingTextResponse,
-  ToolCallPayload,
-  experimental_StreamData,
-  Tool,
+  StreamData,
+  createDataStreamResponse,
+  streamText,
+  tool,
 } from "ai";
 
 const MAX_ROWS = 25;
@@ -80,11 +79,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const tools: Tool[] = Object.keys(availableFunctions).map((f) => {
+const tools: any[] = Object.keys(availableFunctions).map((f) => {
   return {
     type: "function",
     function: availableFunctions[f as FunctionName].meta,
-  } as Tool;
+  };
 });
 
 export async function createPrimaryColumn(
