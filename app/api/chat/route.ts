@@ -3,7 +3,7 @@ import {
   OpenAIStream,
   StreamingTextResponse,
   ToolCallPayload,
-  experimental_StreamData,
+  StreamData,
   Tool,
 } from "ai";
 import OpenAI from "openai";
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
     data: { imageUrl, settings },
   } = body;
 
-  const data = new experimental_StreamData();
+  const data = new StreamData();
   const systemMessage = await getSystemMessage(settings.customInstructions);
   const isAzure = settings.provider === Provider.AZURE;
   const openai = getOpenaiClient(settings.provider);

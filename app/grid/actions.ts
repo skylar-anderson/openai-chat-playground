@@ -5,7 +5,7 @@ import {
   OpenAIStream,
   StreamingTextResponse,
   ToolCallPayload,
-  experimental_StreamData,
+  StreamData,
   Tool,
 } from "ai";
 
