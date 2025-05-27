@@ -8,6 +8,7 @@ const CREATE_ISSUE_COMMENT_ENDPOINT =
 const UPDATE_ISSUE_ENDPOINT =
   "PATCH /repos/{owner}/{repo}/issues/{issue_number}";
 const CREATE_PULL_REQUEST_REVIEW_ENDPOINT = `POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews`;
+const WRITE_FILE_ENDPOINT = "PUT /repos/{owner}/{repo}/contents/{path}";
 
 export const headers = {
   "X-GitHub-Api-Version": "2022-11-28",
@@ -273,5 +274,61 @@ export async function getMemory() {
     console.log("Failed to fetch memory!");
     console.log(error);
     return "An error occured when trying to fetch memory.";
+  }
+}
+
+type WriteFileProps = {
+  repository: string;
+  path: string;
+  content: string;
+  message?: string;
+  sha?: string;
+};
+
+export async function writeFile({
+  repository,
+  path,
+  content,
+  message = "Update file",
+  sha,
+}: WriteFileProps) {
+  type WriteFileResponse =
+    | Endpoints[typeof WRITE_FILE_ENDPOINT]["response"]
+    | undefined;
+  
+  const [owner, repo] = repository.split("/");
+  
+  try {
+    // Content needs to be base64 encoded for the GitHub API
+    const base64Content = Buffer.from(content).toString('base64');
+    
+    const params: any = {
+      owner,
+      repo,
+      path,
+      message,
+      content: base64Content,
+      headers,
+    };
+    
+    // If sha is provided (for updating an existing file), include it
+    if (sha) {
+      params.sha = sha;
+    }
+    
+    const response = await githubApiRequest<WriteFileResponse>(
+      WRITE_FILE_ENDPOINT,
+      params
+    );
+    
+    if (!response?.status) {
+      return new Error("Failed to write file");
+    }
+
+    return response;
+  } catch (error) {
+    console.log("Failed to write file!");
+    console.log(error);
+    return error;
   }
 }
