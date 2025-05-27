@@ -7,6 +7,7 @@ import retrieveDiffFromSHA from "./functions/retrieveDiffFromSHA";
 import retrieveDiffFromPullRequest from "./functions/retrieveDiffFromPullRequest";
 import searchWithBing from "./functions/searchWithBing";
 import readFile from "./functions/readFile";
+import writeFile from "./functions/writeFile";
 import listPullRequests from "./functions/listPullRequests";
 import getIssue from "./functions/getIssue";
 import getCommit from "./functions/getCommit";
@@ -32,6 +33,7 @@ export const availableFunctions = {
   getCommit,
   listPullRequests,
   readFile,
+  writeFile,
   searchWithBing,
   retrieveDiffFromSHA,
   retrieveDiffFromPullRequest,
@@ -112,6 +114,8 @@ export async function runFunction(name: string, args: any) {
       return await addMemory.run(args["memory"]);
     case "readFile":
       return await readFile.run(args["repository"], args["path"]);
+    case "writeFile":
+      return await writeFile.run(args["repository"], args["path"], args["content"]);
     case "getCommit":
       return await getCommit.run(args["repository"], args["ref"]);
     case "getIssue":
