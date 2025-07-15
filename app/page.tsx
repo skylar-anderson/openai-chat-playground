@@ -5,7 +5,7 @@ import Chat from "./components/Chat";
 
 export default function Home() {
   return (
-    <ThemeProvider>
+    <ThemeProvider colorMode="dark">
       <BaseStyles>
         <Chat />
       </BaseStyles>
